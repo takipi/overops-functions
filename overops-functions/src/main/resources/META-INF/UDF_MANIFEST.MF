@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<udf_manifest>
+   <version>1.0</version> 
+   <library_name>overops-public-lib</library_name>
+   <backwards_compatible>true</backwards_compatible>
+   <functions></functions>
+</udf_manifest>

@@ -1,0 +1,26 @@
+apply plugin: 'eu.appsatori.fatjar'
+
+buildscript {
+	repositories {
+		jcenter()
+	}
+
+	dependencies {
+		classpath 'eu.appsatori:gradle-fatjar-plugin:0.3'
+	}
+}
+
+dependencies {
+	compile (
+		"org.apache.commons:commons-lang3:3.7",
+		project(":api-interface")
+	)
+}
+
+fatJar {
+	exclude 'META-INF/maven'
+	exclude 'META-INF/*.example'
+	manifest {
+		attributes 'Main-Class': 'OveropsFunctions'
+	}
+}

@@ -1,0 +1,19 @@
+rootProject.name = "udf-projects"
+
+def includeExternalProject(relativePath)
+{
+	def projectDirectory = new File(relativePath).canonicalFile
+	def buildGradleFile = new File(projectDirectory, "build.gradle")
+
+	if (!buildGradleFile.canRead())
+	{
+		throw new IllegalStateException("Unable to find gradle file: $buildGradleFile")
+	}
+
+	createProjectDescriptor(rootProject, projectDirectory.name, projectDirectory)
+}
+
+includeExternalProject("../api-client/api-client-core")
+includeExternalProject("../api-client/api-interface")
+
+include ":overops-functions"
