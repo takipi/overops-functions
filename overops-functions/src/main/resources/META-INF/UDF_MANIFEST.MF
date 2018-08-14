@@ -3,5 +3,13 @@
    <version>1.0</version> 
    <library_name>overops-public-lib</library_name>
    <backwards_compatible>true</backwards_compatible>
-   <functions></functions>
+   <functions>
+	   <function>
+	      <function_type>CHANNEL</function_type>
+	      <function_name>apply-label</function_name>
+	      <description>Applies a specific input label to events</description>
+	      <param_type>TEXT</param_type>
+	      <class_file>com.takipi.common.udf.label.ApplyLabelFunction</class_file>
+	   </function>
+	</functions>
 </udf_manifest>
