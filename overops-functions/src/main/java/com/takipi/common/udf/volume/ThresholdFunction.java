@@ -59,15 +59,15 @@ public class ThresholdFunction {
 		}
 
 		if ((input.relative_to == Mode.Method_Calls) && (input.rate <= 0.0)) {
-			throw new IllegalArgumentException("'percentage' must be positive");
+			throw new IllegalArgumentException("'rate' must be positive");
 		}
 
 		if ((input.relative_to == Mode.Method_Calls) && (input.rate > 100.0)) {
-			throw new IllegalArgumentException("'percentage' can't be more then 100 for method calls");
+			throw new IllegalArgumentException("'rate' can't be more then 100 for method calls");
 		}
 
 		if ((input.relative_to == Mode.Thread_Calls) && (input.rate <= 0.0)) {
-			throw new IllegalArgumentException("'percentage' must be positive");
+			throw new IllegalArgumentException("'rate' must be positive");
 		}
 
 		return input;
