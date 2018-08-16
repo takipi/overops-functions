@@ -27,7 +27,7 @@
 	      	# Compare the number of times application threads (e.g. Servlet, Actor, Future,..) containing the events matching the target views have executed  against the number of events occurring. For example, if a Servlet containing the events within the view was invoked a 1000 times and 20 events matching the view’s filter took place, a RATE value above 2 will invoke an alert.
 	      	relative_to = Thread_Calls
 
-	      	# Compare the number of times the application method containing the events was invoked against the number of events which occured. 
+	      	# Compare the number of times the application method containing the events was invoked against the number of events which occurred. 
 	      	# relative_to = Method_Calls
 
 	      	# Time period to look at, in minutes.
