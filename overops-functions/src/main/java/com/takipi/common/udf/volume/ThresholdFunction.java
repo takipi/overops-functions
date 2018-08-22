@@ -12,6 +12,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.takipi.common.api.ApiClient;
+import com.takipi.common.api.data.volume.Transaction;
 import com.takipi.common.api.request.alert.Anomaly;
 import com.takipi.common.api.request.alert.Anomaly.AnomalyContributor;
 import com.takipi.common.api.request.alert.AnomalyAlertRequest;
@@ -24,7 +25,6 @@ import com.takipi.common.api.result.GenericResult;
 import com.takipi.common.api.result.event.EventResult;
 import com.takipi.common.api.result.volume.EventsVolumeResult;
 import com.takipi.common.api.result.volume.TransactionsVolumeResult;
-import com.takipi.common.api.result.volume.TransactionsVolumeResult.Transaction;
 import com.takipi.common.api.url.UrlClient.Response;
 import com.takipi.common.api.util.ValidationUtil.VolumeType;
 import com.takipi.common.udf.ContextArgs;
@@ -54,7 +54,7 @@ public class ThresholdFunction {
 			throw new IllegalArgumentException("'timespan' must be positive");
 		}
 
-		if ((input.relative_to == Mode.Absolute) && (input.threshold <= 0l)) {
+		if (input.threshold <= 0l) {
 			throw new IllegalArgumentException("'threshold' must be positive");
 		}
 
@@ -89,7 +89,7 @@ public class ThresholdFunction {
 		DateTime to = DateTime.now();
 		DateTime from = to.minusMinutes(input.timespan);
 
-		DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
+		DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();
 
 		EventsVolumeRequest eventsVolumeRequest = EventsVolumeRequest.newBuilder().setServiceId(args.serviceId)
 				.setViewId(args.viewId).setFrom(from.toString(fmt)).setTo(to.toString(fmt)).setVolumeType(volumeType)
@@ -119,7 +119,7 @@ public class ThresholdFunction {
 			}
 		}
 
-		if (hitCount == 0l) {
+		if (hitCount <= input.threshold) {
 			return;
 		}
 
@@ -127,7 +127,7 @@ public class ThresholdFunction {
 
 		switch (input.relative_to) {
 		case Absolute: {
-			thresholdExceeded = (hitCount >= input.threshold);
+			thresholdExceeded = true;
 		}
 			break;
 
