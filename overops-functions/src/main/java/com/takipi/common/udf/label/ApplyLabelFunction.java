@@ -48,8 +48,12 @@ public class ApplyLabelFunction {
 
 		System.out.println("execute context: " + rawContextArgs);
 
-		if (!args.eventValidate()) {
+		if (!args.validate()) {
 			throw new IllegalArgumentException("Bad context args - " + rawContextArgs);
+		}
+
+		if (!args.viewValidate()) {
+			return;
 		}
 
 		ApiClient apiClient = args.apiClient();

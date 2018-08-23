@@ -11,7 +11,7 @@ public class ContextArgs {
 	public String apiKey;
 	public String resurface;
 
-	private boolean validate() {
+	public boolean validate() {
 		return ((!Strings.isNullOrEmpty(serviceId)) && (!Strings.isNullOrEmpty(apiKey)));
 	}
 

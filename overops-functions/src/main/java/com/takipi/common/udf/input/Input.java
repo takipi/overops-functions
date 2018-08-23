@@ -1,10 +1,15 @@
 package com.takipi.common.udf.input;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class Input {
@@ -35,6 +40,14 @@ public class Input {
 					fld.set(this, getLong(value));
 				} else if ((type == Double.class) || (type == double.class)) {
 					fld.set(this, getDouble(value));
+				} else if (type == List.class) {
+					Type genericType = getGenericType(fld);
+
+					if (genericType == String.class) {
+						fld.set(this, getStringList(value));
+					} else {
+						throw new IllegalArgumentException("Invalid value for " + key + " - " + value);
+					}
 				} else if (type.isEnum()) {
 					boolean enumTypeFound = false;
 
@@ -90,6 +103,42 @@ public class Input {
 		}
 
 		return Double.parseDouble(value.trim());
+	}
+
+	private static List<String> getStringList(String value) {
+		if ((value == null) || (value.isEmpty())) {
+			return Collections.emptyList();
+		}
+
+		String[] split = value.split(";");
+
+		List<String> result = Lists.newArrayListWithCapacity(split.length);
+
+		Collections.addAll(result, split);
+
+		return result;
+	}
+
+	private static Type getGenericType(Field fld) {
+		Type[] genericTypes = getGenericTypes(fld);
+
+		if (genericTypes == null) {
+			return null;
+		}
+
+		return genericTypes[0];
+	}
+
+	private static Type[] getGenericTypes(Field fld) {
+		Type type = fld.getGenericType();
+
+		if (type instanceof ParameterizedType) {
+			ParameterizedType genericType = (ParameterizedType) type;
+
+			return genericType.getActualTypeArguments();
+		} else {
+			return null;
+		}
 	}
 
 	private static Map<String, String> getPropertyMap(String rawInput) {
