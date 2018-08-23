@@ -52,7 +52,7 @@ public class ApplyLabelFunction {
 			throw new IllegalArgumentException("Bad context args - " + rawContextArgs);
 		}
 
-		if (!args.viewValidate()) {
+		if (!args.eventValidate()) {
 			return;
 		}
 
