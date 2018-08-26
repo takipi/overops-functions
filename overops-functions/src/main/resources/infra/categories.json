@@ -1,0 +1,194 @@
+{
+	"categories": 
+	[
+		{
+			"names":
+			[
+				"org.xml",
+				"java.text",
+				"javax.xml",
+				"com.google.gson",
+				"org.json",
+				"org.yaml",
+				"org.bson"
+			],
+			"labels": ["parser"]
+		},
+		{
+			"names":
+			[
+				"java.net",
+				"java.rmi",
+				"javax.ws",
+				"javax.net",
+				"javax.servlet",
+				"javax.faces",
+				"javax.ejb",
+				"javax.mail",
+				"com.twitter.finagle",
+				"kafka",
+				"org.jboss",
+				"io.undertow",
+				"glassfish",
+				"org.glassfish",
+				"org.apache.catalina",
+				"org.apache.coyote",
+				"org.apache.jasper",
+				"cascading"
+			],
+			"labels": ["net"]
+		},
+		{
+			"names":
+			[
+				"java.io",
+				"java.nio",
+				"javax.annotation.processing"
+			],
+			"labels": ["io"]
+		},
+		{
+			"names":
+			[
+				"java.sql",
+				"com.mysql",
+				"javax.transaction",
+				"org.postgresql",
+				"com.mongodb",
+				"org.h2",
+				"org.apache.derby",
+				"com.couchbase.client",
+				"net.spy.memcached",
+				"com.basho.riak",
+				"redis",
+				"com.amazonaws.services.dynamodb",
+				"com.amazonaws.services.simpledb"
+			],
+			"labels": ["db"]
+		},
+		{
+			"names":
+			[
+				"java.security",
+				"javax.security",
+				"sun.security"
+			],
+			"labels": ["security"]
+		},
+		{
+			"names":
+			[
+				"org.hibernate",
+				"net.sf.hibernate",
+				"javax.persistence"
+			],
+			"labels": ["persistence"]
+		},
+		{
+			"names":
+			[
+				"com.hazelcast",
+				"net.spy.memcached",
+				"org.apache.commons.jcs",
+				"net.sf.ehcache"
+			],
+			"labels": ["cache"]
+		},
+		{
+			"names":
+			[
+				"java",
+				"javax",
+				"sun",
+				"sunw"
+			],
+			"labels": ["java-lang"]
+		},
+		{
+			"names":
+			[
+				"java.lang",
+				"java.util"
+			],
+			"labels": ["jvm"]
+		},
+		{
+			"names":
+			[
+				"groovy",
+				"groovyjarjarantlr",
+				"org.codehaus.groovy"
+			],
+			"labels": ["groovy-lang"]
+		},
+		{
+			"names":
+			[
+				"scala",
+				"scalax"
+			],
+			"labels": ["scala-lang"]
+		},
+		{
+			"names":
+			[
+				"jruby",
+				"org.jruby"
+			],
+			"labels": ["jruby-lang"]
+		},
+		{
+			"names":
+			[
+				"com.amazonaws"
+			],
+			"labels": ["amazon"]
+		},
+		{
+			"names":
+			[
+				"com.springframework"
+			],
+			"labels": ["spring"]
+		},
+		{
+			"names":
+			[
+				"com.google"
+			],
+			"labels": ["google"]
+		},
+		{
+			"names":
+			[
+				"ch.qos.logback",
+				"org.apache.logging",
+				"org.apache.commons.logging",
+				"java.util.logging",
+				"org.slf4j"
+			],
+			"labels": ["logging"]
+		},
+		{
+			"names":
+			[
+				"org.apache"
+			],
+			"labels": ["apache"]
+		},
+		{
+			"names":
+			[
+				"org.apache.hadoop"
+			],
+			"labels": ["hadoop"]
+		},
+		{
+			"names":
+			[
+				"org.apache.spark"
+			],
+			"labels": ["spark"]
+		}
+	]
+}
