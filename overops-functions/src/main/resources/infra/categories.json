@@ -1,44 +1,36 @@
 {
-	"categories": 
-	[
-		{
-			"names":
-			[
+	"categories": [{
+			"names": [
 				"com.google.gson"
 			],
 			"labels": ["gson"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.bson"
 			],
 			"labels": ["bson"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.yaml"
 			],
 			"labels": ["yaml"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.json"
 			],
 			"labels": ["json"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"com.fasterxml.jackson"
 			],
 			"labels": ["jackson"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.xml",
 				"java.text",
 				"javax.xml"
@@ -46,8 +38,7 @@
 			"labels": ["parser"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"java.net",
 				"java.rmi",
 				"javax.ws",
@@ -60,45 +51,39 @@
 			"labels": ["net"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"com.twitter.finagle"
 			],
 			"labels": ["finagle"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.jboss"
 			],
 			"labels": ["jboss"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"io.undertow"
 			],
 			"labels": ["undertow"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"kafka",
 				"org.apache.kafka"
 			],
 			"labels": ["kafka"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"glassfish",
 				"org.glassfish"
 			],
 			"labels": ["glassfish"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"java.io",
 				"java.nio",
 				"javax.annotation.processing"
@@ -106,8 +91,7 @@
 			"labels": ["io"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"java.sql",
 				"javax.transaction",
 				"net.spy.memcached"
@@ -115,89 +99,77 @@
 			"labels": ["db"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"com.basho.riak"
 			],
 			"labels": ["riak"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"com.mysql"
 			],
 			"labels": ["mysql"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.postgresql",
 				"com.postgresql"
 			],
 			"labels": ["postgresql"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"com.mongodb",
 				"org.mongodb"
 			],
 			"labels": ["mongodb"]
 		},
-		
+
 		{
-			"names":
-			[
+			"names": [
 				"org.h2"
 			],
 			"labels": ["h2"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"com.couchbase"
 			],
 			"labels": ["couchbase"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"oracle",
 				"com.oracle"
 			],
 			"labels": ["oracle"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"com.microsoft.sqlserver"
 			],
 			"labels": ["mssql"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.junit"
 			],
 			"labels": ["junit"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.testng"
 			],
 			"labels": ["testng"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.mockito"
 			],
 			"labels": ["mockito"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.reddison",
 				"redis",
 				"io.lettuce"
@@ -205,8 +177,7 @@
 			"labels": ["redis"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"java.security",
 				"javax.security",
 				"sun.security"
@@ -214,37 +185,32 @@
 			"labels": ["security"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"net.sf.hibernate",
 				"javax.persistence"
 			],
 			"labels": ["persistence"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.hibernate"
 			],
 			"labels": ["hibernate"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.derby"
 			],
 			"labels": ["derby"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"com.hazelcast"
 			],
 			"labels": ["hazelcast"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"com.hazelcast",
 				"net.spy.memcached",
 				"org.apache.commons.jcs",
@@ -253,8 +219,7 @@
 			"labels": ["cache"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"java",
 				"javax",
 				"sun",
@@ -263,16 +228,14 @@
 			"labels": ["java-lang"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"java.lang",
 				"java.util"
 			],
 			"labels": ["jvm"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"groovy",
 				"groovyjarjarantlr",
 				"org.codehaus.groovy"
@@ -280,735 +243,631 @@
 			"labels": ["groovy-lang"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"scala",
 				"scalax"
 			],
 			"labels": ["scala-lang"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"jruby",
 				"org.jruby"
 			],
 			"labels": ["jruby-lang"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.apigateway"
-		  ],
-		  "labels": ["aws-apigateway"]
+			"names": [
+				"com.amazonaws.services.apigateway"
+			],
+			"labels": ["aws-apigateway"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.applicationautoscaling"
-		  ],
-		  "labels": ["aws-applicationautoscaling"]
+			"names": [
+				"com.amazonaws.services.applicationautoscaling"
+			],
+			"labels": ["aws-applicationautoscaling"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.applicationdiscovery"
-		  ],
-		  "labels": ["aws-applicationdiscovery"]
+			"names": [
+				"com.amazonaws.services.applicationdiscovery"
+			],
+			"labels": ["aws-applicationdiscovery"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.appstream"
-		  ],
-		  "labels": ["aws-appstream"]
+			"names": [
+				"com.amazonaws.services.appstream"
+			],
+			"labels": ["aws-appstream"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.autoscaling"
-		  ],
-		  "labels": ["aws-autoscaling"]
+			"names": [
+				"com.amazonaws.services.autoscaling"
+			],
+			"labels": ["aws-autoscaling"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.batch"
-		  ],
-		  "labels": ["aws-batch"]
+			"names": [
+				"com.amazonaws.services.batch"
+			],
+			"labels": ["aws-batch"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.budgets"
-		  ],
-		  "labels": ["aws-budgets"]
+			"names": [
+				"com.amazonaws.services.budgets"
+			],
+			"labels": ["aws-budgets"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.certificatemanager"
-		  ],
-		  "labels": ["aws-certificatemanager"]
+			"names": [
+				"com.amazonaws.services.certificatemanager"
+			],
+			"labels": ["aws-certificatemanager"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.cloudformation"
-		  ],
-		  "labels": ["aws-cloudformation"]
+			"names": [
+				"com.amazonaws.services.cloudformation"
+			],
+			"labels": ["aws-cloudformation"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.cloudfront"
-		  ],
-		  "labels": ["aws-cloudfront"]
+			"names": [
+				"com.amazonaws.services.cloudfront"
+			],
+			"labels": ["aws-cloudfront"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.cloudsearchdomain"
-		  ],
-		  "labels": ["aws-cloudsearchdomain"]
+			"names": [
+				"com.amazonaws.services.cloudsearchdomain"
+			],
+			"labels": ["aws-cloudsearchdomain"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.cloudsearchv2"
-		  ],
-		  "labels": ["aws-cloudsearch"]
+			"names": [
+				"com.amazonaws.services.cloudsearchv2"
+			],
+			"labels": ["aws-cloudsearch"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.cloudtrail"
-		  ],
-		  "labels": ["aws-cloudtrail"]
+			"names": [
+				"com.amazonaws.services.cloudtrail"
+			],
+			"labels": ["aws-cloudtrail"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.cloudwatch"
-		  ],
-		  "labels": ["aws-cloudwatch"]
+			"names": [
+				"com.amazonaws.services.cloudwatch"
+			],
+			"labels": ["aws-cloudwatch"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.cloudwatchevents"
-		  ],
-		  "labels": ["aws-cloudwatchevents"]
+			"names": [
+				"com.amazonaws.services.cloudwatchevents"
+			],
+			"labels": ["aws-cloudwatchevents"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.codebuild"
-		  ],
-		  "labels": ["aws-codebuild"]
+			"names": [
+				"com.amazonaws.services.codebuild"
+			],
+			"labels": ["aws-codebuild"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.codecommit"
-		  ],
-		  "labels": ["aws-codecommit"]
+			"names": [
+				"com.amazonaws.services.codecommit"
+			],
+			"labels": ["aws-codecommit"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.codedeploy"
-		  ],
-		  "labels": ["aws-codedeploy"]
+			"names": [
+				"com.amazonaws.services.codedeploy"
+			],
+			"labels": ["aws-codedeploy"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.codepipeline"
-		  ],
-		  "labels": ["aws-codepipeline"]
+			"names": [
+				"com.amazonaws.services.codepipeline"
+			],
+			"labels": ["aws-codepipeline"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.cognitoidentity"
-		  ],
-		  "labels": ["aws-cognitoidentity"]
+			"names": [
+				"com.amazonaws.services.cognitoidentity"
+			],
+			"labels": ["aws-cognitoidentity"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.cognitoidp"
-		  ],
-		  "labels": ["aws-cognitoidp"]
+			"names": [
+				"com.amazonaws.services.cognitoidp"
+			],
+			"labels": ["aws-cognitoidp"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.cognitosync"
-		  ],
-		  "labels": ["aws-cognitosync"]
+			"names": [
+				"com.amazonaws.services.cognitosync"
+			],
+			"labels": ["aws-cognitosync"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.databasemigrationservice"
-		  ],
-		  "labels": ["aws-databasemigrationservice"]
+			"names": [
+				"com.amazonaws.services.databasemigrationservice"
+			],
+			"labels": ["aws-databasemigrationservice"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.datapipeline"
-		  ],
-		  "labels": ["aws-datapipeline"]
+			"names": [
+				"com.amazonaws.services.datapipeline"
+			],
+			"labels": ["aws-datapipeline"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.devicefarm"
-		  ],
-		  "labels": ["aws-devicefarm"]
+			"names": [
+				"com.amazonaws.services.devicefarm"
+			],
+			"labels": ["aws-devicefarm"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.directconnect"
-		  ],
-		  "labels": ["aws-directconnect"]
+			"names": [
+				"com.amazonaws.services.directconnect"
+			],
+			"labels": ["aws-directconnect"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.directory"
-		  ],
-		  "labels": ["aws-directory"]
+			"names": [
+				"com.amazonaws.services.directory"
+			],
+			"labels": ["aws-directory"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.dynamodb",
+			"names": [
+				"com.amazonaws.services.dynamodb",
 				"com.amazonaws.services.dynamodbv2"
-		  ],
-		  "labels": ["aws-dynamodb"]
+			],
+			"labels": ["aws-dynamodb"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.ec2"
-		  ],
-		  "labels": ["aws-ec2"]
+			"names": [
+				"com.amazonaws.services.ec2"
+			],
+			"labels": ["aws-ec2"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.ecr"
-		  ],
-		  "labels": ["aws-ecr"]
+			"names": [
+				"com.amazonaws.services.ecr"
+			],
+			"labels": ["aws-ecr"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.ecs"
-		  ],
-		  "labels": ["aws-ecs"]
+			"names": [
+				"com.amazonaws.services.ecs"
+			],
+			"labels": ["aws-ecs"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.elasticache"
-		  ],
-		  "labels": ["aws-elasticache"]
+			"names": [
+				"com.amazonaws.services.elasticache"
+			],
+			"labels": ["aws-elasticache"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.elasticbeanstalk"
-		  ],
-		  "labels": ["aws-elasticbeanstalk"]
+			"names": [
+				"com.amazonaws.services.elasticbeanstalk"
+			],
+			"labels": ["aws-elasticbeanstalk"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.elasticfilesystem"
-		  ],
-		  "labels": ["aws-elasticfilesystem"]
+			"names": [
+				"com.amazonaws.services.elasticfilesystem"
+			],
+			"labels": ["aws-elasticfilesystem"]
 		},
 		{
-		  "names":
-		  [
+			"names": [
 				"com.amazonaws.services.elasticloadbalancing",
-		    "com.amazonaws.services.elasticloadbalancingv2"
-		  ],
-		  "labels": ["aws-elasticloadbalancing"]
+				"com.amazonaws.services.elasticloadbalancingv2"
+			],
+			"labels": ["aws-elasticloadbalancing"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.elasticmapreduce"
-		  ],
-		  "labels": ["aws-elasticmapreduce"]
+			"names": [
+				"com.amazonaws.services.elasticmapreduce"
+			],
+			"labels": ["aws-elasticmapreduce"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.elasticsearch"
-		  ],
-		  "labels": ["aws-elasticsearch"]
+			"names": [
+				"com.amazonaws.services.elasticsearch"
+			],
+			"labels": ["aws-elasticsearch"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.elastictranscoder"
-		  ],
-		  "labels": ["aws-elastictranscoder"]
+			"names": [
+				"com.amazonaws.services.elastictranscoder"
+			],
+			"labels": ["aws-elastictranscoder"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.gamelift"
-		  ],
-		  "labels": ["aws-gamelift"]
+			"names": [
+				"com.amazonaws.services.gamelift"
+			],
+			"labels": ["aws-gamelift"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.glacier"
-		  ],
-		  "labels": ["aws-glacier"]
+			"names": [
+				"com.amazonaws.services.glacier"
+			],
+			"labels": ["aws-glacier"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.identitymanagement"
-		  ],
-		  "labels": ["aws-identitymanagement"]
+			"names": [
+				"com.amazonaws.services.identitymanagement"
+			],
+			"labels": ["aws-identitymanagement"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.importexport"
-		  ],
-		  "labels": ["aws-importexport"]
+			"names": [
+				"com.amazonaws.services.importexport"
+			],
+			"labels": ["aws-importexport"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.inspector"
-		  ],
-		  "labels": ["aws-inspector"]
+			"names": [
+				"com.amazonaws.services.inspector"
+			],
+			"labels": ["aws-inspector"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.iotdata"
-		  ],
-		  "labels": ["aws-iotdata"]
+			"names": [
+				"com.amazonaws.services.iotdata"
+			],
+			"labels": ["aws-iotdata"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.kinesisfirehose"
-		  ],
-		  "labels": ["aws-kinesisfirehose"]
+			"names": [
+				"com.amazonaws.services.kinesisfirehose"
+			],
+			"labels": ["aws-kinesisfirehose"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.kms"
-		  ],
-		  "labels": ["aws-kms"]
+			"names": [
+				"com.amazonaws.services.kms"
+			],
+			"labels": ["aws-kms"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.lambda"
-		  ],
-		  "labels": ["aws-lambda"]
+			"names": [
+				"com.amazonaws.services.lambda"
+			],
+			"labels": ["aws-lambda"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.logs"
-		  ],
-		  "labels": ["aws-logs"]
+			"names": [
+				"com.amazonaws.services.logs"
+			],
+			"labels": ["aws-logs"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.machinelearning"
-		  ],
-		  "labels": ["aws-machinelearning"]
+			"names": [
+				"com.amazonaws.services.machinelearning"
+			],
+			"labels": ["aws-machinelearning"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.marketplacecommerceanalytics"
-		  ],
-		  "labels": ["aws-marketplacecommerceanalytics"]
+			"names": [
+				"com.amazonaws.services.marketplacecommerceanalytics"
+			],
+			"labels": ["aws-marketplacecommerceanalytics"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.marketplacemetering"
-		  ],
-		  "labels": ["aws-marketplacemetering"]
+			"names": [
+				"com.amazonaws.services.marketplacemetering"
+			],
+			"labels": ["aws-marketplacemetering"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.opsworks"
-		  ],
-		  "labels": ["aws-opsworks"]
+			"names": [
+				"com.amazonaws.services.opsworks"
+			],
+			"labels": ["aws-opsworks"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.organizations"
-		  ],
-		  "labels": ["aws-organizations"]
+			"names": [
+				"com.amazonaws.services.organizations"
+			],
+			"labels": ["aws-organizations"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.pinpoint"
-		  ],
-		  "labels": ["aws-pinpoint"]
+			"names": [
+				"com.amazonaws.services.pinpoint"
+			],
+			"labels": ["aws-pinpoint"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.polly"
-		  ],
-		  "labels": ["aws-polly"]
+			"names": [
+				"com.amazonaws.services.polly"
+			],
+			"labels": ["aws-polly"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.rds"
-		  ],
-		  "labels": ["aws-rds"]
+			"names": [
+				"com.amazonaws.services.rds"
+			],
+			"labels": ["aws-rds"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.redshift"
-		  ],
-		  "labels": ["aws-redshift"]
+			"names": [
+				"com.amazonaws.services.redshift"
+			],
+			"labels": ["aws-redshift"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.rekognition"
-		  ],
-		  "labels": ["aws-rekognition"]
+			"names": [
+				"com.amazonaws.services.rekognition"
+			],
+			"labels": ["aws-rekognition"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.route53"
-		  ],
-		  "labels": ["aws-route53"]
+			"names": [
+				"com.amazonaws.services.route53"
+			],
+			"labels": ["aws-route53"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.route53domains"
-		  ],
-		  "labels": ["aws-route53domains"]
+			"names": [
+				"com.amazonaws.services.route53domains"
+			],
+			"labels": ["aws-route53domains"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.securitytoken"
-		  ],
-		  "labels": ["aws-securitytoken"]
+			"names": [
+				"com.amazonaws.services.securitytoken"
+			],
+			"labels": ["aws-securitytoken"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.servermigration"
-		  ],
-		  "labels": ["aws-servermigration"]
+			"names": [
+				"com.amazonaws.services.servermigration"
+			],
+			"labels": ["aws-servermigration"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.servicecatalog"
-		  ],
-		  "labels": ["aws-servicecatalog"]
+			"names": [
+				"com.amazonaws.services.servicecatalog"
+			],
+			"labels": ["aws-servicecatalog"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.shield"
-		  ],
-		  "labels": ["aws-shield"]
+			"names": [
+				"com.amazonaws.services.shield"
+			],
+			"labels": ["aws-shield"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.simpledb"
-		  ],
-		  "labels": ["aws-simpledb"]
+			"names": [
+				"com.amazonaws.services.simpledb"
+			],
+			"labels": ["aws-simpledb"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.simpleemail"
-		  ],
-		  "labels": ["aws-simpleemail"]
+			"names": [
+				"com.amazonaws.services.simpleemail"
+			],
+			"labels": ["aws-simpleemail"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.simplesystemsmanagement"
-		  ],
-		  "labels": ["aws-simplesystemsmanagement"]
+			"names": [
+				"com.amazonaws.services.simplesystemsmanagement"
+			],
+			"labels": ["aws-simplesystemsmanagement"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.simpleworkflow"
-		  ],
-		  "labels": ["aws-simpleworkflow"]
+			"names": [
+				"com.amazonaws.services.simpleworkflow"
+			],
+			"labels": ["aws-simpleworkflow"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.snowball"
-		  ],
-		  "labels": ["aws-snowball"]
+			"names": [
+				"com.amazonaws.services.snowball"
+			],
+			"labels": ["aws-snowball"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.sns"
-		  ],
-		  "labels": ["aws-sns"]
+			"names": [
+				"com.amazonaws.services.sns"
+			],
+			"labels": ["aws-sns"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.sqs"
-		  ],
-		  "labels": ["aws-sqs"]
+			"names": [
+				"com.amazonaws.services.sqs"
+			],
+			"labels": ["aws-sqs"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.stepfunctions"
-		  ],
-		  "labels": ["aws-stepfunctions"]
+			"names": [
+				"com.amazonaws.services.stepfunctions"
+			],
+			"labels": ["aws-stepfunctions"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.storagegateway"
-		  ],
-		  "labels": ["aws-storagegateway"]
+			"names": [
+				"com.amazonaws.services.storagegateway"
+			],
+			"labels": ["aws-storagegateway"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.waf"
-		  ],
-		  "labels": ["aws-waf"]
+			"names": [
+				"com.amazonaws.services.waf"
+			],
+			"labels": ["aws-waf"]
 		},
 		{
-		  "names":
-		  [
-		    "com.amazonaws.services.workspaces"
-		  ],
-		  "labels": ["aws-workspaces"]
+			"names": [
+				"com.amazonaws.services.workspaces"
+			],
+			"labels": ["aws-workspaces"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"com.springframework"
 			],
 			"labels": ["spring"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"com.google.common.cache"
 			],
 			"labels": ["guava-cache"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"com.google.inject"
 			],
 			"labels": ["guice"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.slf4j"
 			],
 			"labels": ["slf4j"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"java.util.logging"
 			],
 			"labels": ["java-logging"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"ch.qos.logback"
 			],
 			"labels": ["logback"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.logging",
 				"org.apache.commons.logging"
 			],
 			"labels": ["log4j"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache"
 			],
 			"labels": ["apache"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.dubbo"
 			],
 			"labels": ["dubbo"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.weex"
 			],
 			"labels": ["weex"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.thrift"
 			],
 			"labels": ["thrift"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.storm"
 			],
 			"labels": ["storm"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.zookeeper",
 				"org.apache.jute"
 			],
 			"labels": ["zookeeper"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.cassandra"
 			],
 			"labels": ["cassandra"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.flink"
 			],
 			"labels": ["flink"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.skywalking"
 			],
 			"labels": ["skywalking"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.zeppelin"
 			],
 			"labels": ["zeppelin"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.heron"
 			],
 			"labels": ["heron"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.hbase"
 			],
 			"labels": ["hbase"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.jmeter"
 			],
 			"labels": ["jmeter"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.beam"
 			],
 			"labels": ["beam"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.hive"
 			],
 			"labels": ["hive"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.camel"
 			],
 			"labels": ["camel"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.shiro"
 			],
 			"labels": ["shiro"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.flume"
 			],
 			"labels": ["flume"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.maven"
 			],
 			"labels": ["maven"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.catalina",
 				"org.apache.jasper",
 				"org.apache.coyote",
@@ -1017,15 +876,13 @@
 			"labels": ["tomcat"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.hadoop"
 			],
 			"labels": ["hadoop"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.spark",
 				"org.spark-project",
 				"org.spark_project"
@@ -1033,29 +890,25 @@
 			"labels": ["spark"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.apache.http"
 			],
 			"labels": ["apache-http"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.eclipse.jetty"
 			],
 			"labels": ["jetty"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"io.netty"
 			],
 			"labels": ["netty"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"akka",
 				"org.akka",
 				"com.akka"
@@ -1063,18 +916,22 @@
 			"labels": ["akka"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"org.elasticsearch"
 			],
 			"labels": ["elasticsearch"]
 		},
 		{
-			"names":
-			[
+			"names": [
 				"io.reactivex"
 			],
 			"labels": ["reactivex"]
+		},
+		{
+			"names": [
+				"com.netflix.hystrix"
+			],
+			"labels": ["hystrix"]
 		}
 	]
 }
