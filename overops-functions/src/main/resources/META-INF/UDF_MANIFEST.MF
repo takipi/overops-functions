@@ -19,6 +19,20 @@
 	      </default_params>
 	   </function>
 	   <function>
+	      <function_type>CHANNEL</function_type>
+	      <function_name>infrastructure-routing</function_name>
+	      <description>Classify incoming events according to the functional component within the code from which they originated</description>
+	      <param_type>TEXT</param_type>
+	      <class_file>com.takipi.common.udf.infra.InfrastructureRoutingFunction</class_file>
+	      <default_params>
+	      	# A list of comma delimited tuples in the form of A=B;C=D;E=F, where the first item within the tuple is a namespace (package name), and the second is a label which will applied to the event if it matches the namespace. If left empty, uses predefined common libraries namespaces.
+	      	# namespaces=com.company.db=db;com.company.util=utility
+
+	      	# Category name where auto-generated routing view will be created.
+	      	category_name=infrastructure
+	      </default_params>
+	   </function>
+	   <function>
 	      <function_type>ANOMALY</function_type>
 	      <function_name>Relative Threshold</function_name>
 	      <description>
