@@ -28,12 +28,12 @@ fatJar {
 }
 
 uploadArchives {
-  repositories {
-    mavenDeployer {
-      pom.project {
-        name 'overops-functions'
-        description 'OverOps Functions - Extending OverOps Reliability Platform'
-        
+	repositories {
+		mavenDeployer {
+			pom.project {
+				name 'overops-functions'
+				description 'OverOps Functions - Extending OverOps Reliability Platform'
+				
 				licenses {
 					license {
 						name 'MIT License'
@@ -41,12 +41,12 @@ uploadArchives {
 					}
 				}
 
-        scm {
-          connection 'scm:git:https://github.com/takipi/overops-functions/tree/master/overops-functions'
-          developerConnection 'scm:git:https://github.com/takipi/overops-functions/tree/master/overops-functions'
-          url 'https://github.com/takipi/overops-functions/tree/master/overops-functions'
-        }
-      }
-    }
-  }
+				scm {
+					connection 'scm:git:https://github.com/takipi/overops-functions/tree/master/overops-functions'
+					developerConnection 'scm:git:https://github.com/takipi/overops-functions/tree/master/overops-functions'
+					url 'https://github.com/takipi/overops-functions/tree/master/overops-functions'
+				}
+			}
+		}
+	}
 }
