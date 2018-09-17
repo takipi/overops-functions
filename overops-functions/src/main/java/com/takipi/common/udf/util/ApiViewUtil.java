@@ -34,8 +34,8 @@ public class ApiViewUtil {
 
 			SummarizedView view = views.get(viewName);
 
-			if (views.containsKey(viewName)) {
-				System.out.println("views " + viewName + " found with ID " + view.id);
+			if (view != null) {
+				System.out.println("view " + viewName + " found with ID " + view.id);
 
 				continue;
 			}
@@ -119,5 +119,4 @@ public class ApiViewUtil {
 
 		return eventsVolumeResult;
 	}
-
 }
