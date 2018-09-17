@@ -3,31 +3,31 @@
 			"names": [
 				"com.google.gson"
 			],
-			"labels": ["gson"]
+			"labels": ["Gson"]
 		},
 		{
 			"names": [
 				"org.bson"
 			],
-			"labels": ["bson"]
+			"labels": ["Bson"]
 		},
 		{
 			"names": [
 				"org.yaml"
 			],
-			"labels": ["yaml"]
+			"labels": ["YAML"]
 		},
 		{
 			"names": [
 				"org.json"
 			],
-			"labels": ["json"]
+			"labels": ["JSON"]
 		},
 		{
 			"names": [
 				"com.fasterxml.jackson"
 			],
-			"labels": ["jackson"]
+			"labels": ["Jackson"]
 		},
 		{
 			"names": [
@@ -35,7 +35,7 @@
 				"java.text",
 				"javax.xml"
 			],
-			"labels": ["parser"]
+			"labels": ["Parser"]
 		},
 		{
 			"names": [
@@ -48,39 +48,39 @@
 				"javax.ejb",
 				"javax.mail"
 			],
-			"labels": ["net"]
+			"labels": ["Net"]
 		},
 		{
 			"names": [
 				"com.twitter.finagle"
 			],
-			"labels": ["finagle"]
+			"labels": ["Finagle"]
 		},
 		{
 			"names": [
 				"org.jboss"
 			],
-			"labels": ["jboss"]
+			"labels": ["JBoss"]
 		},
 		{
 			"names": [
 				"io.undertow"
 			],
-			"labels": ["undertow"]
+			"labels": ["Undertow"]
 		},
 		{
 			"names": [
 				"kafka",
 				"org.apache.kafka"
 			],
-			"labels": ["kafka"]
+			"labels": ["Kafka"]
 		},
 		{
 			"names": [
 				"glassfish",
 				"org.glassfish"
 			],
-			"labels": ["glassfish"]
+			"labels": ["GlassFish"]
 		},
 		{
 			"names": [
@@ -88,7 +88,7 @@
 				"java.nio",
 				"javax.annotation.processing"
 			],
-			"labels": ["io"]
+			"labels": ["IO"]
 		},
 		{
 			"names": [
@@ -96,77 +96,76 @@
 				"javax.transaction",
 				"net.spy.memcached"
 			],
-			"labels": ["db"]
+			"labels": ["DB"]
 		},
 		{
 			"names": [
 				"com.basho.riak"
 			],
-			"labels": ["riak"]
+			"labels": ["Riak"]
 		},
 		{
 			"names": [
 				"com.mysql"
 			],
-			"labels": ["mysql"]
+			"labels": ["MySQL"]
 		},
 		{
 			"names": [
 				"org.postgresql",
 				"com.postgresql"
 			],
-			"labels": ["postgresql"]
+			"labels": ["PostgreSQL"]
 		},
 		{
 			"names": [
 				"com.mongodb",
 				"org.mongodb"
 			],
-			"labels": ["mongodb"]
+			"labels": ["MongoDB"]
 		},
-
 		{
 			"names": [
 				"org.h2"
 			],
-			"labels": ["h2"]
+			"labels": ["H2"]
 		},
 		{
 			"names": [
 				"com.couchbase"
 			],
-			"labels": ["couchbase"]
+			"labels": ["Couchbase"]
 		},
 		{
 			"names": [
 				"oracle",
 				"com.oracle"
 			],
-			"labels": ["oracle"]
+			"labels": ["Oracle"]
 		},
 		{
 			"names": [
 				"com.microsoft.sqlserver"
 			],
-			"labels": ["mssql"]
+			"labels": ["MS-SQL"]
 		},
 		{
 			"names": [
 				"org.junit"
 			],
-			"labels": ["junit"]
+			"labels": ["JUnit"]
 		},
 		{
 			"names": [
 				"org.testng"
 			],
-			"labels": ["testng"]
+			"labels": ["TestNG"]
 		},
 		{
 			"names": [
 				"org.mockito"
 			],
-			"labels": ["mockito"]
+			"labels": ["Mockito"]
 		},
 		{
 			"names": [
@@ -174,7 +173,7 @@
 				"redis",
 				"io.lettuce"
 			],
-			"labels": ["redis"]
+			"labels": ["Redis"]
 		},
 		{
 			"names": [
@@ -182,41 +181,40 @@
 				"javax.security",
 				"sun.security"
 			],
-			"labels": ["security"]
+			"labels": ["Security"]
+		},
+		{
+			"names": [
+				"javax.persistence"
+			],
+			"labels": ["Persistence"]
 		},
 		{
 			"names": [
 				"net.sf.hibernate",
-				"javax.persistence"
-			],
-			"labels": ["persistence"]
-		},
-		{
-			"names": [
 				"org.hibernate"
 			],
-			"labels": ["hibernate"]
+			"labels": ["Hibernate"]
 		},
 		{
 			"names": [
 				"org.apache.derby"
 			],
-			"labels": ["derby"]
+			"labels": ["Derby"]
 		},
 		{
 			"names": [
 				"com.hazelcast"
 			],
-			"labels": ["hazelcast"]
+			"labels": ["Hazelcast"]
 		},
 		{
 			"names": [
-				"com.hazelcast",
 				"net.spy.memcached",
 				"org.apache.commons.jcs",
 				"net.sf.ehcache"
 			],
-			"labels": ["cache"]
+			"labels": ["Cache"]
 		},
 		{
 			"names": [
@@ -225,14 +223,14 @@
 				"sun",
 				"sunw"
 			],
-			"labels": ["java-lang"]
+			"labels": ["Java-lang"]
 		},
 		{
 			"names": [
 				"java.lang",
 				"java.util"
 			],
-			"labels": ["jvm"]
+			"labels": ["JVM"]
 		},
 		{
 			"names": [
@@ -240,21 +238,21 @@
 				"groovyjarjarantlr",
 				"org.codehaus.groovy"
 			],
-			"labels": ["groovy-lang"]
+			"labels": ["Groovy-lang"]
 		},
 		{
 			"names": [
 				"scala",
 				"scalax"
 			],
-			"labels": ["scala-lang"]
+			"labels": ["Scala-lang"]
 		},
 		{
 			"names": [
 				"jruby",
 				"org.jruby"
 			],
-			"labels": ["jruby-lang"]
+			"labels": ["JRuby-lang"]
 		},
 		{
 			"names": [
@@ -712,81 +710,81 @@
 			"names": [
 				"com.springframework"
 			],
-			"labels": ["spring"]
+			"labels": ["Spring"]
 		},
 		{
 			"names": [
 				"com.google.common.cache"
 			],
-			"labels": ["guava-cache"]
+			"labels": ["Guava-cache"]
 		},
 		{
 			"names": [
 				"com.google.inject"
 			],
-			"labels": ["guice"]
+			"labels": ["Guice"]
 		},
 		{
 			"names": [
 				"org.slf4j"
 			],
-			"labels": ["slf4j"]
+			"labels": ["SLF4J"]
 		},
 		{
 			"names": [
 				"java.util.logging"
 			],
-			"labels": ["java-logging"]
+			"labels": ["Java-logging"]
 		},
 		{
 			"names": [
 				"ch.qos.logback"
 			],
-			"labels": ["logback"]
+			"labels": ["Logback"]
 		},
 		{
 			"names": [
 				"org.apache.logging",
 				"org.apache.commons.logging"
 			],
-			"labels": ["log4j"]
+			"labels": ["Log4j"]
 		},
 		{
 			"names": [
 				"org.apache"
 			],
-			"labels": ["apache"]
+			"labels": ["Apache"]
 		},
 		{
 			"names": [
 				"org.apache.dubbo"
 			],
-			"labels": ["dubbo"]
+			"labels": ["Dubbo"]
 		},
 		{
 			"names": [
 				"org.apache.weex"
 			],
-			"labels": ["weex"]
+			"labels": ["Weex"]
 		},
 		{
 			"names": [
 				"org.apache.thrift"
 			],
-			"labels": ["thrift"]
+			"labels": ["Thrift"]
 		},
 		{
 			"names": [
 				"org.apache.storm"
 			],
-			"labels": ["storm"]
+			"labels": ["Storm"]
 		},
 		{
 			"names": [
 				"org.apache.zookeeper",
 				"org.apache.jute"
 			],
-			"labels": ["zookeeper"]
+			"labels": ["ZooKeeper"]
 		},
 		{
 			"names": [
@@ -798,73 +796,73 @@
 			"names": [
 				"org.apache.flink"
 			],
-			"labels": ["flink"]
+			"labels": ["Flink"]
 		},
 		{
 			"names": [
 				"org.apache.skywalking"
 			],
-			"labels": ["skywalking"]
+			"labels": ["SkyWalking"]
 		},
 		{
 			"names": [
 				"org.apache.zeppelin"
 			],
-			"labels": ["zeppelin"]
+			"labels": ["Zeppelin"]
 		},
 		{
 			"names": [
 				"org.apache.heron"
 			],
-			"labels": ["heron"]
+			"labels": ["Heron"]
 		},
 		{
 			"names": [
 				"org.apache.hbase"
 			],
-			"labels": ["hbase"]
+			"labels": ["HBase"]
 		},
 		{
 			"names": [
 				"org.apache.jmeter"
 			],
-			"labels": ["jmeter"]
+			"labels": ["Jmeter"]
 		},
 		{
 			"names": [
 				"org.apache.beam"
 			],
-			"labels": ["beam"]
+			"labels": ["Beam"]
 		},
 		{
 			"names": [
 				"org.apache.hive"
 			],
-			"labels": ["hive"]
+			"labels": ["Hive"]
 		},
 		{
 			"names": [
 				"org.apache.camel"
 			],
-			"labels": ["camel"]
+			"labels": ["Camel"]
 		},
 		{
 			"names": [
 				"org.apache.shiro"
 			],
-			"labels": ["shiro"]
+			"labels": ["Shiro"]
 		},
 		{
 			"names": [
 				"org.apache.flume"
 			],
-			"labels": ["flume"]
+			"labels": ["Flume"]
 		},
 		{
 			"names": [
 				"org.apache.maven"
 			],
-			"labels": ["maven"]
+			"labels": ["Maven"]
 		},
 		{
 			"names": [
@@ -873,13 +871,13 @@
 				"org.apache.coyote",
 				"org.apache.tomcat"
 			],
-			"labels": ["tomcat"]
+			"labels": ["Tomcat"]
 		},
 		{
 			"names": [
 				"org.apache.hadoop"
 			],
-			"labels": ["hadoop"]
+			"labels": ["Hadoop"]
 		},
 		{
 			"names": [
@@ -887,25 +885,25 @@
 				"org.spark-project",
 				"org.spark_project"
 			],
-			"labels": ["spark"]
+			"labels": ["Spark"]
 		},
 		{
 			"names": [
 				"org.apache.http"
 			],
-			"labels": ["apache-http"]
+			"labels": ["Apache-http"]
 		},
 		{
 			"names": [
 				"org.eclipse.jetty"
 			],
-			"labels": ["jetty"]
+			"labels": ["Jetty"]
 		},
 		{
 			"names": [
 				"io.netty"
 			],
-			"labels": ["netty"]
+			"labels": ["Netty"]
 		},
 		{
 			"names": [
@@ -913,25 +911,25 @@
 				"org.akka",
 				"com.akka"
 			],
-			"labels": ["akka"]
+			"labels": ["Akka"]
 		},
 		{
 			"names": [
 				"org.elasticsearch"
 			],
-			"labels": ["elasticsearch"]
+			"labels": ["Elasticsearch"]
 		},
 		{
 			"names": [
 				"io.reactivex"
 			],
-			"labels": ["reactivex"]
+			"labels": ["Reactivex"]
 		},
 		{
 			"names": [
 				"com.netflix.hystrix"
 			],
-			"labels": ["hystrix"]
+			"labels": ["Hystrix"]
 		}
 	]
 }
