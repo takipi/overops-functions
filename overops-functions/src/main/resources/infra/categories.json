@@ -1,0 +1,935 @@
+{
+	"categories": [{
+			"names": [
+				"com.google.gson"
+			],
+			"labels": ["Gson"]
+		},
+		{
+			"names": [
+				"org.bson"
+			],
+			"labels": ["Bson"]
+		},
+		{
+			"names": [
+				"org.yaml"
+			],
+			"labels": ["YAML"]
+		},
+		{
+			"names": [
+				"org.json"
+			],
+			"labels": ["JSON"]
+		},
+		{
+			"names": [
+				"com.fasterxml.jackson"
+			],
+			"labels": ["Jackson"]
+		},
+		{
+			"names": [
+				"org.xml",
+				"java.text",
+				"javax.xml"
+			],
+			"labels": ["Parser"]
+		},
+		{
+			"names": [
+				"java.net",
+				"java.rmi",
+				"javax.ws",
+				"javax.net",
+				"javax.servlet",
+				"javax.faces",
+				"javax.ejb",
+				"javax.mail"
+			],
+			"labels": ["Net"]
+		},
+		{
+			"names": [
+				"com.twitter.finagle"
+			],
+			"labels": ["Finagle"]
+		},
+		{
+			"names": [
+				"org.jboss"
+			],
+			"labels": ["JBoss"]
+		},
+		{
+			"names": [
+				"io.undertow"
+			],
+			"labels": ["Undertow"]
+		},
+		{
+			"names": [
+				"kafka",
+				"org.apache.kafka"
+			],
+			"labels": ["Kafka"]
+		},
+		{
+			"names": [
+				"glassfish",
+				"org.glassfish"
+			],
+			"labels": ["GlassFish"]
+		},
+		{
+			"names": [
+				"java.io",
+				"java.nio",
+				"javax.annotation.processing"
+			],
+			"labels": ["IO"]
+		},
+		{
+			"names": [
+				"java.sql",
+				"javax.transaction",
+				"net.spy.memcached"
+			],
+			"labels": ["DB"]
+		},
+		{
+			"names": [
+				"com.basho.riak"
+			],
+			"labels": ["Riak"]
+		},
+		{
+			"names": [
+				"com.mysql"
+			],
+			"labels": ["MySQL"]
+		},
+		{
+			"names": [
+				"org.postgresql",
+				"com.postgresql"
+			],
+			"labels": ["PostgreSQL"]
+		},
+		{
+			"names": [
+				"com.mongodb",
+				"org.mongodb"
+			],
+			"labels": ["MongoDB"]
+		},
+		{
+			"names": [
+				"org.h2"
+			],
+			"labels": ["H2"]
+		},
+		{
+			"names": [
+				"com.couchbase"
+			],
+			"labels": ["Couchbase"]
+		},
+		{
+			"names": [
+				"oracle",
+				"com.oracle"
+			],
+			"labels": ["Oracle"]
+		},
+		{
+			"names": [
+				"com.microsoft.sqlserver"
+			],
+			"labels": ["MS-SQL"]
+		},
+		{
+			"names": [
+				"org.junit"
+			],
+			"labels": ["JUnit"]
+		},
+		{
+			"names": [
+				"org.testng"
+			],
+			"labels": ["TestNG"]
+		},
+		{
+			"names": [
+				"org.mockito"
+			],
+			"labels": ["Mockito"]
+		},
+		{
+			"names": [
+				"org.reddison",
+				"redis",
+				"io.lettuce"
+			],
+			"labels": ["Redis"]
+		},
+		{
+			"names": [
+				"java.security",
+				"javax.security",
+				"sun.security"
+			],
+			"labels": ["Security"]
+		},
+		{
+			"names": [
+				"javax.persistence"
+			],
+			"labels": ["Persistence"]
+		},
+		{
+			"names": [
+				"net.sf.hibernate",
+				"org.hibernate"
+			],
+			"labels": ["Hibernate"]
+		},
+		{
+			"names": [
+				"org.apache.derby"
+			],
+			"labels": ["Derby"]
+		},
+		{
+			"names": [
+				"com.hazelcast"
+			],
+			"labels": ["Hazelcast"]
+		},
+		{
+			"names": [
+				"net.spy.memcached",
+				"org.apache.commons.jcs",
+				"net.sf.ehcache"
+			],
+			"labels": ["Cache"]
+		},
+		{
+			"names": [
+				"java",
+				"javax",
+				"sun",
+				"sunw"
+			],
+			"labels": ["Java-lang"]
+		},
+		{
+			"names": [
+				"java.lang",
+				"java.util"
+			],
+			"labels": ["JVM"]
+		},
+		{
+			"names": [
+				"groovy",
+				"groovyjarjarantlr",
+				"org.codehaus.groovy"
+			],
+			"labels": ["Groovy-lang"]
+		},
+		{
+			"names": [
+				"scala",
+				"scalax"
+			],
+			"labels": ["Scala-lang"]
+		},
+		{
+			"names": [
+				"jruby",
+				"org.jruby"
+			],
+			"labels": ["JRuby-lang"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.apigateway"
+			],
+			"labels": ["aws-apigateway"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.applicationautoscaling"
+			],
+			"labels": ["aws-applicationautoscaling"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.applicationdiscovery"
+			],
+			"labels": ["aws-applicationdiscovery"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.appstream"
+			],
+			"labels": ["aws-appstream"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.autoscaling"
+			],
+			"labels": ["aws-autoscaling"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.batch"
+			],
+			"labels": ["aws-batch"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.budgets"
+			],
+			"labels": ["aws-budgets"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.certificatemanager"
+			],
+			"labels": ["aws-certificatemanager"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.cloudformation"
+			],
+			"labels": ["aws-cloudformation"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.cloudfront"
+			],
+			"labels": ["aws-cloudfront"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.cloudsearchdomain"
+			],
+			"labels": ["aws-cloudsearchdomain"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.cloudsearchv2"
+			],
+			"labels": ["aws-cloudsearch"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.cloudtrail"
+			],
+			"labels": ["aws-cloudtrail"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.cloudwatch"
+			],
+			"labels": ["aws-cloudwatch"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.cloudwatchevents"
+			],
+			"labels": ["aws-cloudwatchevents"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.codebuild"
+			],
+			"labels": ["aws-codebuild"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.codecommit"
+			],
+			"labels": ["aws-codecommit"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.codedeploy"
+			],
+			"labels": ["aws-codedeploy"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.codepipeline"
+			],
+			"labels": ["aws-codepipeline"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.cognitoidentity"
+			],
+			"labels": ["aws-cognitoidentity"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.cognitoidp"
+			],
+			"labels": ["aws-cognitoidp"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.cognitosync"
+			],
+			"labels": ["aws-cognitosync"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.databasemigrationservice"
+			],
+			"labels": ["aws-databasemigrationservice"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.datapipeline"
+			],
+			"labels": ["aws-datapipeline"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.devicefarm"
+			],
+			"labels": ["aws-devicefarm"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.directconnect"
+			],
+			"labels": ["aws-directconnect"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.directory"
+			],
+			"labels": ["aws-directory"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.dynamodb",
+				"com.amazonaws.services.dynamodbv2"
+			],
+			"labels": ["aws-dynamodb"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.ec2"
+			],
+			"labels": ["aws-ec2"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.ecr"
+			],
+			"labels": ["aws-ecr"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.ecs"
+			],
+			"labels": ["aws-ecs"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.elasticache"
+			],
+			"labels": ["aws-elasticache"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.elasticbeanstalk"
+			],
+			"labels": ["aws-elasticbeanstalk"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.elasticfilesystem"
+			],
+			"labels": ["aws-elasticfilesystem"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.elasticloadbalancing",
+				"com.amazonaws.services.elasticloadbalancingv2"
+			],
+			"labels": ["aws-elasticloadbalancing"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.elasticmapreduce"
+			],
+			"labels": ["aws-elasticmapreduce"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.elasticsearch"
+			],
+			"labels": ["aws-elasticsearch"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.elastictranscoder"
+			],
+			"labels": ["aws-elastictranscoder"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.gamelift"
+			],
+			"labels": ["aws-gamelift"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.glacier"
+			],
+			"labels": ["aws-glacier"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.identitymanagement"
+			],
+			"labels": ["aws-identitymanagement"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.importexport"
+			],
+			"labels": ["aws-importexport"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.inspector"
+			],
+			"labels": ["aws-inspector"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.iotdata"
+			],
+			"labels": ["aws-iotdata"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.kinesisfirehose"
+			],
+			"labels": ["aws-kinesisfirehose"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.kms"
+			],
+			"labels": ["aws-kms"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.lambda"
+			],
+			"labels": ["aws-lambda"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.logs"
+			],
+			"labels": ["aws-logs"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.machinelearning"
+			],
+			"labels": ["aws-machinelearning"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.marketplacecommerceanalytics"
+			],
+			"labels": ["aws-marketplacecommerceanalytics"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.marketplacemetering"
+			],
+			"labels": ["aws-marketplacemetering"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.opsworks"
+			],
+			"labels": ["aws-opsworks"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.organizations"
+			],
+			"labels": ["aws-organizations"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.pinpoint"
+			],
+			"labels": ["aws-pinpoint"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.polly"
+			],
+			"labels": ["aws-polly"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.rds"
+			],
+			"labels": ["aws-rds"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.redshift"
+			],
+			"labels": ["aws-redshift"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.rekognition"
+			],
+			"labels": ["aws-rekognition"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.route53"
+			],
+			"labels": ["aws-route53"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.route53domains"
+			],
+			"labels": ["aws-route53domains"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.securitytoken"
+			],
+			"labels": ["aws-securitytoken"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.servermigration"
+			],
+			"labels": ["aws-servermigration"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.servicecatalog"
+			],
+			"labels": ["aws-servicecatalog"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.shield"
+			],
+			"labels": ["aws-shield"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.simpledb"
+			],
+			"labels": ["aws-simpledb"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.simpleemail"
+			],
+			"labels": ["aws-simpleemail"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.simplesystemsmanagement"
+			],
+			"labels": ["aws-simplesystemsmanagement"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.simpleworkflow"
+			],
+			"labels": ["aws-simpleworkflow"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.snowball"
+			],
+			"labels": ["aws-snowball"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.sns"
+			],
+			"labels": ["aws-sns"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.sqs"
+			],
+			"labels": ["aws-sqs"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.stepfunctions"
+			],
+			"labels": ["aws-stepfunctions"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.storagegateway"
+			],
+			"labels": ["aws-storagegateway"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.waf"
+			],
+			"labels": ["aws-waf"]
+		},
+		{
+			"names": [
+				"com.amazonaws.services.workspaces"
+			],
+			"labels": ["aws-workspaces"]
+		},
+		{
+			"names": [
+				"com.springframework"
+			],
+			"labels": ["Spring"]
+		},
+		{
+			"names": [
+				"com.google.common.cache"
+			],
+			"labels": ["Guava-cache"]
+		},
+		{
+			"names": [
+				"com.google.inject"
+			],
+			"labels": ["Guice"]
+		},
+		{
+			"names": [
+				"org.slf4j"
+			],
+			"labels": ["SLF4J"]
+		},
+		{
+			"names": [
+				"java.util.logging"
+			],
+			"labels": ["Java-logging"]
+		},
+		{
+			"names": [
+				"ch.qos.logback"
+			],
+			"labels": ["Logback"]
+		},
+		{
+			"names": [
+				"org.apache.logging",
+				"org.apache.commons.logging"
+			],
+			"labels": ["Log4j"]
+		},
+		{
+			"names": [
+				"org.apache"
+			],
+			"labels": ["Apache"]
+		},
+		{
+			"names": [
+				"org.apache.dubbo"
+			],
+			"labels": ["Dubbo"]
+		},
+		{
+			"names": [
+				"org.apache.weex"
+			],
+			"labels": ["Weex"]
+		},
+		{
+			"names": [
+				"org.apache.thrift"
+			],
+			"labels": ["Thrift"]
+		},
+		{
+			"names": [
+				"org.apache.storm"
+			],
+			"labels": ["Storm"]
+		},
+		{
+			"names": [
+				"org.apache.zookeeper",
+				"org.apache.jute"
+			],
+			"labels": ["ZooKeeper"]
+		},
+		{
+			"names": [
+				"org.apache.cassandra"
+			],
+			"labels": ["cassandra"]
+		},
+		{
+			"names": [
+				"org.apache.flink"
+			],
+			"labels": ["Flink"]
+		},
+		{
+			"names": [
+				"org.apache.skywalking"
+			],
+			"labels": ["SkyWalking"]
+		},
+		{
+			"names": [
+				"org.apache.zeppelin"
+			],
+			"labels": ["Zeppelin"]
+		},
+		{
+			"names": [
+				"org.apache.heron"
+			],
+			"labels": ["Heron"]
+		},
+		{
+			"names": [
+				"org.apache.hbase"
+			],
+			"labels": ["HBase"]
+		},
+		{
+			"names": [
+				"org.apache.jmeter"
+			],
+			"labels": ["Jmeter"]
+		},
+		{
+			"names": [
+				"org.apache.beam"
+			],
+			"labels": ["Beam"]
+		},
+		{
+			"names": [
+				"org.apache.hive"
+			],
+			"labels": ["Hive"]
+		},
+		{
+			"names": [
+				"org.apache.camel"
+			],
+			"labels": ["Camel"]
+		},
+		{
+			"names": [
+				"org.apache.shiro"
+			],
+			"labels": ["Shiro"]
+		},
+		{
+			"names": [
+				"org.apache.flume"
+			],
+			"labels": ["Flume"]
+		},
+		{
+			"names": [
+				"org.apache.maven"
+			],
+			"labels": ["Maven"]
+		},
+		{
+			"names": [
+				"org.apache.catalina",
+				"org.apache.jasper",
+				"org.apache.coyote",
+				"org.apache.tomcat"
+			],
+			"labels": ["Tomcat"]
+		},
+		{
+			"names": [
+				"org.apache.hadoop"
+			],
+			"labels": ["Hadoop"]
+		},
+		{
+			"names": [
+				"org.apache.spark",
+				"org.spark-project",
+				"org.spark_project"
+			],
+			"labels": ["Spark"]
+		},
+		{
+			"names": [
+				"org.apache.http"
+			],
+			"labels": ["Apache-http"]
+		},
+		{
+			"names": [
+				"org.eclipse.jetty"
+			],
+			"labels": ["Jetty"]
+		},
+		{
+			"names": [
+				"io.netty"
+			],
+			"labels": ["Netty"]
+		},
+		{
+			"names": [
+				"akka",
+				"org.akka",
+				"com.akka"
+			],
+			"labels": ["Akka"]
+		},
+		{
+			"names": [
+				"org.elasticsearch"
+			],
+			"labels": ["Elasticsearch"]
+		},
+		{
+			"names": [
+				"io.reactivex"
+			],
+			"labels": ["Reactivex"]
+		},
+		{
+			"names": [
+				"com.netflix.hystrix"
+			],
+			"labels": ["Hystrix"]
+		}
+	]
+}
