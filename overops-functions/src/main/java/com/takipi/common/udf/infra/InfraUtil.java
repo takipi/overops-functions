@@ -63,7 +63,13 @@ public class InfraUtil {
 		Set<String> eventLabels = Sets.newHashSet();
 
 		for (String locationLabel : locationLabels) {
-			eventLabels.add(toInternalInfraLabelName(locationLabel));
+			String infraLabelName = toInternalInfraLabelName(locationLabel);
+
+			if ((event.labels != null) && (event.labels.contains(infraLabelName))) {
+				continue;
+			}
+
+			eventLabels.add(infraLabelName);
 
 			if (!existingLabels.add(locationLabel)) {
 				continue;
@@ -79,7 +85,7 @@ public class InfraUtil {
 			addViewToCategory(categoryId, viewId, serviceId, apiClient);
 		}
 
-		if (applyLabels) {
+		if ((applyLabels) && (!eventLabels.isEmpty())) {
 			EventModifyLabelsRequest addLabelsRequest = EventModifyLabelsRequest.newBuilder().setServiceId(serviceId)
 					.setEventId(event.id).addLabels(eventLabels).build();
 
