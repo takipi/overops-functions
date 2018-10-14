@@ -2,7 +2,6 @@ package com.takipi.common.udf.infra;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -11,7 +10,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.takipi.common.api.ApiClient;
@@ -155,7 +154,7 @@ public class InfrastructureRoutingFunction {
 		public String template_view;
 		public String category_name;
 
-		private final Map<String, String> namespaceToLabel = Maps.newHashMap();
+		private final List<Pair<String, String>> namespaceToLabel = Lists.newArrayList();
 
 		InfrastructureInput(String raw) {
 			super(raw);
@@ -182,7 +181,7 @@ public class InfrastructureRoutingFunction {
 					throw new IllegalArgumentException("Invalid namespaces");
 				}
 
-				namespaceToLabel.put(key, value);
+				namespaceToLabel.add(Pair.of(key, value));
 			}
 		}
 
