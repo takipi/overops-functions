@@ -29,6 +29,7 @@ import com.takipi.common.api.result.view.CreateViewResult;
 import com.takipi.common.api.result.view.ViewsResult;
 import com.takipi.common.api.url.UrlClient.Response;
 import com.takipi.common.api.util.CollectionUtil;
+import com.takipi.common.api.util.Pair;
 
 public class InfraUtil {
 	private static final String INFRA_SUFFIX = ".infra";
@@ -46,62 +47,80 @@ public class InfraUtil {
 		categorizeEvent(metadataResult.data, serviceId, categoryId, categories, existingLabels, apiClient, applyLabels);
 	}
 
-	public static Collection<String> categorizeEvent(EventResult event, String serviceId, String categoryId,
-			Categories categories, Set<String> existingLabels, ApiClient apiClient, boolean applyLabels) {
+	public static Pair<Collection<String>, Collection<String>> categorizeEvent(EventResult event, String serviceId,
+			String categoryId, Categories categories, Set<String> existingLabels, ApiClient apiClient,
+			boolean applyLabels) {
 		if ((event == null) || (event.error_origin == null)) {
-			return Collections.emptySet();
+			return Pair.of(Collections.emptySet(), Collections.emptySet());
 		}
+
+		Set<String> labelsToRemove = Sets.newHashSet();
+
+		if (!CollectionUtil.safeIsEmpty(event.labels)) {
+			for (String currentLabel : event.labels) {
+				if (currentLabel.endsWith(INFRA_SUFFIX)) {
+					labelsToRemove.add(currentLabel);
+				}
+			}
+		}
+
+		Set<String> labelsToAdd = Sets.newHashSet();
 
 		Location errorOrigin = event.error_origin;
 
 		Set<String> locationLabels = categories.getCategories(errorOrigin.class_name);
 
-		if (locationLabels.isEmpty()) {
-			return Collections.emptySet();
+		if (!CollectionUtil.safeIsEmpty(locationLabels)) {
+			for (String locationLabel : locationLabels) {
+				String infraLabelName = toInternalInfraLabelName(locationLabel);
+
+				labelsToRemove.remove(infraLabelName);
+
+				if (CollectionUtil.safeContains(event.labels, infraLabelName)) {
+					continue;
+				}
+
+				labelsToAdd.add(infraLabelName);
+
+				if (existingLabels.add(locationLabel)) {
+					validateInfraView(locationLabel, categoryId, serviceId, apiClient);
+				}
+			}
 		}
 
-		Set<String> eventLabels = Sets.newHashSet();
-
-		for (String locationLabel : locationLabels) {
-			String infraLabelName = toInternalInfraLabelName(locationLabel);
-
-			if ((event.labels != null) && (event.labels.contains(infraLabelName))) {
-				continue;
-			}
-
-			eventLabels.add(infraLabelName);
-
-			if (!existingLabels.add(locationLabel)) {
-				continue;
-			}
-
-			boolean labelExisted = createInfraLabel(locationLabel, serviceId, apiClient);
-
-			if (labelExisted) {
-				continue;
-			}
-
-			String viewId = createInfraView(locationLabel, serviceId, apiClient);
-			addViewToCategory(categoryId, viewId, serviceId, apiClient);
+		if (!applyLabels) {
+			return Pair.of(labelsToAdd, labelsToRemove);
 		}
 
-		if ((applyLabels) && (!eventLabels.isEmpty())) {
-			EventModifyLabelsRequest addLabelsRequest = EventModifyLabelsRequest.newBuilder().setServiceId(serviceId)
-					.setEventId(event.id).addLabels(eventLabels).build();
+		if ((!labelsToAdd.isEmpty()) || (!labelsToRemove.isEmpty())) {
+			EventModifyLabelsRequest labelsRequest = EventModifyLabelsRequest.newBuilder().setServiceId(serviceId)
+					.setEventId(event.id).addLabels(labelsToAdd).removeLabels(labelsToRemove).build();
 
-			Response<EmptyResult> addResult = apiClient.post(addLabelsRequest);
+			Response<EmptyResult> addResult = apiClient.post(labelsRequest);
 
 			if (addResult.isBadResponse()) {
 				throw new IllegalStateException("Can't apply labels to event " + event.id);
 			}
 		}
 
-		return eventLabels;
+		return Pair.of(labelsToAdd, labelsToRemove);
+	}
+
+	private static void validateInfraView(String locationLabel, String categoryId, String serviceId,
+			ApiClient apiClient) {
+		boolean labelExisted = createInfraLabel(locationLabel, serviceId, apiClient);
+
+		if (labelExisted) {
+			return;
+		}
+
+		String viewId = createInfraView(locationLabel, serviceId, apiClient);
+		addViewToCategory(categoryId, viewId, serviceId, apiClient);
 	}
 
 	// Returns true if the label already existed.
 	//
-	public static boolean createInfraLabel(String labelName, String serviceId, ApiClient apiClient) {
+	private static boolean createInfraLabel(String labelName, String serviceId, ApiClient apiClient) {
 		String infraLabelName = toInternalInfraLabelName(labelName);
 
 		CreateLabelRequest createLabelRequest = CreateLabelRequest.newBuilder().setServiceId(serviceId)
@@ -116,7 +135,7 @@ public class InfraUtil {
 		return (createResponse.responseCode == HttpURLConnection.HTTP_CONFLICT);
 	}
 
-	public static String createInfraView(String labelName, String serviceId, ApiClient apiClient) {
+	private static String createInfraView(String labelName, String serviceId, ApiClient apiClient) {
 		ViewFilters viewFilters = new ViewFilters();
 		viewFilters.labels = Collections.singletonList(toInternalInfraLabelName(labelName));
 
@@ -200,7 +219,7 @@ public class InfraUtil {
 		throw new IllegalStateException("Failed getting category - " + categoryName);
 	}
 
-	public static void addViewToCategory(String categoryId, String viewId, String serviceId, ApiClient apiClient) {
+	private static void addViewToCategory(String categoryId, String viewId, String serviceId, ApiClient apiClient) {
 		CategoryAddViewRequest categoryAddViewRequest = CategoryAddViewRequest.newBuilder().setServiceId(serviceId)
 				.setCategoryId(categoryId).setViewId(viewId).build();
 
