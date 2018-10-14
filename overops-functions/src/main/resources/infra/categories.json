@@ -31,24 +31,9 @@
 		},
 		{
 			"names": [
-				"org.xml",
-				"java.text",
-				"javax.xml"
+				"org.xml"
 			],
-			"labels": ["Parser"]
-		},
-		{
-			"names": [
-				"java.net",
-				"java.rmi",
-				"javax.ws",
-				"javax.net",
-				"javax.servlet",
-				"javax.faces",
-				"javax.ejb",
-				"javax.mail"
-			],
-			"labels": ["Net"]
+			"labels": ["XML-Parser"]
 		},
 		{
 			"names": [
@@ -77,26 +62,9 @@
 		},
 		{
 			"names": [
-				"glassfish",
-				"org.glassfish"
+				"org.glassfish.jersey"
 			],
-			"labels": ["GlassFish"]
-		},
-		{
-			"names": [
-				"java.io",
-				"java.nio",
-				"javax.annotation.processing"
-			],
-			"labels": ["IO"]
-		},
-		{
-			"names": [
-				"java.sql",
-				"javax.transaction",
-				"net.spy.memcached"
-			],
-			"labels": ["DB"]
+			"labels": ["Jersey"]
 		},
 		{
 			"names": [
@@ -177,20 +145,6 @@
 		},
 		{
 			"names": [
-				"java.security",
-				"javax.security",
-				"sun.security"
-			],
-			"labels": ["Security"]
-		},
-		{
-			"names": [
-				"javax.persistence"
-			],
-			"labels": ["Persistence"]
-		},
-		{
-			"names": [
 				"net.sf.hibernate",
 				"org.hibernate"
 			],
@@ -207,52 +161,6 @@
 				"com.hazelcast"
 			],
 			"labels": ["Hazelcast"]
-		},
-		{
-			"names": [
-				"net.spy.memcached",
-				"org.apache.commons.jcs",
-				"net.sf.ehcache"
-			],
-			"labels": ["Cache"]
-		},
-		{
-			"names": [
-				"java",
-				"javax",
-				"sun",
-				"sunw"
-			],
-			"labels": ["Java-lang"]
-		},
-		{
-			"names": [
-				"java.lang",
-				"java.util"
-			],
-			"labels": ["JVM"]
-		},
-		{
-			"names": [
-				"groovy",
-				"groovyjarjarantlr",
-				"org.codehaus.groovy"
-			],
-			"labels": ["Groovy-lang"]
-		},
-		{
-			"names": [
-				"scala",
-				"scalax"
-			],
-			"labels": ["Scala-lang"]
-		},
-		{
-			"names": [
-				"jruby",
-				"org.jruby"
-			],
-			"labels": ["JRuby-lang"]
 		},
 		{
 			"names": [
@@ -684,6 +592,12 @@
 		},
 		{
 			"names": [
+				"com.amazonaws.services.s3"
+			],
+			"labels": ["aws-s3"]
+		},
+		{
+			"names": [
 				"com.amazonaws.services.stepfunctions"
 			],
 			"labels": ["aws-stepfunctions"]
@@ -751,12 +665,6 @@
 		},
 		{
 			"names": [
-				"org.apache"
-			],
-			"labels": ["Apache"]
-		},
-		{
-			"names": [
 				"org.apache.dubbo"
 			],
 			"labels": ["Dubbo"]
@@ -790,7 +698,7 @@
 			"names": [
 				"org.apache.cassandra"
 			],
-			"labels": ["cassandra"]
+			"labels": ["Cassandra"]
 		},
 		{
 			"names": [
@@ -881,17 +789,17 @@
 		},
 		{
 			"names": [
+				"org.apache.http"
+			],
+			"labels": ["Apache-http"]
+		},
+		{
+			"names": [
 				"org.apache.spark",
 				"org.spark-project",
 				"org.spark_project"
 			],
 			"labels": ["Spark"]
-		},
-		{
-			"names": [
-				"org.apache.http"
-			],
-			"labels": ["Apache-http"]
 		},
 		{
 			"names": [
@@ -930,6 +838,119 @@
 				"com.netflix.hystrix"
 			],
 			"labels": ["Hystrix"]
+		},
+		{
+			"names": [
+				"org.apache"
+			],
+			"labels": ["Apache"]
+		},
+		{
+			"names": [
+				"glassfish",
+				"org.glassfish"
+			],
+			"labels": ["GlassFish"]
+		},
+		{
+			"names": [
+				"com.amazonaws"
+			],
+			"labels": ["AWS"]
+		},
+		{
+			"names": [
+				"com.google"
+			],
+			"labels": ["Google"]
+		},
+		{
+			"names": [
+				"java.security",
+				"javax.security",
+				"sun.security"
+			],
+			"labels": ["Java-Security"]
+		},
+		{
+			"names": [
+				"javax.persistence"
+			],
+			"labels": ["Java-Persistence"]
+		},
+		{
+			"names": [
+				"java.text",
+				"javax.xml"
+			],
+			"labels": ["Java-Parser"]
+		},
+		{
+			"names": [
+				"java.net",
+				"java.rmi",
+				"javax.ws",
+				"javax.net",
+				"javax.servlet",
+				"javax.faces",
+				"javax.ejb",
+				"javax.mail"
+			],
+			"labels": ["Java-Net"]
+		},
+		{
+			"names": [
+				"net.spy.memcached",
+				"org.apache.commons.jcs",
+				"net.sf.ehcache"
+			],
+			"labels": ["Java-Cache"]
+		},
+		{
+			"names": [
+				"java.io",
+				"java.nio",
+				"javax.annotation.processing"
+			],
+			"labels": ["Java-IO"]
+		},
+		{
+			"names": [
+				"java.sql",
+				"javax.transaction"
+			],
+			"labels": ["Java-DB"]
+		},
+		{
+			"names": [
+				"groovy",
+				"groovyjarjarantlr",
+				"org.codehaus.groovy"
+			],
+			"labels": ["Groovy-lang"]
+		},
+		{
+			"names": [
+				"scala",
+				"scalax"
+			],
+			"labels": ["Scala-lang"]
+		},
+		{
+			"names": [
+				"jruby",
+				"org.jruby"
+			],
+			"labels": ["JRuby-lang"]
+		},
+		{
+			"names": [
+				"java",
+				"javax",
+				"sun",
+				"sunw"
+			],
+			"labels": ["Java-lang"]
 		}
 	]
 }
