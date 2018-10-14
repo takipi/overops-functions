@@ -45,7 +45,7 @@
 	   </function>
 	   <function>
 	      <function_type>CHANNEL</function_type>
-	      <function_name>Code Routing</function_name>
+	      <function_name>Routing</function_name>
 	      <description>Classify incoming events according to the functional component within the code from which they originated. See code at: https://git.io/fADU6</description>
 	      <param_type>TEXT</param_type>
 	      <class_file>com.takipi.common.udf.infra.InfrastructureRoutingFunction</class_file>
