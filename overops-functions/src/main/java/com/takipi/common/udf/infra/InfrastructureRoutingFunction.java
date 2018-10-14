@@ -1,9 +1,7 @@
 package com.takipi.common.udf.infra;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -12,7 +10,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.takipi.common.api.ApiClient;
@@ -23,6 +21,7 @@ import com.takipi.common.api.result.event.EventResult;
 import com.takipi.common.api.result.event.EventsResult;
 import com.takipi.common.api.url.UrlClient.Response;
 import com.takipi.common.api.util.CollectionUtil;
+import com.takipi.common.api.util.Pair;
 import com.takipi.common.udf.ContextArgs;
 import com.takipi.common.udf.input.Input;
 
@@ -104,25 +103,25 @@ public class InfrastructureRoutingFunction {
 		BatchModifyLabelsRequest.Builder builder = BatchModifyLabelsRequest.newBuilder().setServiceId(args.serviceId);
 
 		for (EventResult event : eventsResult.events) {
-			Collection<String> labels = InfraUtil.categorizeEvent(event, args.serviceId, categoryId, categories,
-					createdLabels, apiClient, false);
-			
-			if (!labels.isEmpty())
-			{
-				builder.addLabelModifications(event.id, labels, Collections.<String>emptySet());
+			Pair<Collection<String>, Collection<String>> eventCategories = InfraUtil.categorizeEvent(event,
+					args.serviceId, categoryId, categories, createdLabels, apiClient, false);
+
+			Collection<String> labelsToAdd = eventCategories.getFirst();
+			Collection<String> labelsToRemove = eventCategories.getSecond();
+
+			if ((!labelsToAdd.isEmpty()) || (!labelsToRemove.isEmpty())) {
+				builder.addLabelModifications(event.id, labelsToAdd, labelsToRemove);
 				hasModifications = true;
 			}
 		}
-		
-		if (!hasModifications)
-		{
+
+		if (!hasModifications) {
 			return;
 		}
-		
+
 		Response<EmptyResult> response = apiClient.post(builder.build());
-		
-		if (response.isBadResponse())
-		{
+
+		if (response.isBadResponse()) {
 			throw new IllegalStateException("Failed batch apply of labels.");
 		}
 	}
@@ -155,7 +154,7 @@ public class InfrastructureRoutingFunction {
 		public String template_view;
 		public String category_name;
 
-		private final Map<String, String> namespaceToLabel = Maps.newHashMap();
+		private final List<Pair<String, String>> namespaceToLabel = Lists.newArrayList();
 
 		InfrastructureInput(String raw) {
 			super(raw);
@@ -182,7 +181,7 @@ public class InfrastructureRoutingFunction {
 					throw new IllegalArgumentException("Invalid namespaces");
 				}
 
-				namespaceToLabel.put(key, value);
+				namespaceToLabel.add(Pair.of(key, value));
 			}
 		}
 

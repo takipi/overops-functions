@@ -4,7 +4,6 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
@@ -13,14 +12,15 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.takipi.common.api.util.CollectionUtil;
+import com.takipi.common.api.util.Pair;
 
 public class Categories {
 	private static final String DEFAULT_CATEGORIES = "infra/categories.json";
 	private static final Categories EMPTY_CATEGORIES = new Categories();
-	
+
 	private static boolean initialized;
 	private static volatile Categories instance = null;
-	
+
 	public static Categories defaultCategories() {
 		if ((instance == null) && (!initialized)) {
 			synchronized (Categories.class) {
@@ -59,8 +59,6 @@ public class Categories {
 			return Collections.emptySet();
 		}
 
-		Set<String> result = Sets.newHashSet();
-
 		for (Category category : categories) {
 			if ((CollectionUtil.safeIsEmpty(category.names)) || (CollectionUtil.safeIsEmpty(category.labels))) {
 				continue;
@@ -68,13 +66,12 @@ public class Categories {
 
 			for (String name : category.names) {
 				if (className.startsWith(name)) {
-					result.addAll(category.labels);
-					break;
+					return Sets.newHashSet(category.labels);
 				}
 			}
 		}
 
-		return result;
+		return Collections.emptySet();
 	}
 
 	public static class Category {
@@ -82,22 +79,20 @@ public class Categories {
 		public List<String> labels;
 	}
 
-	public static Categories from(Map<String, String> namespaceToLabel)
-	{
+	public static Categories from(List<Pair<String, String>> namespaceToLabel) {
 		List<Category> categories = Lists.newArrayListWithExpectedSize(namespaceToLabel.size());
-		
-		for (Map.Entry<String, String> entry : namespaceToLabel.entrySet())
-		{
+
+		for (Pair<String, String> entry : namespaceToLabel) {
 			Category category = new Category();
-			category.names = Collections.singletonList(entry.getKey());
-			category.labels = Collections.singletonList(entry.getValue());
-			
+			category.names = Collections.singletonList(entry.getFirst());
+			category.labels = Collections.singletonList(entry.getSecond());
+
 			categories.add(category);
 		}
-		
+
 		Categories result = new Categories();
 		result.categories = categories;
-		
+
 		return result;
 	}
 }
