@@ -1,4 +1,4 @@
-package com.takipi.common.udf.infra;
+package com.takipi.udf.infra;
 
 import java.net.HttpURLConnection;
 import java.util.Collection;

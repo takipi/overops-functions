@@ -1,4 +1,4 @@
-package com.takipi.common.udf.infra;
+package com.takipi.udf.infra;
 
 import java.util.Collection;
 import java.util.List;
@@ -20,10 +20,10 @@ import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.core.url.UrlClient.Response;
-import com.takipi.common.udf.ContextArgs;
-import com.takipi.common.udf.input.Input;
 import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
+import com.takipi.udf.ContextArgs;
+import com.takipi.udf.input.Input;
 
 public class InfrastructureRoutingFunction {
 	public static void main(String[] args) {

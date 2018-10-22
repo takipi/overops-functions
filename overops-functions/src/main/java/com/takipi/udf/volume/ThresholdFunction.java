@@ -1,4 +1,4 @@
-package com.takipi.common.udf.volume;
+package com.takipi.udf.volume;
 
 import java.net.HttpURLConnection;
 import java.util.Collections;
@@ -27,8 +27,8 @@ import com.takipi.api.client.result.event.EventsVolumeResult;
 import com.takipi.api.client.result.transaction.TransactionsVolumeResult;
 import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
 import com.takipi.api.core.url.UrlClient.Response;
-import com.takipi.common.udf.ContextArgs;
-import com.takipi.common.udf.input.Input;
+import com.takipi.udf.ContextArgs;
+import com.takipi.udf.input.Input;
 
 public class ThresholdFunction {
 	static ThresholdInput getThresholdInput(String rawInput) {

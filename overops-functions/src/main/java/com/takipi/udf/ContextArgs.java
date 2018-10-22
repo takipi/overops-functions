@@ -1,4 +1,4 @@
-package com.takipi.common.udf;
+package com.takipi.udf;
 
 import com.google.common.base.Strings;
 import com.takipi.api.client.ApiClient;

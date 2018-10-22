@@ -1,4 +1,4 @@
-package com.takipi.common.udf.label;
+package com.takipi.udf.label;
 
 import java.net.HttpURLConnection;
 
@@ -11,8 +11,8 @@ import com.takipi.api.client.request.event.EventModifyLabelsRequest;
 import com.takipi.api.client.request.label.CreateLabelRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.core.url.UrlClient.Response;
-import com.takipi.common.udf.ContextArgs;
-import com.takipi.common.udf.input.Input;
+import com.takipi.udf.ContextArgs;
+import com.takipi.udf.input.Input;
 
 public class ApplyLabelFunction {
 	public static String validateInput(String rawInput) {

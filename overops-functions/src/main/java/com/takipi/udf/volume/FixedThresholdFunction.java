@@ -1,4 +1,4 @@
-package com.takipi.common.udf.volume;
+package com.takipi.udf.volume;
 
 public class FixedThresholdFunction extends ThresholdFunction {
 	private static String adjustInput(String rawInput) {

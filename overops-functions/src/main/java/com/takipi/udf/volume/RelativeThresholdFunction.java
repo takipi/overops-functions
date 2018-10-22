@@ -1,4 +1,4 @@
-package com.takipi.common.udf.volume;
+package com.takipi.udf.volume;
 
 public class RelativeThresholdFunction extends ThresholdFunction {
 	public static String validateInput(String rawInput) {
