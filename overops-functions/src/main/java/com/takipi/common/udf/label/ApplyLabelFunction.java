@@ -6,11 +6,11 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import com.takipi.common.api.ApiClient;
-import com.takipi.common.api.request.event.EventModifyLabelsRequest;
-import com.takipi.common.api.request.label.CreateLabelRequest;
-import com.takipi.common.api.result.EmptyResult;
-import com.takipi.common.api.url.UrlClient.Response;
+import com.takipi.api.client.ApiClient;
+import com.takipi.api.client.request.event.EventModifyLabelsRequest;
+import com.takipi.api.client.request.label.CreateLabelRequest;
+import com.takipi.api.client.result.EmptyResult;
+import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.udf.ContextArgs;
 import com.takipi.common.udf.input.Input;
 

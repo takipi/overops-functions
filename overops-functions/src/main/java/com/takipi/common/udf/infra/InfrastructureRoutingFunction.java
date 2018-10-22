@@ -13,17 +13,17 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
-import com.takipi.common.api.ApiClient;
-import com.takipi.common.api.request.event.EventsRequest;
-import com.takipi.common.api.request.label.BatchModifyLabelsRequest;
-import com.takipi.common.api.result.EmptyResult;
-import com.takipi.common.api.result.event.EventResult;
-import com.takipi.common.api.result.event.EventsResult;
-import com.takipi.common.api.url.UrlClient.Response;
-import com.takipi.common.api.util.CollectionUtil;
-import com.takipi.common.api.util.Pair;
+import com.takipi.api.client.ApiClient;
+import com.takipi.api.client.request.event.EventsRequest;
+import com.takipi.api.client.request.label.BatchModifyLabelsRequest;
+import com.takipi.api.client.result.EmptyResult;
+import com.takipi.api.client.result.event.EventResult;
+import com.takipi.api.client.result.event.EventsResult;
+import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.udf.ContextArgs;
 import com.takipi.common.udf.input.Input;
+import com.takipi.common.util.CollectionUtil;
+import com.takipi.common.util.Pair;
 
 public class InfrastructureRoutingFunction {
 	public static void main(String[] args) {
