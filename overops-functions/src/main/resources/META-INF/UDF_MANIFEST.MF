@@ -79,5 +79,57 @@
 	      	minimum_threshold_delta = 5
 	      </default_params>
 	   </function>
+	   <function>
+	      <function_type>ANOMALY</function_type>
+	      <function_name>Severity</function_name>
+	      <description>
+	      	Mark events as New if they were introduced in an active deployment and are important. Mark events as Regressed if they have crossed a volume threshold against a previous timeframe. See code at: https://git.io/fxiSl
+	      </description>
+	      <param_type>TEXT</param_type>
+	      <class_file>com.takipi.udf.severity.SeverityFunction</class_file>
+	      <default_params>
+	      	# the time window (minutes) that we compare the baseline to
+			activeTimespan = 1440
+			
+			# the time window (minutes) to compare the last &lt;activeTimespan&gt; against
+			baseTimespan = 10080
+			
+			# a change in % that would be considered a regression
+			reggressionDelta = 1
+			
+			# a change in % that would be considered a critical regression (zero means no critical regressions)
+			criticalRegressionDelta = 0
+
+			# should the function attempt to apply seasonality algorithm
+			applySeasonality = false
+
+			# comma delimited list of exception types that are severe by definition
+			criticalExceptionTypes = NullPointerException;IndexOutOfBoundsException;ClassCastException;AssertionError
+			
+			# minimum rate that a regression, new + non-critical event must exceed
+			minErrorRateThreshold = 0.1
+			
+			# minimum volume that a regression, new + non-critical event must exceed
+			minVolumeThreshold = 500
+			
+			# name of category in which to place views
+			category = Severe
+			
+			# how to label new issues
+			newEventslabel = New Issue
+			
+			# view to contain new issues
+			newEventsView = New Issues
+			
+			# how to label regressed issues
+			regressedEventsLabel = Regression
+
+			# view to contain regressed issues
+			regressedEventsView = Regressions
+			
+			# how long (minutes) should these labels "stick" to an event
+			labelRetention = 1440
+	      </default_params>
+	   </function>
 	</functions>
 </udf_manifest>
