@@ -59,7 +59,7 @@
 	   </function>
 	   <function>
 	      <function_type>ANOMALY</function_type>
-	      <function_name>New entry point timers</function_name>
+	      <function_name>Automatic entry point timers</function_name>
 	      <description>
 	      	Automatically set timers on application entry points based on average runtime. See code at: https://git.io/fxiy0
 	      </description>
