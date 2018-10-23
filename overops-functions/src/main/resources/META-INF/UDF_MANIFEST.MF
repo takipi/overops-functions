@@ -57,5 +57,27 @@
 	      	category_name=infrastructure
 	      </default_params>
 	   </function>
+	   <function>
+	      <function_type>ANOMALY</function_type>
+	      <function_name>New entry point timers</function_name>
+	      <description>
+	      	Automatically set timers on application entry points based on average runtime. See code at: https://git.io/fxiy0
+	      </description>
+	      <param_type>TEXT</param_type>
+	      <class_file>com.takipi.udf.timer.PeriodicAvgTimerFunction</class_file>
+	      <default_params>
+	      	# Time period to look at, in hours.
+	      	timespan = 24
+
+	      	# Number of std deviations from the mean time to place threshold on.
+	      	std_dev = 1.0
+
+	      	# Minimum value allowed for a given threshold.
+	      	minimum_absolute_threshold = 30
+
+	      	# Mimimum necessary delta between existing and new threshold value which merits an update of it.
+	      	minimum_threshold_delta = 5
+	      </default_params>
+	   </function>
 	</functions>
 </udf_manifest>
