@@ -1,4 +1,4 @@
-package com.takipi.common.udf.infra;
+package com.takipi.udf.infra;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
@@ -11,8 +11,8 @@ import org.apache.commons.io.IOUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
-import com.takipi.common.api.util.CollectionUtil;
-import com.takipi.common.api.util.Pair;
+import com.takipi.common.util.CollectionUtil;
+import com.takipi.common.util.Pair;
 
 public class Categories {
 	private static final String DEFAULT_CATEGORIES = "infra/categories.json";

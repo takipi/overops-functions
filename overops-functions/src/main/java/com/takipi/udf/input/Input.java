@@ -1,4 +1,4 @@
-package com.takipi.common.udf.input;
+package com.takipi.udf.input;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;

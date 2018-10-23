@@ -1,7 +1,7 @@
-package com.takipi.common.udf;
+package com.takipi.udf;
 
 import com.google.common.base.Strings;
-import com.takipi.common.api.ApiClient;
+import com.takipi.api.client.ApiClient;
 
 public class ContextArgs {
 	public String apiHost;

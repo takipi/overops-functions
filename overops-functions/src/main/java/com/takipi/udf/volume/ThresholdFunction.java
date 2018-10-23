@@ -1,4 +1,4 @@
-package com.takipi.common.udf.volume;
+package com.takipi.udf.volume;
 
 import java.net.HttpURLConnection;
 import java.util.Collections;
@@ -11,24 +11,24 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import com.takipi.common.api.ApiClient;
-import com.takipi.common.api.data.volume.Transaction;
-import com.takipi.common.api.request.alert.Anomaly;
-import com.takipi.common.api.request.alert.Anomaly.AnomalyContributor;
-import com.takipi.common.api.request.alert.AnomalyAlertRequest;
-import com.takipi.common.api.request.event.EventModifyLabelsRequest;
-import com.takipi.common.api.request.label.CreateLabelRequest;
-import com.takipi.common.api.request.volume.EventsVolumeRequest;
-import com.takipi.common.api.request.volume.TransactionsVolumeRequest;
-import com.takipi.common.api.result.EmptyResult;
-import com.takipi.common.api.result.GenericResult;
-import com.takipi.common.api.result.event.EventResult;
-import com.takipi.common.api.result.volume.EventsVolumeResult;
-import com.takipi.common.api.result.volume.TransactionsVolumeResult;
-import com.takipi.common.api.url.UrlClient.Response;
-import com.takipi.common.api.util.ValidationUtil.VolumeType;
-import com.takipi.common.udf.ContextArgs;
-import com.takipi.common.udf.input.Input;
+import com.takipi.api.client.ApiClient;
+import com.takipi.api.client.data.transaction.Transaction;
+import com.takipi.api.client.request.alert.Anomaly;
+import com.takipi.api.client.request.alert.Anomaly.AnomalyContributor;
+import com.takipi.api.client.request.alert.AnomalyAlertRequest;
+import com.takipi.api.client.request.event.EventModifyLabelsRequest;
+import com.takipi.api.client.request.event.EventsVolumeRequest;
+import com.takipi.api.client.request.label.CreateLabelRequest;
+import com.takipi.api.client.request.transaction.TransactionsVolumeRequest;
+import com.takipi.api.client.result.EmptyResult;
+import com.takipi.api.client.result.GenericResult;
+import com.takipi.api.client.result.event.EventResult;
+import com.takipi.api.client.result.event.EventsVolumeResult;
+import com.takipi.api.client.result.transaction.TransactionsVolumeResult;
+import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
+import com.takipi.api.core.url.UrlClient.Response;
+import com.takipi.udf.ContextArgs;
+import com.takipi.udf.input.Input;
 
 public class ThresholdFunction {
 	static ThresholdInput getThresholdInput(String rawInput) {
