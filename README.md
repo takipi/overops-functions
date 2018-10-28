@@ -9,7 +9,7 @@ An Anomaly UDF is a function that would be used to determine whether the volume 
 Read more about Anomaly functions at: https://doc.overops.com/docs/managing-and-creating-alerts#section-anomaly-functions.
 ### Channel Functions:
 The Function-alerting channel in “Alert Settings” screen enables to select a function to activate when alert is triggered.
-Read more about Channel functions at: https://doc.overops.com/docs/managing-and-creating-alerts#section-anomaly-functions.
+Read more about Channel functions at: https://doc.overops.com/docs/managing-and-creating-alerts#section-channel-functions.
 
 
 ## List of UDF libraries in this repository:
