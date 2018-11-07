@@ -51,3 +51,13 @@ uploadArchives {
 		}
 	}
 }
+
+task copyJar(dependsOn: fatJar) {
+	doLast {
+		if (rootProject.hasProperty("jarTargetFile")) {
+			println "Copying $jar.archivePath to $jarTargetFile"
+
+			ant.copy(file:jar.archivePath, tofile:jarTargetFile)
+		}
+	}
+}
