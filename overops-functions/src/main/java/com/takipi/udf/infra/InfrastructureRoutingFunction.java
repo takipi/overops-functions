@@ -19,6 +19,7 @@ import com.takipi.api.client.request.label.BatchModifyLabelsRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsResult;
+import com.takipi.api.client.util.categories.Categories;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;

@@ -1,5 +1,6 @@
 package com.takipi.udf.severity;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -24,9 +25,10 @@ import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsVolumeResult;
 import com.takipi.api.client.util.category.CategoryUtil;
 import com.takipi.api.client.util.label.LabelUtil;
+import com.takipi.api.client.util.regression.RateRegression;
+import com.takipi.api.client.util.regression.RegressionInput;
+import com.takipi.api.client.util.regression.RegressionResult;
 import com.takipi.api.client.util.regression.RegressionUtil;
-import com.takipi.api.client.util.regression.RegressionUtil.RateRegression;
-import com.takipi.api.client.util.regression.RegressionUtil.RegressionResult;
 import com.takipi.api.client.util.view.ViewUtil;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.Pair;
@@ -96,10 +98,21 @@ public class SeverityFunction {
 
 		System.out.println("Calculating regressions\n");
 
-		RateRegression rateRegression = RegressionUtil.calculateRateRegressions(args.apiClient(), args.serviceId,
-				args.viewId, input.activeTimespan, input.baseTimespan, input.minVolumeThreshold,
-				input.minErrorRateThreshold, input.reggressionDelta, input.criticalRegressionDelta,
-				input.applySeasonality, input.criticalExceptionTypes, System.out, false);
+		RegressionInput regressionInput = new RegressionInput();
+		
+		regressionInput.serviceId = args.serviceId;
+		regressionInput.viewId = args.viewId;
+		regressionInput.activeTimespan = input.activeTimespan;
+		regressionInput.baselineTimespan = input.baseTimespan;
+		regressionInput.minVolumeThreshold = input.minVolumeThreshold;
+		regressionInput.minErrorRateThreshold = input.minErrorRateThreshold;
+		regressionInput.regressionDelta = input.reggressionDelta;
+		regressionInput.criticalRegressionDelta = input.criticalRegressionDelta;
+		regressionInput.applySeasonality = input.applySeasonality;
+		regressionInput.criticalExceptionTypes = input.criticalExceptionTypes;
+		
+		
+		RateRegression rateRegression = RegressionUtil.calculateRateRegressions(args.apiClient(), regressionInput, System.out, false);
 
 		Map<String, EventResult> allNewAndCritical = Maps.newHashMap();
 
@@ -166,7 +179,7 @@ public class SeverityFunction {
 				modified = true;
 				newlyLabeledEvents.put(event.id, event);
 
-				builder.addLabelModifications(event.id, Collections.singleton(label), Collections.emptyList());
+				builder.addLabelModifications(event.id, Collections.singleton(label), new ArrayList<String>());
 				System.out.println("Applying label " + label + " to " + event.id);
 			} else {
 				System.out.println("Event " + event.id + " already has label " + label);
@@ -245,7 +258,7 @@ public class SeverityFunction {
 				if (!keepLabel) {
 					modified = true;
 					System.out.println("Removing label " + label + " from " + event.id);
-					builder.addLabelModifications(event.id, Collections.emptyList(), Collections.singleton(label));
+					builder.addLabelModifications(event.id, new ArrayList<String>(), Collections.singleton(label));
 
 				}
 			}

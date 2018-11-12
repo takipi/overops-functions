@@ -27,6 +27,7 @@ import com.takipi.api.client.result.category.CreateCategoryResult;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.view.CreateViewResult;
 import com.takipi.api.client.result.view.ViewsResult;
+import com.takipi.api.client.util.categories.Categories;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
