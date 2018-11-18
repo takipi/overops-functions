@@ -23,7 +23,6 @@ import com.takipi.api.client.result.event.EventActionsResult;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsVolumeResult;
 import com.takipi.api.client.util.category.CategoryUtil;
-import com.takipi.api.client.util.infra.InfraUtil;
 import com.takipi.api.client.util.label.LabelUtil;
 import com.takipi.api.client.util.regression.RateRegression;
 import com.takipi.api.client.util.regression.RegressionInput;
@@ -152,7 +151,7 @@ public class SeverityFunction {
 		Category category = CategoryUtil.getServiceCategoryByName(args.apiClient(), args.serviceId, input.category);
 
 		if (category == null) {
-			result = InfraUtil.createCategory(input.category, args.serviceId, args.apiClient());
+			result = CategoryUtil.createCategory(input.category, args.serviceId, args.apiClient());
 			System.out.println("Created category " + result + " for " + input.category);
 		} else {
 			result = category.id;

@@ -19,8 +19,8 @@ import com.takipi.api.client.request.label.BatchModifyLabelsRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsResult;
-import com.takipi.api.client.util.infra.Categories;
-import com.takipi.api.client.util.infra.InfraUtil;
+import com.takipi.api.client.util.categories.Categories;
+import com.takipi.api.client.util.category.CategoryUtil;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
@@ -97,7 +97,7 @@ public class InfrastructureRoutingFunction {
 			return;
 		}
 
-		String categoryId = InfraUtil.createCategory(input.category_name, args.serviceId, apiClient);
+		String categoryId = CategoryUtil.createCategory(input.category_name, args.serviceId, apiClient);
 		Categories categories = input.getCategories();
 		Set<String> createdLabels = Sets.newHashSet();
 
@@ -145,7 +145,7 @@ public class InfrastructureRoutingFunction {
 
 		ApiClient apiClient = args.apiClient();
 
-		String categoryId = InfraUtil.createCategory(input.category_name, args.serviceId, apiClient);
+		String categoryId = CategoryUtil.createCategory(input.category_name, args.serviceId, apiClient);
 
 		InfraUtil.categorizeEvent(args.eventId, args.serviceId, categoryId, input.getCategories(), Sets.newHashSet(),
 				apiClient, true);
