@@ -54,7 +54,7 @@
 	      	# namespaces=com.company.db=db;com.company.util=utility
 
 	      	# Category name where auto-generated routing view will be created.
-	      	category_name=infrastructure
+	      	category_name=tiers
 	      </default_params>
 	   </function>
 	   <function>
