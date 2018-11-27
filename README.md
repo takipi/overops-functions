@@ -5,7 +5,7 @@ Full manifest of all libraries can be found here - https://git.io/fxDIW
 
 ## Our Collection consists of two types of functions:
 ### Anomaly Functions:
-An Anomaly UDF is a function that would be used to determine whether the volume of specific events is considered anomalous by comparing it to a target threshold within a view/timeframe.
+An Anomaly UDF is a function that would be used to determine whether the volume of specific events is considered anomalous by comparing it to a target threshold within a view/timeframe. Anomaly function will run periodically (the rate is adjustable - i.e. each 1/5/15... minutes) and search for anomalies.
 Read more about Anomaly functions at: https://doc.overops.com/docs/managing-and-creating-alerts#section-anomaly-functions.
 ### Channel Functions:
 The Function-alerting channel in “Alert Settings” screen enables to select a function to activate when alert is triggered.
@@ -20,14 +20,14 @@ Compare the event volume within the view against a target threshold and rate. Th
 See code at: https://git.io/fx6sl
 #### 2. Automatic Entry point Timers -
 Automatically set timers on application entry points based on average runtime.
-See code at: https://git.io/
+See code at: https://git.io/fxiy0
 #### 3. Severity -
 Mark events as New if they were introduced in an active deployment and are important. Mark events as Regressed if they have crossed a volume threshold against a previous timeframe.
 See code at: https://git.io/fxiSl
 
 ### Channel Functions:
 #### 1. Routing -
-Classify incoming events according to the functional component within the code from which they originated.
+Classify incoming events according to the functional component within the code (Code Tier) from which they originated. The classification will be done by adding a label to events which belong to the same Code Tier (for example - "aws.lambda", "Java-lang", "Network Errors", etc..)
 See code at: https://git.io/fx6s8
 #### 2. Apply Label -
 Applies a specific input label to events.
