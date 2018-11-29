@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <udf_manifest>
-   <version>2.1</version>
+   <version>2.2</version>
    <library_name>overops-public-lib</library_name>
    <backwards_compatible>true</backwards_compatible>
    <functions>
@@ -56,6 +56,7 @@
 	      	# Category name where auto-generated routing view will be created.
 	      	category_name=tiers
 	      </default_params>
+	      <admin_function>true</admin_function>
 	   </function>
 	   <function>
 	      <function_type>ANOMALY</function_type>
@@ -78,6 +79,7 @@
 	      	# Mimimum necessary delta between existing and new threshold value which merits an update of it.
 	      	minimum_threshold_delta = 5
 	      </default_params>
+	      <admin_function>true</admin_function>
 	   </function>
 	   <function>
 	      <function_type>ANOMALY</function_type>
@@ -130,6 +132,7 @@
 	      	# how long (minutes) should these labels "stick" to an event
 	      	labelRetention = 1440
 	      </default_params>
+	      <admin_function>true</admin_function>
 	   </function>
 	</functions>
 </udf_manifest>
