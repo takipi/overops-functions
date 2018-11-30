@@ -22,26 +22,43 @@
 	      <function_type>ANOMALY</function_type>
 	      <function_name>Relative Threshold</function_name>
 	      <description>
-	      	Compare the event volume within the view against a target threshold and rate. The rate is defined as number of events / throughput. Throughput can set as the number of times the method containing the event was called, or the number of times the application thread calling into the event executed. See code at: https://git.io/fx6sl
+	      	Compare the view event volume against an error rate (%) and optional fixed threshold. Github: https://git.io/fx6sl
 	      </description>
 	      <param_type>TEXT</param_type>
 	      <class_file>com.takipi.udf.volume.RelativeThresholdFunction</class_file>
-	      <default_params>
-	      	# A percentage value between 1 and 100 against which the volume of events / throughput is compared.
-	      	rate = 5
-
-	      	# Defines a minimal volume threshold that if exceeded to constitute an anomaly in addition to the relative rate.
-	      	threshold = 100
-
-	      	# Compare the number of times application threads (e.g. Servlet, Actor, Future,..) containing the events matching the target views have executed  against the number of events occurring. For example, if a Servlet containing the events within the view was invoked a 1000 times and 20 events matching the view’s filter took place, a RATE value above 2 will invoke an alert.
-	      	relative_to = Thread_Calls
-
-	      	# Compare the number of times the application method containing the events was invoked against the number of events which occurred.
-	      	# relative_to = Method_Calls
-
-	      	# Time period to look at, in minutes.
-	      	timespan = 60
+	      <default_params>	
+			# Acceptable error rate (1 to 100)
+			rate = 10
+			
+			# Optional (0 to ignore) fixed min volume threshold
+			threshold = 1000		
 	      </default_params>
+	   </function>
+	   	   <function>
+	      <function_type>ANOMALY</function_type>
+	      <function_name>Anomaly</function_name>
+	      <description>
+	      	 Alert on events experiencing anomalous volume within a rolling time window. Github : https://git.io/fxiSl
+	      </description>
+	      <param_type>TEXT</param_type>
+	      <class_file>com.takipi.udf.volume.RegressionFunction</class_file>
+	      <default_params>
+	      	# the active time window (min) to inspect
+	      	activeTimespan = 1440
+	      	
+	      	# The baseline time window to compare against (min) 
+	      	baseTimespan = 10080
+	      	
+	      	# Change in % that would be considered a regression
+	      	reggressionDelta = 100
+	       
+	      	# Min rate in % that an event must exceed
+	      	minErrorRateThreshold = 10
+	      	
+	      	# Min fixed volume that an event must exceed
+	      	minVolumeThreshold = 1000
+	      </default_params>
+	      <admin_function>false</admin_function>
 	   </function>
 	   <function>
 	      <function_type>CHANNEL</function_type>

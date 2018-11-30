@@ -3,6 +3,7 @@ package com.takipi.udf.volume;
 import java.net.HttpURLConnection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -10,18 +11,15 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.transaction.Transaction;
-import com.takipi.api.client.request.alert.Anomaly;
-import com.takipi.api.client.request.alert.Anomaly.AnomalyContributor;
-import com.takipi.api.client.request.alert.AnomalyAlertRequest;
 import com.takipi.api.client.request.event.EventModifyLabelsRequest;
 import com.takipi.api.client.request.event.EventsVolumeRequest;
 import com.takipi.api.client.request.label.CreateLabelRequest;
 import com.takipi.api.client.request.transaction.TransactionsVolumeRequest;
 import com.takipi.api.client.result.EmptyResult;
-import com.takipi.api.client.result.GenericResult;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsVolumeResult;
 import com.takipi.api.client.result.transaction.TransactionsVolumeResult;
@@ -31,6 +29,9 @@ import com.takipi.udf.ContextArgs;
 import com.takipi.udf.input.Input;
 
 public class ThresholdFunction {
+	
+	private static final int DEFAULT_TIME_WINDOW = 60;
+	
 	static ThresholdInput getThresholdInput(String rawInput) {
 		System.out.println("validateInput rawInput:" + rawInput);
 
@@ -46,24 +47,16 @@ public class ThresholdFunction {
 			throw new IllegalArgumentException(e.getMessage(), e);
 		}
 
-		if (input.relative_to == null) {
-			throw new IllegalArgumentException("Missing 'relative_to'");
-		}
-
-		if (input.timespan <= 0) {
+		if (input.timespan < 0) {
 			throw new IllegalArgumentException("'timespan' must be positive");
 		}
 
-		if (input.threshold <= 0l) {
+		if (input.threshold < 0l) {
 			throw new IllegalArgumentException("'threshold' must be positive");
 		}
 
 		if ((input.relative_to == Mode.Method_Calls) && (input.rate <= 0.0)) {
 			throw new IllegalArgumentException("'rate' must be positive");
-		}
-
-		if ((input.relative_to == Mode.Method_Calls) && (input.rate > 100.0)) {
-			throw new IllegalArgumentException("'rate' can't be more then 100 for method calls");
 		}
 
 		if ((input.relative_to == Mode.Thread_Calls) && (input.rate <= 0.0)) {
@@ -84,10 +77,19 @@ public class ThresholdFunction {
 
 		ApiClient apiClient = args.apiClient();
 
-		VolumeType volumeType = ((input.relative_to == Mode.Method_Calls) ? VolumeType.all : VolumeType.hits);
+		VolumeType volumeType = ((input.relative_to == null) || (input.relative_to == Mode.Method_Calls) 
+			? VolumeType.all : VolumeType.hits);
 
+		int timespan;
+		
+		if (input.timespan != 0) {
+			timespan = input.timespan;
+		} else {
+			timespan = DEFAULT_TIME_WINDOW;
+		}
+		
 		DateTime to = DateTime.now();
-		DateTime from = to.minusMinutes(input.timespan);
+		DateTime from = to.minusMinutes(timespan);
 
 		DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();
 
@@ -125,7 +127,15 @@ public class ThresholdFunction {
 
 		boolean thresholdExceeded = false;
 
-		switch (input.relative_to) {
+		Mode mode;
+		
+		if (input.relative_to != null) {
+			mode = input.relative_to;
+		} else {
+			mode = Mode.Method_Calls;
+		}
+		
+		switch (mode) {
 		case Absolute: {
 			thresholdExceeded = true;
 		}
@@ -140,7 +150,7 @@ public class ThresholdFunction {
 					int i1 = Integer.parseInt(o1.id);
 					int i2 = Integer.parseInt(o2.id);
 					return i1 - i2;
-				};
+				}
 			});
 
 			for (EventResult event : eventsVolumeResult.events) {
@@ -201,38 +211,16 @@ public class ThresholdFunction {
 			return;
 		}
 
-		// Send anomaly message to integrations
-
-		Anomaly anomaly = Anomaly.create();
-
-		anomaly.addAnomalyPeriod(args.viewId, from.getMillis(), to.getMillis());
-
+		List<EventResult> contributors = Lists.newArrayList();
+		
 		for (EventResult event : eventsVolumeResult.events) {
 			if ((event.stats != null) && (event.stats.hits > 0)) {
-				anomaly.addContributor(Integer.parseInt(event.id), event.stats.hits);
+				contributors.add(event);
 			}
 		}
-
-		AnomalyAlertRequest anomalyAlertRequest = AnomalyAlertRequest.newBuilder().setServiceId(args.serviceId)
-				.setViewId(args.viewId).setFrom(from.toString()).setTo(to.toString()).setDesc(input.toString())
-				.setAnomaly(anomaly).build();
-
-		Response<GenericResult> anomalyAlertResponse = apiClient.post(anomalyAlertRequest);
-
-		if (anomalyAlertResponse.isBadResponse()) {
-			throw new IllegalStateException("Failed alerting on anomaly for view - " + args.viewId);
-		}
-
-		GenericResult alertResult = anomalyAlertResponse.data;
-
-		if (alertResult == null) {
-			throw new IllegalStateException("Failed getting anomaly alert result on view - " + args.viewId);
-		}
-
-		if (!alertResult.result) {
-			throw new IllegalStateException(
-					"Anomaly alert on view - " + args.viewId + " failed with - " + alertResult.message);
-		}
+		
+		AnomalyUtil.send(apiClient, args.serviceId, args.viewId, 
+			contributors, from, to, input.toString());
 
 		// Mark all contributors as Alert label
 		if (!StringUtils.isEmpty(input.label)) {
@@ -245,7 +233,7 @@ public class ThresholdFunction {
 				throw new IllegalStateException("Can't create label " + input);
 			}
 
-			for (AnomalyContributor contributor : anomaly.getAnomalyContributors()) {
+			for (EventResult contributor : contributors) {
 				EventModifyLabelsRequest addLabel = EventModifyLabelsRequest.newBuilder().setServiceId(args.serviceId)
 						.setEventId(String.valueOf(contributor.id)).addLabel(input.label).build();
 
@@ -275,21 +263,29 @@ public class ThresholdFunction {
 
 			builder.append("Threshold(");
 
-			switch (relative_to) {
+			Mode mode;
+			
+			if (relative_to != null ) {
+				mode = relative_to;
+			} else {
+				mode = Mode.Method_Calls;
+			}
+			
+			switch (mode) {
 			case Absolute:
 				builder.append(threshold);
 				break;
 
 			case Method_Calls:
 			case Thread_Calls: {
-				builder.append(threshold);
-				builder.append(", ");
-
 				builder.append(String.format("%.2f", rate));
 				builder.append('%');
-
-				builder.append(" of ");
-				builder.append(relative_to);
+				builder.append(", ");
+				builder.append(threshold);
+				if (relative_to == Mode.Thread_Calls) {
+					builder.append(" of ");
+					builder.append(relative_to);
+				}
 			}
 				break;
 			}
