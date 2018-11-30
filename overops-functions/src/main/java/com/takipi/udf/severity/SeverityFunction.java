@@ -63,8 +63,8 @@ public class SeverityFunction {
 			throw new IllegalArgumentException("'timespan' must be positive");
 		}
 
-		if (input.reggressionDelta <= 0) {
-			throw new IllegalArgumentException("'reggressionDelta' must be positive");
+		if (input.regressionDelta <= 0) {
+			throw new IllegalArgumentException("'regressionDelta' must be positive");
 		}
 
 		if (input.criticalRegressionDelta < 0) {
@@ -105,7 +105,7 @@ public class SeverityFunction {
 		regressionInput.baselineTimespan = input.baseTimespan;
 		regressionInput.minVolumeThreshold = input.minVolumeThreshold;
 		regressionInput.minErrorRateThreshold = input.minErrorRateThreshold;
-		regressionInput.regressionDelta = input.reggressionDelta;
+		regressionInput.regressionDelta = input.regressionDelta;
 		regressionInput.criticalRegressionDelta = input.criticalRegressionDelta;
 		regressionInput.applySeasonality = input.applySeasonality;
 		regressionInput.criticalExceptionTypes = input.criticalExceptionTypes;
@@ -277,7 +277,7 @@ public class SeverityFunction {
 	static class SeverityInput extends Input {
 		public int activeTimespan; // the time window (min) that we compare the baseline to
 		public int baseTimespan; // the time window (min) to compare the last <activeTimespan> against
-		public double reggressionDelta; // a change in % that would be considered a regression
+		public double regressionDelta; // a change in % that would be considered a regression
 		public double criticalRegressionDelta; // a change in % that would be considered a critical regression
 		public boolean applySeasonality; // whether or not to apply a seasonality algorithm.
 		public List<String> criticalExceptionTypes; // comma delimited list of exception types that are severe by def
