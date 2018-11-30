@@ -50,7 +50,7 @@
 	      	baseTimespan = 10080
 	      	
 	      	# Change in % that would be considered a regression
-	      	reggressionDelta = 100
+	      	regressionDelta = 100
 	       
 	      	# Min rate in % that an event must exceed
 	      	minErrorRateThreshold = 10
@@ -114,7 +114,7 @@
 	      	baseTimespan = 10080
 	      	
 	      	# a change in % that would be considered a regression
-	      	reggressionDelta = 1
+	      	regressionDelta = 1
 	      	
 	      	# a change in % that would be considered a critical regression (zero means no critical regressions)
 	      	criticalRegressionDelta = 0

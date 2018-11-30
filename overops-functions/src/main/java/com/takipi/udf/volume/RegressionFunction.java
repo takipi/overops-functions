@@ -48,8 +48,8 @@ public class RegressionFunction {
 			throw new IllegalArgumentException("'timespan' must be positive");
 		}
 
-		if (input.reggressionDelta <= 0) {
-			throw new IllegalArgumentException("'reggressionDelta' must be positive");
+		if (input.regressionDelta <= 0) {
+			throw new IllegalArgumentException("'regressionDelta' must be positive");
 		}
 
 		return input;
@@ -78,7 +78,7 @@ public class RegressionFunction {
 		regressionInput.baselineTimespan = input.baseTimespan;
 		regressionInput.minVolumeThreshold = input.minVolumeThreshold;
 		regressionInput.minErrorRateThreshold = input.minErrorRateThreshold / 100;
-		regressionInput.regressionDelta = input.reggressionDelta / 100;
+		regressionInput.regressionDelta = input.regressionDelta / 100;
 		regressionInput.applySeasonality = true;
 
 		if (input.appName != null) {
@@ -111,7 +111,7 @@ public class RegressionFunction {
 	static class RegressionFunctionInput extends Input {
 		public int activeTimespan;
 		public int baseTimespan;
-		public double reggressionDelta;
+		public double regressionDelta;
 		public double minErrorRateThreshold;
 		public int minVolumeThreshold;
 		public String appName;
@@ -139,7 +139,7 @@ public class RegressionFunction {
 		@Override
 		public String toString() {
 			String result = String.format("Anomaly(last %s vs. prev %s, change > %.2f%%)", prettify(activeTimespan),
-					prettify(baseTimespan), reggressionDelta * 100);
+					prettify(baseTimespan), regressionDelta * 100);
 
 			return result;
 		}
