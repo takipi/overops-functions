@@ -12,17 +12,15 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.takipi.api.client.ApiClient;
-import com.takipi.api.client.data.view.SummarizedView;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.util.regression.RateRegression;
 import com.takipi.api.client.util.regression.RegressionInput;
 import com.takipi.api.client.util.regression.RegressionResult;
 import com.takipi.api.client.util.regression.RegressionUtil;
-import com.takipi.api.client.util.view.ViewUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.input.Input;
 
-public class RegressionThresholdFunction {
+public class RegressionFunction {
 	public static String validateInput(String rawInput) {
 		return parseRegressionInput(rawInput).toString();
 	}
@@ -61,8 +59,9 @@ public class RegressionThresholdFunction {
 		System.out.println("execute:" + rawContextArgs);
 
 		ContextArgs args = (new Gson()).fromJson(rawContextArgs, ContextArgs.class);
+
 		ApiClient apiClient = args.apiClient();
-		
+
 		if (!args.viewValidate()) {
 			throw new IllegalArgumentException("Invalid context args - " + rawContextArgs);
 		}
@@ -81,44 +80,42 @@ public class RegressionThresholdFunction {
 		regressionInput.minErrorRateThreshold = input.minErrorRateThreshold / 100;
 		regressionInput.regressionDelta = input.reggressionDelta / 100;
 		regressionInput.applySeasonality = true;
-		
+
 		if (input.appName != null) {
 			regressionInput.applictations = Arrays.asList(input.appName.split(","));
 		}
 
-		RateRegression rateRegression = RegressionUtil.calculateRateRegressions(apiClient, regressionInput,
-				System.out, false);
+		RateRegression rateRegression = RegressionUtil.calculateRateRegressions(apiClient, regressionInput, System.out,
+				false);
 
 		Collection<RegressionResult> activeRegressions = rateRegression.getAllRegressions().values();
-		
+
 		if (activeRegressions.size() == 0) {
 			System.out.println("No anomalies found");
 			return;
 		}
-		
+
 		List<EventResult> contributors = Lists.newArrayList();
-		
+
 		for (RegressionResult regressionResult : activeRegressions) {
 			contributors.add(regressionResult.getEvent());
 		}
-		
-		System.out.println("Alerting on " + activeRegressions.size() + 
-				" anomalies: " + StringUtils.join(contributors.toArray(), ',')); 
-		
-		AnomalyUtil.send(apiClient, args.serviceId, args.viewId, 
-			contributors, rateRegression.getActiveWndowStart(), DateTime.now(), 
-			input.toString());
 
+		System.out.println("Alerting on " + activeRegressions.size() + " anomalies: "
+				+ StringUtils.join(contributors.toArray(), ','));
+
+		AnomalyUtil.send(apiClient, args.serviceId, args.viewId, contributors, rateRegression.getActiveWndowStart(),
+				DateTime.now(), input.toString());
 	}
 
 	static class RegressionFunctionInput extends Input {
-		public int activeTimespan; 
-		public int baseTimespan; 
-		public double reggressionDelta; 
-		public double minErrorRateThreshold; 
-		public int minVolumeThreshold; 
+		public int activeTimespan;
+		public int baseTimespan;
+		public double reggressionDelta;
+		public double minErrorRateThreshold;
+		public int minVolumeThreshold;
 		public String appName;
-		
+
 		private RegressionFunctionInput(String raw) {
 			super(raw);
 		}
@@ -126,56 +123,25 @@ public class RegressionThresholdFunction {
 		static RegressionFunctionInput of(String raw) {
 			return new RegressionFunctionInput(raw);
 		}
-		
+
 		private String prettify(int value) {
-						
 			if (TimeUnit.MINUTES.toHours(value) > 24) {
 				return TimeUnit.MINUTES.toDays(value) + " days";
-			} 
-			
+			}
+
 			if (TimeUnit.MINUTES.toHours(value) > 1) {
 				return TimeUnit.MINUTES.toDays(value) + " hours";
-			} 
-			
+			}
+
 			return value + " minutes";
 		}
 
 		@Override
 		public String toString() {
-			String result = String.format("Anomaly(last %s vs. prev %s, change > %.2f%%)", 
-					prettify(activeTimespan), prettify(baseTimespan), reggressionDelta * 100);
-			
+			String result = String.format("Anomaly(last %s vs. prev %s, change > %.2f%%)", prettify(activeTimespan),
+					prettify(baseTimespan), reggressionDelta * 100);
+
 			return result;
 		}
-	}
-	
-	public static void main(String[] args) {
-		
-		if ((args == null) || (args.length < 3)) {
-			throw new IllegalArgumentException("args");
-		}
-		
-		ContextArgs contextArgs = new ContextArgs();
-		
-		contextArgs.apiHost = args[0];
-		contextArgs.apiKey = args[1];
-		contextArgs.serviceId =  args[2];
-		
-		SummarizedView view = ViewUtil.getServiceViewByName(contextArgs.apiClient(), contextArgs.serviceId, "TalTest");
-
-		contextArgs.viewId = view.id;
-	
-		//some test values 
-		String[] values = new String[] {
-				"activeTimespan=1440",  
-				"baseTimespan=10080",
-				"reggressionDelta=100", 
-				"minErrorRateThreshold=10", 
-				"minVolumeThreshold=100", 
-			};	
-		
-		
-		String rawContextArgs = (new Gson()).toJson(contextArgs);				
-		RegressionThresholdFunction.execute(rawContextArgs, String.join("\n", values));
 	}
 }

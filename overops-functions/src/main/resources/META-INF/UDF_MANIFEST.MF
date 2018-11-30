@@ -38,7 +38,7 @@
 	      <function_type>ANOMALY</function_type>
 	      <function_name>Anomaly</function_name>
 	      <description>
-	      	 Alert on events experiencing anomalous volume within a rolling time window. Github : https://git.io/fxiSl
+	      	 Alert on events experiencing anomalous volume within a rolling time window. Github : https://git.io/fpwNI
 	      </description>
 	      <param_type>TEXT</param_type>
 	      <class_file>com.takipi.udf.volume.RegressionFunction</class_file>

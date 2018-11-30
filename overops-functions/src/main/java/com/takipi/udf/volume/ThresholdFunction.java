@@ -29,9 +29,9 @@ import com.takipi.udf.ContextArgs;
 import com.takipi.udf.input.Input;
 
 public class ThresholdFunction {
-	
+
 	private static final int DEFAULT_TIME_WINDOW = 60;
-	
+
 	static ThresholdInput getThresholdInput(String rawInput) {
 		System.out.println("validateInput rawInput:" + rawInput);
 
@@ -49,6 +49,10 @@ public class ThresholdFunction {
 
 		if (input.timespan < 0) {
 			throw new IllegalArgumentException("'timespan' must be positive");
+		}
+
+		if ((input.threshold <= 0l) && (input.relative_to == Mode.Absolute)) {
+			throw new IllegalArgumentException("'threshold' must be positive");
 		}
 
 		if (input.threshold < 0l) {
@@ -77,17 +81,18 @@ public class ThresholdFunction {
 
 		ApiClient apiClient = args.apiClient();
 
-		VolumeType volumeType = ((input.relative_to == null) || (input.relative_to == Mode.Method_Calls) 
-			? VolumeType.all : VolumeType.hits);
+		VolumeType volumeType = ((input.relative_to == null) || (input.relative_to == Mode.Method_Calls)
+				? VolumeType.all
+				: VolumeType.hits);
 
 		int timespan;
-		
+
 		if (input.timespan != 0) {
 			timespan = input.timespan;
 		} else {
 			timespan = DEFAULT_TIME_WINDOW;
 		}
-		
+
 		DateTime to = DateTime.now();
 		DateTime from = to.minusMinutes(timespan);
 
@@ -121,20 +126,20 @@ public class ThresholdFunction {
 			}
 		}
 
-		if (hitCount <= input.threshold) {
+		if ((input.threshold > 0) && (hitCount <= input.threshold)) {
 			return;
 		}
 
 		boolean thresholdExceeded = false;
 
 		Mode mode;
-		
+
 		if (input.relative_to != null) {
 			mode = input.relative_to;
 		} else {
 			mode = Mode.Method_Calls;
 		}
-		
+
 		switch (mode) {
 		case Absolute: {
 			thresholdExceeded = true;
@@ -212,15 +217,14 @@ public class ThresholdFunction {
 		}
 
 		List<EventResult> contributors = Lists.newArrayList();
-		
+
 		for (EventResult event : eventsVolumeResult.events) {
 			if ((event.stats != null) && (event.stats.hits > 0)) {
 				contributors.add(event);
 			}
 		}
-		
-		AnomalyUtil.send(apiClient, args.serviceId, args.viewId, 
-			contributors, from, to, input.toString());
+
+		AnomalyUtil.send(apiClient, args.serviceId, args.viewId, contributors, from, to, input.toString());
 
 		// Mark all contributors as Alert label
 		if (!StringUtils.isEmpty(input.label)) {
@@ -264,13 +268,13 @@ public class ThresholdFunction {
 			builder.append("Threshold(");
 
 			Mode mode;
-			
-			if (relative_to != null ) {
+
+			if (relative_to != null) {
 				mode = relative_to;
 			} else {
 				mode = Mode.Method_Calls;
 			}
-			
+
 			switch (mode) {
 			case Absolute:
 				builder.append(threshold);
