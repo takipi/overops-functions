@@ -28,10 +28,6 @@ import com.takipi.udf.ContextArgs;
 import com.takipi.udf.input.Input;
 
 public class InfrastructureRoutingFunction {
-	public static void main(String[] args) {
-
-	}
-
 	public static String validateInput(String rawInput) {
 		getInfrastructureInput(rawInput);
 
