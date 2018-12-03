@@ -15,15 +15,15 @@ import com.takipi.api.client.data.timer.Timer;
 import com.takipi.api.client.data.transaction.Transaction;
 import com.takipi.api.client.request.event.EventsRequest;
 import com.takipi.api.client.request.redaction.CodeRedactionExcludeRequest;
-import com.takipi.api.client.request.timer.CreateTimerRequest;
-import com.takipi.api.client.request.timer.EditTimerRequest;
-import com.takipi.api.client.request.timer.TimersRequest;
 import com.takipi.api.client.request.transaction.TransactionsVolumeRequest;
+import com.takipi.api.client.request.transactiontimer.CreateTransactionTimerRequest;
+import com.takipi.api.client.request.transactiontimer.EditTransactionTimerRequest;
+import com.takipi.api.client.request.transactiontimer.TransactionTimersRequest;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.client.result.redaction.CodeRedactionElements;
-import com.takipi.api.client.result.timer.TimersResult;
 import com.takipi.api.client.result.transaction.TransactionsVolumeResult;
+import com.takipi.api.client.result.transactiontimer.TransactionTimersResult;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
@@ -123,11 +123,12 @@ public class PeriodicAvgTimerFunction {
 			throw new IllegalStateException("Missing events");
 		}
 
-		TimersRequest timersRequest = TimersRequest.newBuilder().setServiceId(args.serviceId).build();
+		TransactionTimersRequest transactionTimersRequest = TransactionTimersRequest.newBuilder()
+				.setServiceId(args.serviceId).build();
 
-		Response<TimersResult> timersResponse = apiClient.get(timersRequest);
+		Response<TransactionTimersResult> transactionTimersResponse = apiClient.get(transactionTimersRequest);
 
-		if (timersResponse.isBadResponse()) {
+		if (transactionTimersResponse.isBadResponse()) {
 			throw new IllegalStateException("Failed getting timers.");
 		}
 
@@ -144,7 +145,7 @@ public class PeriodicAvgTimerFunction {
 		Map<String, Long> updatedTimers = Maps.newHashMap();
 
 		for (Transaction transaction : transactionsResult.transactions) {
-			if ((Strings.isNullOrEmpty(transaction.name)) || (transaction.stats == null)) {
+			if ((Strings.isNullOrEmpty(transaction.class_name)) || (transaction.stats == null)) {
 				continue;
 			}
 
@@ -163,13 +164,13 @@ public class PeriodicAvgTimerFunction {
 
 			long timerThreshold = Math.max(adjustedThreshold, input.minimum_absolute_threshold);
 
-			Pair<String, String> fullName = getFullTransactionName(transaction.name, eventsResult.events);
+			Pair<String, String> fullName = getFullTransactionName(transaction, eventsResult.events);
 
 			if (fullName == null) {
 				continue;
 			}
 
-			Timer timer = getExistingTimer(fullName, timersResponse.data.timers);
+			Timer timer = getExistingTransactionTimer(fullName, transactionTimersResponse.data.transaction_timers);
 
 			if (timer == null) {
 				newTimers.put(fullName, timerThreshold);
@@ -186,21 +187,21 @@ public class PeriodicAvgTimerFunction {
 			Pair<String, String> fullName = entry.getKey();
 			long threshold = entry.getValue();
 
-			CreateTimerRequest createTimerRequest = CreateTimerRequest.newBuilder().setServiceId(args.serviceId)
-					.setClassName(fullName.getFirst()).setMethodName(fullName.getSecond()).setThreshold(threshold)
-					.build();
+			CreateTransactionTimerRequest createTransactionTimerRequest = CreateTransactionTimerRequest.newBuilder()
+					.setServiceId(args.serviceId).setClassName(fullName.getFirst()).setMethodName(fullName.getSecond())
+					.setThreshold(threshold).build();
 
-			apiClient.post(createTimerRequest);
+			apiClient.post(createTransactionTimerRequest);
 		}
 
 		for (Map.Entry<String, Long> entry : updatedTimers.entrySet()) {
 			String timerId = entry.getKey();
 			long threshold = entry.getValue();
 
-			EditTimerRequest editTimerRequest = EditTimerRequest.newBuilder().setServiceId(args.serviceId)
-					.setTimerId(Integer.parseInt(timerId)).setThreshold(threshold).build();
+			EditTransactionTimerRequest editTransactionTimerRequest = EditTransactionTimerRequest.newBuilder()
+					.setServiceId(args.serviceId).setTimerId(Integer.parseInt(timerId)).setThreshold(threshold).build();
 
-			apiClient.post(editTimerRequest);
+			apiClient.post(editTransactionTimerRequest);
 		}
 	}
 
@@ -211,14 +212,14 @@ public class PeriodicAvgTimerFunction {
 
 		if (!CollectionUtil.safeIsEmpty(redactionElements.packages)) {
 			for (String packageName : redactionElements.packages) {
-				if (transaction.name.startsWith(packageName)) {
+				if (transaction.class_name.startsWith(packageName)) {
 					return true;
 				}
 			}
 		}
 
 		if (!CollectionUtil.safeIsEmpty(redactionElements.classes)) {
-			String transactionName = JavaUtil.toSimpleClassName(transaction.name);
+			String transactionName = JavaUtil.toSimpleClassName(transaction.class_name);
 
 			for (String className : redactionElements.classes) {
 				String simpleClassName = JavaUtil.toSimpleClassName(className);
@@ -232,8 +233,12 @@ public class PeriodicAvgTimerFunction {
 		return false;
 	}
 
-	private static Pair<String, String> getFullTransactionName(String name, List<EventResult> events) {
-		String internalName = JavaUtil.toInternalName(name);
+	private static Pair<String, String> getFullTransactionName(Transaction transaction, List<EventResult> events) {
+		String internalName = JavaUtil.toInternalName(transaction.class_name);
+		
+		if (!Strings.isNullOrEmpty(transaction.method_name)) {
+			return Pair.of(internalName, transaction.method_name);
+		}
 
 		for (EventResult event : events) {
 			if ((event.entry_point == null) || (Strings.isNullOrEmpty(event.entry_point.class_name))
@@ -242,14 +247,14 @@ public class PeriodicAvgTimerFunction {
 			}
 
 			if (internalName.equals(JavaUtil.toInternalName(event.entry_point.class_name))) {
-				return Pair.of(JavaUtil.toInternalName(event.entry_point.class_name), event.entry_point.method_name);
+				return Pair.of(internalName, event.entry_point.method_name);
 			}
 		}
 
 		return null;
 	}
 
-	private static Timer getExistingTimer(Pair<String, String> fullName, List<Timer> timers) {
+	private static Timer getExistingTransactionTimer(Pair<String, String> fullName, List<Timer> timers) {
 		if (CollectionUtil.safeIsEmpty(timers)) {
 			return null;
 		}
