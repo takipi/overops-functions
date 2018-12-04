@@ -67,8 +67,9 @@
 	      <param_type>TEXT</param_type>
 	      <class_file>com.takipi.udf.infra.InfrastructureRoutingFunction</class_file>
 	      <default_params>
-	      	# A list of comma delimited tuples in the form of A=B;C=D;E=F, where the first item within the tuple is a namespace (e.g com.google, org.apache), and the second is a label which will applied to the event if it matches that namespace (e.g Google, Apache). If left empty, uses predefined common libraries namespaces. The full category list can be found at https://git.io/fADUX
-	      	# namespaces=com.company.db=db;com.company.util=utility
+	      	# The full category list can be found at https://git.io/fpPT0 
+					# You can choose to not use it, and supply a new list of semicolon delimited tuples in the form of A=B;C=D;E=F, where the first item is a package (e.g com.google), and the second is a tier (e.g Google).
+	      	# namespaces=com.company.db=DB;org.mongodb=MongoDB
 
 	      	# Category name where auto-generated routing view will be created.
 	      	category_name=tiers
