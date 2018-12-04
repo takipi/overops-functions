@@ -94,7 +94,7 @@
 	      	# Minimum value allowed for a given threshold.
 	      	minimum_absolute_threshold = 30
 
-	      	# Mimimum necessary delta between existing and new threshold value which merits an update of it.
+	      	# Minimum necessary delta between existing and new threshold value which merits an update of it.
 	      	minimum_threshold_delta = 5
 	      </default_params>
 	      <admin_function>true</admin_function>
