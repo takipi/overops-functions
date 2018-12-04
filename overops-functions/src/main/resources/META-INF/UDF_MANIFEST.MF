@@ -77,7 +77,7 @@
 	   </function>
 	   <function>
 	      <function_type>ANOMALY</function_type>
-	      <function_name>Automatic entry point timers</function_name>
+	      <function_name>Transaction Timers</function_name>
 	      <description>
 	      	Automatically set timers on application entry points based on average runtime. See code at: https://git.io/fxiy0
 	      </description>
@@ -95,6 +95,45 @@
 
 	      	# Mimimum necessary delta between existing and new threshold value which merits an update of it.
 	      	minimum_threshold_delta = 5
+	      </default_params>
+	      <admin_function>true</admin_function>
+	   </function>
+	   	   <function>
+	      <function_type>ANOMALY</function_type>
+	      <function_name>App Routing</function_name>
+	      <description>
+	      	Automatically create views for active applications. See code at: https://git.io/fxiy0
+	      </description>
+	      <param_type>TEXT</param_type>
+	      <class_file>com.tkipi.udf.app.AppRoutingFunction</class_file>
+	      <default_params>
+	      	# Name of category in which to place views
+	      	category = Apps
+
+	      	# Max num of views to create
+	      	maxViews = 50     	
+	      </default_params>
+	      <admin_function>true</admin_function>
+	   </function>
+	   	   </function>
+	   	   <function>
+	      <function_type>ANOMALY</function_type>
+	      <function_name>Deployment Routing</function_name>
+	      <description>
+	      	Automatically create views for active deployments. See code at: https://git.io/fxiy0
+	      </description>
+	      <param_type>TEXT</param_type>
+	      <class_file>com.takipi.udf.deployment.DeploymentRoutingFunction</class_file>
+	      <default_params>
+	      	# Name of category in which to place views
+	      	category = CI / CD
+
+	      	# Max num of views to create (views for non active deployments will be removed)
+	      	maxViews = 50  
+	      	
+	      	# An optional prefix to add to the view name (e.g. 'New in') 
+	      	prefix = 'New in '  
+	      	   	
 	      </default_params>
 	      <admin_function>true</admin_function>
 	   </function>

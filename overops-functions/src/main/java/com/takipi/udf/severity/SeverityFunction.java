@@ -23,7 +23,6 @@ import com.takipi.api.client.result.event.EventActionsResult;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsVolumeResult;
 import com.takipi.api.client.util.category.CategoryUtil;
-import com.takipi.api.client.util.infra.InfraUtil;
 import com.takipi.api.client.util.label.LabelUtil;
 import com.takipi.api.client.util.regression.RateRegression;
 import com.takipi.api.client.util.regression.RegressionInput;
@@ -115,22 +114,27 @@ public class SeverityFunction {
 
 		Map<String, EventResult> allNewAndCritical = Maps.newHashMap();
 
-		allNewAndCritical.putAll(rateRegression.getExceededNewEvents());
-		allNewAndCritical.putAll(rateRegression.getCriticalNewEvents());
-
-		applySeverityLabels(args, input.newEventslabel, input.newEventsView, input.labelRetention,
-				Lists.newArrayList(allNewAndCritical.values()));
-
-		Collection<RegressionResult> activeRegressions = rateRegression.getAllRegressions().values();
-
-		Collection<EventResult> activeRegressionEvents = Lists.newArrayListWithCapacity(activeRegressions.size());
-
-		for (RegressionResult activeRegression : activeRegressions) {
-			activeRegressionEvents.add(activeRegression.getEvent());
+		if (input.newEventsView != null) {
+			
+			allNewAndCritical.putAll(rateRegression.getExceededNewEvents());
+			allNewAndCritical.putAll(rateRegression.getCriticalNewEvents());
+	
+			applySeverityLabels(args, input.newEventslabel, input.newEventsView, input.labelRetention,
+					Lists.newArrayList(allNewAndCritical.values()));
 		}
 
-		applySeverityLabels(args, input.regressedEventsLabel, input.regressedEventsView, input.labelRetention,
-				activeRegressionEvents);
+		if (input.regressedEventsView != null) {
+			
+			Collection<RegressionResult> activeRegressions = rateRegression.getAllRegressions().values();
+			Collection<EventResult> activeRegressionEvents = Lists.newArrayListWithCapacity(activeRegressions.size());
+	
+			for (RegressionResult activeRegression : activeRegressions) {
+				activeRegressionEvents.add(activeRegression.getEvent());
+			}
+			
+			applySeverityLabels(args, input.regressedEventsLabel, input.regressedEventsView, input.labelRetention,
+					activeRegressionEvents);
+		}
 	}
 
 	private static void setupSeverityViews(ContextArgs args, SeverityInput input) {
@@ -141,10 +145,18 @@ public class SeverityFunction {
 
 		Collection<Pair<String, String>> views = Lists.newArrayList();
 
-		views.add(Pair.of(input.newEventsView, input.newEventslabel));
-		views.add(Pair.of(input.regressedEventsView, input.regressedEventsLabel));
+		if (input.newEventsView != null) {
+			views.add(Pair.of(input.newEventsView, input.newEventslabel));
+		}
+		
+		if (input.regressedEventsView != null) {
+			views.add(Pair.of(input.regressedEventsView, input.regressedEventsLabel));
+		}
 
-		ViewUtil.createLabelViewsIfNotExists(args.apiClient(), args.serviceId, views, categoryId);
+		if (views.size() > 0) {
+			ViewUtil.createLabelViewsIfNotExists(args.apiClient(), args.serviceId, 
+				views, categoryId);
+		}
 	}
 
 	private static String createSeverityCategory(ContextArgs args, SeverityInput input) {
@@ -152,7 +164,7 @@ public class SeverityFunction {
 		Category category = CategoryUtil.getServiceCategoryByName(args.apiClient(), args.serviceId, input.category);
 
 		if (category == null) {
-			result = InfraUtil.createCategory(input.category, args.serviceId, args.apiClient());
+			result = ViewUtil.createCategory(input.category, args.serviceId, args.apiClient());
 			System.out.println("Created category " + result + " for " + input.category);
 		} else {
 			result = category.id;
