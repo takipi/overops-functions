@@ -114,22 +114,27 @@ public class SeverityFunction {
 
 		Map<String, EventResult> allNewAndCritical = Maps.newHashMap();
 
-		allNewAndCritical.putAll(rateRegression.getExceededNewEvents());
-		allNewAndCritical.putAll(rateRegression.getCriticalNewEvents());
+		if (input.newEventsView != null) {
 
-		applySeverityLabels(args, input.newEventslabel, input.newEventsView, input.labelRetention,
-				Lists.newArrayList(allNewAndCritical.values()));
+			allNewAndCritical.putAll(rateRegression.getExceededNewEvents());
+			allNewAndCritical.putAll(rateRegression.getCriticalNewEvents());
 
-		Collection<RegressionResult> activeRegressions = rateRegression.getAllRegressions().values();
-
-		Collection<EventResult> activeRegressionEvents = Lists.newArrayListWithCapacity(activeRegressions.size());
-
-		for (RegressionResult activeRegression : activeRegressions) {
-			activeRegressionEvents.add(activeRegression.getEvent());
+			applySeverityLabels(args, input.newEventslabel, input.newEventsView, input.labelRetention,
+					Lists.newArrayList(allNewAndCritical.values()));
 		}
 
-		applySeverityLabels(args, input.regressedEventsLabel, input.regressedEventsView, input.labelRetention,
-				activeRegressionEvents);
+		if (input.regressedEventsView != null) {
+
+			Collection<RegressionResult> activeRegressions = rateRegression.getAllRegressions().values();
+			Collection<EventResult> activeRegressionEvents = Lists.newArrayListWithCapacity(activeRegressions.size());
+
+			for (RegressionResult activeRegression : activeRegressions) {
+				activeRegressionEvents.add(activeRegression.getEvent());
+			}
+
+			applySeverityLabels(args, input.regressedEventsLabel, input.regressedEventsView, input.labelRetention,
+					activeRegressionEvents);
+		}
 	}
 
 	private static void setupSeverityViews(ContextArgs args, SeverityInput input) {
@@ -140,10 +145,17 @@ public class SeverityFunction {
 
 		Collection<Pair<String, String>> views = Lists.newArrayList();
 
-		views.add(Pair.of(input.newEventsView, input.newEventslabel));
-		views.add(Pair.of(input.regressedEventsView, input.regressedEventsLabel));
+		if (input.newEventsView != null) {
+			views.add(Pair.of(input.newEventsView, input.newEventslabel));
+		}
 
-		ViewUtil.createLabelViewsIfNotExists(args.apiClient(), args.serviceId, views, categoryId);
+		if (input.regressedEventsView != null) {
+			views.add(Pair.of(input.regressedEventsView, input.regressedEventsLabel));
+		}
+
+		if (views.size() > 0) {
+			ViewUtil.createLabelViewsIfNotExists(args.apiClient(), args.serviceId, views, categoryId);
+		}
 	}
 
 	private static String createSeverityCategory(ContextArgs args, SeverityInput input) {
