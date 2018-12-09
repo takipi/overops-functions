@@ -19,15 +19,14 @@ import com.takipi.udf.ContextArgs;
 import com.takipi.udf.input.Input;
 
 public class DeploymentRoutingFunction {
-
-	private static final boolean SHARED = false;
+	private static final boolean SHARED = true;
 
 	public static String validateInput(String rawInput) {
 		return parseDeploymentRoutingInput(rawInput).toString();
 	}
 
 	static DeploymentRoutingInput parseDeploymentRoutingInput(String rawInput) {
-		System.out.println("validateInput rawInput:" + rawInput);
+		System.out.println("validateInput rawInput: " + rawInput);
 
 		if (Strings.isNullOrEmpty(rawInput)) {
 			throw new IllegalArgumentException("Input is empty");
@@ -41,20 +40,19 @@ public class DeploymentRoutingFunction {
 			throw new IllegalArgumentException(e.getMessage(), e);
 		}
 
-		if (input.category == null) {
-			throw new IllegalArgumentException("'category' must exist");
+		if (input.category_name == null) {
+			throw new IllegalArgumentException("'category_name' must exist");
 		}
 
-		if (input.maxViews <= 0) {
-			throw new IllegalArgumentException("'maxViews' must be greater than zero");
+		if (input.max_views <= 0) {
+			throw new IllegalArgumentException("'max_views' must be greater than zero");
 		}
 
 		return input;
 	}
 
 	public static void execute(String rawContextArgs, String rawInput) {
-
-		System.out.println("execute:" + rawContextArgs);
+		System.out.println("execute: " + rawContextArgs);
 
 		ContextArgs args = (new Gson()).fromJson(rawContextArgs, ContextArgs.class);
 
@@ -72,9 +70,9 @@ public class DeploymentRoutingFunction {
 	}
 
 	private static void buildDeploymentRoutingViews(ContextArgs args, DeploymentRoutingInput input) {
-
-		String serviceId = args.serviceId;
 		ApiClient apiClient = args.apiClient();
+		
+		String serviceId = args.serviceId;
 
 		String categoryId = createDepCategory(apiClient, serviceId, input);
 
@@ -82,19 +80,19 @@ public class DeploymentRoutingFunction {
 		List<String> allDeps = ClientUtil.getDeployments(apiClient, serviceId, false);
 
 		if (activeDeps == null) {
-			System.out.println("Could not acquire active deps for service " + serviceId);
+			System.err.println("Could not acquire active deps for service " + serviceId);
 			return;
 		}
 
 		if (allDeps == null) {
-			System.out.println("Could not acquire all deps for service " + serviceId);
+			System.err.println("Could not acquire all deps for service " + serviceId);
 			return;
 		}
 
 		Map<String, SummarizedView> views = ViewUtil.getServiceViewsByName(apiClient, serviceId);
 
 		if (views == null) {
-			System.out.println("Could not acquire view for service " + serviceId);
+			System.err.println("Could not acquire view for service " + serviceId);
 			return;
 		}
 
@@ -102,7 +100,6 @@ public class DeploymentRoutingFunction {
 		List<SummarizedView> allDepViews = Lists.newArrayList();
 
 		for (SummarizedView view : views.values()) {
-
 			String viewDepName;
 
 			if (input.prefix != null) {
@@ -118,25 +115,26 @@ public class DeploymentRoutingFunction {
 			}
 		}
 
-		if (activeDepViews.size() >= input.maxViews) {
-			System.out.println("Found " + activeDepViews.size() + " active dep views, excedding max for " + serviceId);
+		if (activeDepViews.size() >= input.max_views) {
+			System.out.println("Found " + activeDepViews.size() + " active dep views, exceeding max for " + serviceId);
 			return;
 		}
 
-		int itemsToDeleteSize = activeDepViews.size() + allDepViews.size() - input.maxViews;
+		int itemsToDeleteSize = 1;//activeDepViews.size() + allDepViews.size() - input.max_views;
 
 		if (itemsToDeleteSize > 0) {
 			for (int i = 0; i < Math.min(itemsToDeleteSize, allDepViews.size()); i++) {
 				SummarizedView view = allDepViews.get(i);
+
 				System.out.println("Deleting view " + view.name + " Id: " + view.id);
-				// XXX: api needed
+
+				ViewUtil.removeView(apiClient, serviceId, view.id);
 			}
 		}
 
 		List<String> activeViewsToCreate = Lists.newArrayList();
 
 		for (String activeDep : activeDeps) {
-
 			String depViewName = toViewName(input, activeDep);
 
 			if (!views.containsKey(depViewName)) {
@@ -144,12 +142,11 @@ public class DeploymentRoutingFunction {
 			}
 		}
 
-		int activeDepViewsToCreateSize = Math.min(activeViewsToCreate.size() + activeDepViews.size(), input.maxViews);
+		int activeDepViewsToCreateSize = Math.min(activeViewsToCreate.size() + activeDepViews.size(), input.max_views);
 
 		List<ViewInfo> viewInfos = Lists.newArrayList();
 
 		for (int i = 0; i < activeDepViewsToCreateSize; i++) {
-
 			String dep = activeViewsToCreate.get(i);
 			ViewInfo viewInfo = new ViewInfo();
 
@@ -165,7 +162,6 @@ public class DeploymentRoutingFunction {
 	}
 
 	private static String toViewName(DeploymentRoutingInput input, String dep) {
-
 		String result;
 
 		if (input.prefix != null) {
@@ -178,14 +174,14 @@ public class DeploymentRoutingFunction {
 	}
 
 	private static String createDepCategory(ApiClient apiClient, String serviceId, DeploymentRoutingInput input) {
-
+		Category category = CategoryUtil.getServiceCategoryByName(apiClient, serviceId, input.category_name);
+		
 		String result;
-		Category category = CategoryUtil.getServiceCategoryByName(apiClient, serviceId, input.category);
 
 		if (category == null) {
-			result = CategoryUtil.createCategory(input.category, serviceId, apiClient, SHARED);
+			result = CategoryUtil.createCategory(input.category_name, serviceId, apiClient, SHARED);
 
-			System.out.println("Created category " + result + " for " + input.category);
+			System.out.println("Created category " + result + " for " + input.category_name);
 		} else {
 			result = category.id;
 		}
@@ -194,9 +190,8 @@ public class DeploymentRoutingFunction {
 	}
 
 	static class DeploymentRoutingInput extends Input {
-
-		public String category; // The category in which to place views
-		public int maxViews; // Max number of views to create in the category
+		public String category_name; // The category in which to place views
+		public int max_views; // Max number of views to create in the category
 		public String prefix; // An optional prefix to add to the view name (e.g. 'New in')
 
 		private DeploymentRoutingInput(String raw) {
@@ -209,14 +204,13 @@ public class DeploymentRoutingFunction {
 
 		@Override
 		public String toString() {
-			return "DeploymentRouting: " + category + " " + maxViews;
+			return "DeploymentRouting: " + category_name + " " + max_views;
 		}
 	}
 
 	// A sample program on how to programmatically activate
 	// DeploymentRoutingFunction
 	public static void main(String[] args) {
-
 		if ((args == null) || (args.length < 3)) {
 			throw new IllegalArgumentException("args");
 		}
@@ -232,7 +226,7 @@ public class DeploymentRoutingFunction {
 		contextArgs.viewId = view.id;
 
 		// some test values
-		String[] sampleValues = new String[] { "category=CI / CD", "prefix='New in '", "maxViews=5" };
+		String[] sampleValues = new String[] { "category_name=CI / CD", "prefix='New in '", "max_views=5" };
 
 		String rawContextArgs = new Gson().toJson(contextArgs);
 		DeploymentRoutingFunction.execute(rawContextArgs, String.join("\n", sampleValues));

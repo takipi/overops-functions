@@ -1,4 +1,4 @@
-package com.tkipi.udf.app;
+package com.takipi.udf.app;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,15 +21,14 @@ import com.takipi.udf.ContextArgs;
 import com.takipi.udf.input.Input;
 
 public class AppRoutingFunction {
-
-	private static final boolean SHARED = false;
+	private static final boolean SHARED = true;
 
 	public static String validateInput(String rawInput) {
 		return parseAppRoutingInput(rawInput).toString();
 	}
 
 	static AppRoutingInput parseAppRoutingInput(String rawInput) {
-		System.out.println("validateInput rawInput:" + rawInput);
+		System.out.println("validateInput rawInput: " + rawInput);
 
 		if (Strings.isNullOrEmpty(rawInput)) {
 			throw new IllegalArgumentException("Input is empty");
@@ -43,20 +42,19 @@ public class AppRoutingFunction {
 			throw new IllegalArgumentException(e.getMessage(), e);
 		}
 
-		if (input.category == null) {
-			throw new IllegalArgumentException("'category' must exist");
+		if (input.category_name == null) {
+			throw new IllegalArgumentException("'category_name' must exist");
 		}
 
-		if (input.maxViews <= 0) {
-			throw new IllegalArgumentException("'maxViews' must be greater than zero");
+		if (input.max_views <= 0) {
+			throw new IllegalArgumentException("'max_views' must be greater than zero");
 		}
 
 		return input;
 	}
 
 	public static void execute(String rawContextArgs, String rawInput) {
-
-		System.out.println("execute:" + rawContextArgs);
+		System.out.println("execute: " + rawContextArgs);
 
 		ContextArgs args = (new Gson()).fromJson(rawContextArgs, ContextArgs.class);
 
@@ -70,13 +68,13 @@ public class AppRoutingFunction {
 	}
 
 	private static void buildAppRoutingViews(ContextArgs args, AppRoutingInput input) {
+		ApiClient apiClient = args.apiClient();
 
 		String serviceId = args.serviceId;
-		ApiClient apiClient = args.apiClient();
 
 		String categoryId = createAppCategory(apiClient, serviceId, input);
 
-		List<String> apps = ClientUtil.getApplications(apiClient, serviceId, true);
+		List<String> apps = ClientUtil.getApplications(apiClient, serviceId, false);
 
 		if (apps == null) {
 			System.out.println("Could not acquire apps for service " + serviceId);
@@ -101,15 +99,14 @@ public class AppRoutingFunction {
 			}
 		}
 
-		if (appsWithViewsSize >= input.maxViews) {
-			System.out.println("Found " + appsWithViewsSize + " app views, excedding max for " + serviceId);
+		if (appsWithViewsSize >= input.max_views) {
+			System.out.println("Found " + appsWithViewsSize + " app views, exceeding max for " + serviceId);
 			return;
 		}
 
 		List<ViewInfo> viewInfos = Lists.newArrayList();
 
 		for (String app : appsWithoutViews) {
-
 			ViewInfo viewInfo = new ViewInfo();
 
 			viewInfo.name = app;
@@ -124,14 +121,14 @@ public class AppRoutingFunction {
 	}
 
 	private static String createAppCategory(ApiClient apiClient, String serviceId, AppRoutingInput input) {
+		Category category = CategoryUtil.getServiceCategoryByName(apiClient, serviceId, input.category_name);
 
 		String result;
-		Category category = CategoryUtil.getServiceCategoryByName(apiClient, serviceId, input.category);
 
 		if (category == null) {
-			result = CategoryUtil.createCategory(input.category, serviceId, apiClient, SHARED);
+			result = CategoryUtil.createCategory(input.category_name, serviceId, apiClient, SHARED);
 
-			System.out.println("Created category " + result + " for " + input.category);
+			System.out.println("Created category " + result + " for " + input.category_name);
 		} else {
 			result = category.id;
 		}
@@ -140,9 +137,8 @@ public class AppRoutingFunction {
 	}
 
 	static class AppRoutingInput extends Input {
-
-		public String category; // The category in which to place views
-		public int maxViews; // Max number of views to create in the category
+		public String category_name; // The category in which to place views
+		public int max_views; // Max number of views to create in the category
 
 		private AppRoutingInput(String raw) {
 			super(raw);
@@ -154,13 +150,12 @@ public class AppRoutingFunction {
 
 		@Override
 		public String toString() {
-			return "AppRouting: " + category + " " + maxViews;
+			return "AppRouting: " + category_name + " " + max_views;
 		}
 	}
 
 	// A sample program on how to programmatically activate AppRoutingFunction
 	public static void main(String[] args) {
-
 		if ((args == null) || (args.length < 3)) {
 			throw new IllegalArgumentException("args");
 		}
@@ -176,7 +171,7 @@ public class AppRoutingFunction {
 		contextArgs.viewId = view.id;
 
 		// some test values
-		String[] sampleValues = new String[] { "category=Apps", "maxViews=50" };
+		String[] sampleValues = new String[] { "category_name=Apps", "max_views=50" };
 
 		String rawContextArgs = new Gson().toJson(contextArgs);
 		AppRoutingFunction.execute(rawContextArgs, String.join("\n", sampleValues));

@@ -106,13 +106,13 @@
 	      	Automatically create views for active applications. See code at: https://git.io/fpiir
 	      </description>
 	      <param_type>TEXT</param_type>
-	      <class_file>com.tkipi.udf.app.AppRoutingFunction</class_file>
+	      <class_file>com.takipi.udf.app.AppRoutingFunction</class_file>
 	      <default_params>
 	      	# Name of category in which to place views
-	      	category = Apps
+	      	category_name = Apps
 
 	      	# Max num of views to create
-	      	maxViews = 50
+	      	max_views = 50
 	      </default_params>
 	      <admin_function>true</admin_function>
 	   </function>
@@ -127,10 +127,10 @@
 	      <class_file>com.takipi.udf.deployment.DeploymentRoutingFunction</class_file>
 	      <default_params>
 	      	# Name of category in which to place views
-	      	category = CI / CD
+	      	category_name = CI / CD
 
 	      	# Max num of views to create (views for non active deployments will be removed)
-	      	maxViews = 50
+	      	max_views = 50
 	      	
 	      	# An optional prefix to add to the view name (e.g. 'New in')
 	      	prefix = 'New in '
