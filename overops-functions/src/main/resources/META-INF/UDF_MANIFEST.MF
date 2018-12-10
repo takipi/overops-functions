@@ -34,7 +34,7 @@
 			threshold = 1000		
 	      </default_params>
 	   </function>
-	   	   <function>
+	   <function>
 	      <function_type>ANOMALY</function_type>
 	      <function_name>Anomaly</function_name>
 	      <description>
@@ -99,7 +99,7 @@
 	      </default_params>
 	      <admin_function>true</admin_function>
 	   </function>
-	   	   <function>
+	   <function>
 	      <function_type>ANOMALY</function_type>
 	      <function_name>App Routing</function_name>
 	      <description>
@@ -116,8 +116,7 @@
 	      </default_params>
 	      <admin_function>true</admin_function>
 	   </function>
-	   	   </function>
-	   	   <function>
+	   <function>
 	      <function_type>ANOMALY</function_type>
 	      <function_name>Deployment Routing</function_name>
 	      <description>
