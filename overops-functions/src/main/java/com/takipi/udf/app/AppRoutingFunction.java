@@ -74,7 +74,7 @@ public class AppRoutingFunction {
 
 		String categoryId = createAppCategory(apiClient, serviceId, input);
 
-		List<String> apps = ClientUtil.getApplications(apiClient, serviceId, false);
+		List<String> apps = ClientUtil.getApplications(apiClient, serviceId, true);
 
 		if (apps == null) {
 			System.out.println("Could not acquire apps for service " + serviceId);
