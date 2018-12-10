@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.joda.time.DateTime;
+import org.joda.time.Minutes;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
@@ -12,26 +13,30 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.timer.Timer;
-import com.takipi.api.client.data.transaction.Transaction;
+import com.takipi.api.client.data.transaction.TransactionGraph;
+import com.takipi.api.client.data.transaction.TransactionGraph.GraphPoint;
 import com.takipi.api.client.request.event.EventsRequest;
 import com.takipi.api.client.request.redaction.CodeRedactionExcludeRequest;
-import com.takipi.api.client.request.transaction.TransactionsVolumeRequest;
+import com.takipi.api.client.request.transaction.TransactionsGraphRequest;
 import com.takipi.api.client.request.transactiontimer.CreateTransactionTimerRequest;
 import com.takipi.api.client.request.transactiontimer.EditTransactionTimerRequest;
 import com.takipi.api.client.request.transactiontimer.TransactionTimersRequest;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.client.result.redaction.CodeRedactionElements;
-import com.takipi.api.client.result.transaction.TransactionsVolumeResult;
+import com.takipi.api.client.result.transaction.TransactionsGraphResult;
 import com.takipi.api.client.result.transactiontimer.TransactionTimersResult;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
+import com.takipi.common.util.MathUtil;
 import com.takipi.common.util.Pair;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.input.Input;
 import com.takipi.udf.util.JavaUtil;
 
 public class PeriodicAvgTimerFunction {
+	private static final int STD_DEV_CALC_RES = 100;
+
 	public static String validateInput(String rawInput) {
 		return getPeriodicAvgTimerInput(rawInput).toString();
 	}
@@ -89,22 +94,23 @@ public class PeriodicAvgTimerFunction {
 
 		DateTime to = DateTime.now();
 		DateTime from = to.minusHours(input.timespan);
+		int pointCount = Math.min(STD_DEV_CALC_RES, Minutes.minutesBetween(from, to).getMinutes());
 
 		DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();
 
-		TransactionsVolumeRequest transactionsRequest = TransactionsVolumeRequest.newBuilder()
+		TransactionsGraphRequest transactionsGraphRequest = TransactionsGraphRequest.newBuilder()
 				.setServiceId(args.serviceId).setViewId(args.viewId).setFrom(from.toString(fmt)).setTo(to.toString(fmt))
-				.build();
+				.setWantedPointCount(pointCount).build();
 
-		Response<TransactionsVolumeResult> transactionsResponse = apiClient.get(transactionsRequest);
+		Response<TransactionsGraphResult> transactionsGraphResponse = apiClient.get(transactionsGraphRequest);
 
-		if (transactionsResponse.isBadResponse()) {
+		if (transactionsGraphResponse.isBadResponse()) {
 			throw new IllegalStateException("Failed getting view transactions.");
 		}
 
-		TransactionsVolumeResult transactionsResult = transactionsResponse.data;
+		TransactionsGraphResult transactionsGraphResult = transactionsGraphResponse.data;
 
-		if (CollectionUtil.safeIsEmpty(transactionsResult.transactions)) {
+		if (CollectionUtil.safeIsEmpty(transactionsGraphResult.graphs)) {
 			return;
 		}
 
@@ -144,27 +150,43 @@ public class PeriodicAvgTimerFunction {
 		Map<Pair<String, String>, Long> newTimers = Maps.newHashMap();
 		Map<String, Long> updatedTimers = Maps.newHashMap();
 
-		for (Transaction transaction : transactionsResult.transactions) {
-			if ((Strings.isNullOrEmpty(transaction.class_name)) || (transaction.stats == null)) {
+		for (TransactionGraph transactionGraph : transactionsGraphResult.graphs) {
+			if ((Strings.isNullOrEmpty(transactionGraph.class_name))
+					|| (CollectionUtil.safeIsEmpty(transactionGraph.points))) {
 				continue;
 			}
 
-			if (isExcludedTransaction(transaction, excludeResponse.data)) {
+			if (isExcludedTransaction(transactionGraph, excludeResponse.data)) {
 				continue;
 			}
 
-			long baseThreshold = (long) Math.floor(transaction.stats.avg_time);
+			double[] avgArr = new double[transactionGraph.points.size()];
+			double[] invArr = new double[transactionGraph.points.size()];
+
+			for (int i = 0; i < transactionGraph.points.size(); i++) {
+				GraphPoint point = transactionGraph.points.get(i);
+
+				if (point.stats == null) {
+					continue;
+				}
+
+				avgArr[i] = point.stats.avg_time;
+				invArr[i] = point.stats.invocations;
+			}
+
+			long baseThreshold = (long) MathUtil.weightedAvg(avgArr, invArr);
 
 			if (baseThreshold < 1L) {
 				continue;
 			}
 
-			long adjustedThreshold = baseThreshold
-					+ Math.round(input.std_dev * transaction.stats.avg_time_std_deviation);
+			double stdDev = MathUtil.wightedStdDev(avgArr, invArr);
+
+			long adjustedThreshold = baseThreshold + Math.round(input.std_dev * stdDev);
 
 			long timerThreshold = Math.max(adjustedThreshold, input.minimum_absolute_threshold);
 
-			Pair<String, String> fullName = getFullTransactionName(transaction, eventsResult.events);
+			Pair<String, String> fullName = getFullTransactionName(transactionGraph, eventsResult.events);
 
 			if (fullName == null) {
 				continue;
@@ -205,7 +227,8 @@ public class PeriodicAvgTimerFunction {
 		}
 	}
 
-	private static boolean isExcludedTransaction(Transaction transaction, CodeRedactionElements redactionElements) {
+	private static boolean isExcludedTransaction(TransactionGraph transaction,
+			CodeRedactionElements redactionElements) {
 		if (redactionElements == null) {
 			return false;
 		}
@@ -219,12 +242,12 @@ public class PeriodicAvgTimerFunction {
 		}
 
 		if (!CollectionUtil.safeIsEmpty(redactionElements.classes)) {
-			String transactionName = JavaUtil.toSimpleClassName(transaction.class_name);
+			String simpleTransactionName = JavaUtil.toSimpleClassName(transaction.class_name);
 
 			for (String className : redactionElements.classes) {
 				String simpleClassName = JavaUtil.toSimpleClassName(className);
 
-				if (transactionName.equals(simpleClassName)) {
+				if (simpleTransactionName.equals(simpleClassName)) {
 					return true;
 				}
 			}
@@ -233,9 +256,9 @@ public class PeriodicAvgTimerFunction {
 		return false;
 	}
 
-	private static Pair<String, String> getFullTransactionName(Transaction transaction, List<EventResult> events) {
+	private static Pair<String, String> getFullTransactionName(TransactionGraph transaction, List<EventResult> events) {
 		String internalName = JavaUtil.toInternalName(transaction.class_name);
-		
+
 		if (!Strings.isNullOrEmpty(transaction.method_name)) {
 			return Pair.of(internalName, transaction.method_name);
 		}
