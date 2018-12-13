@@ -76,6 +76,22 @@
 	      </default_params>
 	      <admin_function>true</admin_function>
 	   </function>
+		 <function>
+	      <function_type>CHANNEL</function_type>
+	      <function_name>Tier Routing</function_name>
+	      <description>Classify events according to the functional component within the code from which they originated. See code at: https://git.io/fx6s8</description>
+	      <param_type>TEXT</param_type>
+	      <class_file>com.takipi.udf.infra.InfrastructureRoutingFunction</class_file>
+	      <default_params>
+					# Category name where tiers views will be created.
+					category_name=tiers
+
+					# Link to the full tiers list: https://git.io/fpPT0 
+					# Enhance it with a delimited list: A=B;C=D;E=F, where the first item is a package (e.g com.mongo), and the second is a tier (e.g MongoDB).
+					# namespaces= org.company.db=DB; org.mongodb=MongoDB
+	      </default_params>
+	      <admin_function>true</admin_function>
+	   </function>
 	   <function>
 	      <function_type>ANOMALY</function_type>
 	      <function_name>Automatic entry point timers</function_name>
