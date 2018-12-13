@@ -34,7 +34,7 @@
 			threshold = 1000		
 	      </default_params>
 	   </function>
-	   	   <function>
+	   <function>
 	      <function_type>ANOMALY</function_type>
 	      <function_name>Anomaly</function_name>
 	      <description>
@@ -46,7 +46,7 @@
 	      	# the active time window (min) to inspect
 	      	activeTimespan = 1440
 	      	
-	      	# The baseline time window to compare against (min) 
+	      	# The baseline time window (min) to compare against
 	      	baseTimespan = 10080
 	      	
 	      	# Change in % that would be considered a regression
@@ -67,12 +67,12 @@
 	      <param_type>TEXT</param_type>
 	      <class_file>com.takipi.udf.infra.InfrastructureRoutingFunction</class_file>
 	      <default_params>
-	      	# The full category list can be found at https://git.io/fpPT0 
-					# You can choose to not use it, and supply a new list of semicolon delimited tuples in the form of A=B;C=D;E=F, where the first item is a package (e.g com.google), and the second is a tier (e.g Google).
-	      	# namespaces=com.company.db=DB;org.mongodb=MongoDB
+					# Category name where tiers views will be created.
+					category_name=tiers
 
-	      	# Category name where auto-generated routing view will be created.
-	      	category_name=tiers
+					# Link to the full tiers list: https://git.io/fpPT0 
+					# Enhance it with a delimited list: A=B;C=D;E=F, where the first item is a package (e.g com.mongo), and the second is a tier (e.g MongoDB).
+					# namespaces= org.company.db=DB; org.mongodb=MongoDB
 	      </default_params>
 	      <admin_function>true</admin_function>
 	   </function>
@@ -101,6 +101,43 @@
 	   </function>
 	   <function>
 	      <function_type>ANOMALY</function_type>
+	      <function_name>App Routing</function_name>
+	      <description>
+	      	Automatically create views for active applications. See code at: https://git.io/fpiir
+	      </description>
+	      <param_type>TEXT</param_type>
+	      <class_file>com.takipi.udf.app.AppRoutingFunction</class_file>
+	      <default_params>
+	      	# Name of category in which to place views
+	      	category_name = Apps
+
+	      	# Max num of views to create
+	      	max_views = 50
+	      </default_params>
+	      <admin_function>true</admin_function>
+	   </function>
+	   <function>
+	      <function_type>ANOMALY</function_type>
+	      <function_name>Deployment Routing</function_name>
+	      <description>
+	      	Automatically create views for active deployments. See code at: https://git.io/fpiia
+	      </description>
+	      <param_type>TEXT</param_type>
+	      <class_file>com.takipi.udf.deployment.DeploymentRoutingFunction</class_file>
+	      <default_params>
+	      	# Name of category in which to place views
+	      	category_name = CI / CD
+
+	      	# Max num of views to create (views for non active deployments will be removed)
+	      	max_views = 6
+	      	
+	      	# An optional prefix to add to the view name (e.g. 'New in')
+	      	prefix = 'New in '
+	      </default_params>
+	      <admin_function>true</admin_function>
+	   </function>
+	   <function>
+	      <function_type>ANOMALY</function_type>
 	      <function_name>Severity</function_name>
 	      <description>
 	      	Mark events as New if they were introduced in an active deployment and are important. Mark events as Regressed if they have crossed a volume threshold against a previous timeframe. See code at: https://git.io/fxiSl
@@ -108,10 +145,10 @@
 	      <param_type>TEXT</param_type>
 	      <class_file>com.takipi.udf.severity.SeverityFunction</class_file>
 	      <default_params>
-	      	# the time window (minutes) that we compare the baseline to
+	      	# the time window (min) that we compare the baseline to
 	      	activeTimespan = 1440
 	      	
-	      	# the time window (minutes) to compare the last &lt;activeTimespan&gt; against
+	      	# the time window (min) to compare the last &lt;activeTimespan&gt; against 
 	      	baseTimespan = 10080
 	      	
 	      	# a change in % that would be considered a regression
