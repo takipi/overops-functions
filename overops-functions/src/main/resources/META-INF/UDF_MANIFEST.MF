@@ -129,7 +129,7 @@
 	      	category_name = CI / CD
 
 	      	# Max num of views to create (views for non active deployments will be removed)
-	      	max_views = 50
+	      	max_views = 6
 	      	
 	      	# An optional prefix to add to the view name (e.g. 'New in')
 	      	prefix = 'New in '
