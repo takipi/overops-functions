@@ -43,11 +43,11 @@
 	      <param_type>TEXT</param_type>
 	      <class_file>com.takipi.udf.volume.RegressionFunction</class_file>
 	      <default_params>
-	      	# the active time window to inspect
-	      	activeTimespan = 1d
+	      	# the active time window (min) to inspect
+	      	activeTimespan = 1440
 	      	
-	      	# The baseline time window to compare against
-	      	baseTimespan = 7d
+	      	# The baseline time window (min) to compare against
+	      	baseTimespan = 10080
 	      	
 	      	# Change in % that would be considered a regression
 	      	regressionDelta = 100
@@ -145,11 +145,11 @@
 	      <param_type>TEXT</param_type>
 	      <class_file>com.takipi.udf.severity.SeverityFunction</class_file>
 	      <default_params>
-	      	# the time window that we compare the baseline to
-	      	activeTimespan = 1d
+	      	# the time window (min) that we compare the baseline to
+	      	activeTimespan = 1440
 	      	
-	      	# the time window to compare the last &lt;activeTimespan&gt; against
-	      	baseTimespan = 7d
+	      	# the time window (min) to compare the last &lt;activeTimespan&gt; against 
+	      	baseTimespan = 10080
 	      	
 	      	# a change in % that would be considered a regression
 	      	regressionDelta = 1
