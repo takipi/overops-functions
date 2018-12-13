@@ -186,6 +186,7 @@ public class InfrastructureRoutingFunction {
 
 		public Categories getCategories() {
 			Categories categories = Categories.defaultCategories();
+			
 			if (!CollectionUtil.safeIsEmpty(namespaceToLabel)) {
 				Categories newCategories = Categories.from(namespaceToLabel);
 				categories.categories.addAll(0, newCategories.categories);
