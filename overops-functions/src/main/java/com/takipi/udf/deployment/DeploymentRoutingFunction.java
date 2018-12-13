@@ -71,7 +71,7 @@ public class DeploymentRoutingFunction {
 
 	private static void buildDeploymentRoutingViews(ContextArgs args, DeploymentRoutingInput input) {
 		ApiClient apiClient = args.apiClient();
-		
+
 		String serviceId = args.serviceId;
 
 		String categoryId = createDepCategory(apiClient, serviceId, input);
@@ -120,7 +120,7 @@ public class DeploymentRoutingFunction {
 			return;
 		}
 
-		int itemsToDeleteSize = 1;//activeDepViews.size() + allDepViews.size() - input.max_views;
+		int itemsToDeleteSize = 1;// activeDepViews.size() + allDepViews.size() - input.max_views;
 
 		if (itemsToDeleteSize > 0) {
 			for (int i = 0; i < Math.min(itemsToDeleteSize, allDepViews.size()); i++) {
@@ -175,7 +175,7 @@ public class DeploymentRoutingFunction {
 
 	private static String createDepCategory(ApiClient apiClient, String serviceId, DeploymentRoutingInput input) {
 		Category category = CategoryUtil.getServiceCategoryByName(apiClient, serviceId, input.category_name);
-		
+
 		String result;
 
 		if (category == null) {
