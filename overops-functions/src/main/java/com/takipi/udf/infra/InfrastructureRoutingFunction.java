@@ -144,7 +144,9 @@ public class InfrastructureRoutingFunction {
 
 		String categoryId = CategoryUtil.createCategory(input.category_name, args.serviceId, apiClient);
 
-		InfraUtil.categorizeEvent(args.eventId, args.serviceId, categoryId, input.getCategories(), Sets.newHashSet(),
+		Categories categories = input.getCategories();
+		
+		InfraUtil.categorizeEvent(args.eventId, args.serviceId, categoryId, categories, Sets.newHashSet(),
 				apiClient, true);
 	}
 
@@ -189,11 +191,35 @@ public class InfrastructureRoutingFunction {
 				return Categories.defaultCategories();
 			}
 
-			return Categories.from(namespaceToLabel);
+			Categories result = Categories.from(namespaceToLabel);
+			result.categories.addAll(Categories.defaultCategories().categories);
+
+			return result;
 		}
 
 		static InfrastructureInput of(String raw) {
 			return new InfrastructureInput(raw);
 		}
+	}
+	
+	// A sample program on how to programmatically activate
+	// InfrastructureRoutingFunction
+	public static void main(String[] args) {
+		if ((args == null) || (args.length < 4)) {
+			throw new IllegalArgumentException("args");
+		}
+
+		ContextArgs contextArgs = new ContextArgs();
+
+		contextArgs.apiHost = args[0];
+		contextArgs.apiKey = args[1];
+		contextArgs.serviceId = args[2];
+		contextArgs.eventId = args[3];
+
+		// some test values
+		String[] sampleValues = new String[] { "category_name=tiers", "namespaces=org.comp=Comp" };
+
+		String rawContextArgs = new Gson().toJson(contextArgs);
+		InfrastructureRoutingFunction.execute(rawContextArgs, String.join("\n", sampleValues));
 	}
 }
