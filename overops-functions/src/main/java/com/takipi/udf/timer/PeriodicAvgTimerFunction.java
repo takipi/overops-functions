@@ -92,6 +92,10 @@ public class PeriodicAvgTimerFunction {
 			throw new IllegalArgumentException("'baseline_invocations_threshold' must be positive");
 		}
 
+		if (input.min_delta_threshold < 0) {
+			throw new IllegalArgumentException("'min_delta_threshold' can't be negative");
+		}
+
 		if (input.over_avg_slowing_percentage <= 0.0) {
 			throw new IllegalArgumentException("'over_avg_slowing_percentage' must be positive");
 		}
@@ -157,7 +161,7 @@ public class PeriodicAvgTimerFunction {
 				args.serviceId, args.viewId, baselineFrom, to, input.baseline_timespan_point_res);
 
 		GraphPerformanceCalculator calculator = GraphPerformanceCalculator.of(input.active_invocations_threshold,
-				input.baseline_invocations_threshold, input.over_avg_slowing_percentage,
+				input.baseline_invocations_threshold, input.min_delta_threshold, input.over_avg_slowing_percentage,
 				input.over_avg_critical_percentage, input.std_dev_factor);
 
 		Map<TransactionGraph, PerformanceScore> performance = PerformanceUtil.getPerformanceStates(activeTransactions,
@@ -492,6 +496,7 @@ public class PeriodicAvgTimerFunction {
 
 		public long active_invocations_threshold;
 		public long baseline_invocations_threshold;
+		public int min_delta_threshold;
 		public double over_avg_slowing_percentage;
 		public double over_avg_critical_percentage;
 		public double std_dev_factor;

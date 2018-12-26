@@ -15,8 +15,8 @@ buildscript {
 dependencies {
 	compile (
 		"org.apache.commons:commons-lang3:3.7",
-		"com.takipi:api-client:2.9.2",
-		"com.takipi:api-client-util:2.9.2"
+		"com.takipi:api-client:2.9.3",
+		"com.takipi:api-client-util:2.9.3"
 	)
 }
 

@@ -123,6 +123,9 @@
 				# Minimum invocations in baseline period to start analyzing.
 				baseline_invocations_threshold = 250
 
+				# Miminum delta (in ms) between baseline and active average times for a transaction to be considered slowing.
+				min_delta_threshold = 5
+
 				# Percentage of slow invocations for a transaction to be considered slowing.
 				over_avg_slowing_percentage = 0.3
 
