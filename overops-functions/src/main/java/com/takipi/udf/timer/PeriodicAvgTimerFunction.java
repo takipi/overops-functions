@@ -19,6 +19,7 @@ import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.timer.Timer;
 import com.takipi.api.client.data.transaction.Stats;
 import com.takipi.api.client.data.transaction.TransactionGraph;
+import com.takipi.api.client.data.view.SummarizedView;
 import com.takipi.api.client.request.event.BatchForceSnapshotsRequest;
 import com.takipi.api.client.request.event.EventsRequest;
 import com.takipi.api.client.request.label.BatchModifyLabelsRequest;
@@ -36,6 +37,7 @@ import com.takipi.api.client.util.performance.calc.PerformanceScore;
 import com.takipi.api.client.util.performance.calc.PerformanceState;
 import com.takipi.api.client.util.performance.transaction.GraphPerformanceCalculator;
 import com.takipi.api.client.util.transaction.TransactionUtil;
+import com.takipi.api.client.util.view.ViewUtil;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
@@ -44,6 +46,8 @@ import com.takipi.udf.input.Input;
 import com.takipi.udf.util.JavaUtil;
 
 public class PeriodicAvgTimerFunction {
+	private static final String TIMERS_VIEW_NAME = "My Timers";
+
 	public static String validateInput(String rawInput) {
 		return getPeriodicAvgTimerInput(rawInput).toString();
 	}
@@ -145,6 +149,12 @@ public class PeriodicAvgTimerFunction {
 
 		ApiClient apiClient = args.apiClient();
 
+		SummarizedView timersView = ViewUtil.getServiceViewByName(apiClient, args.serviceId, TIMERS_VIEW_NAME);
+
+		if (timersView == null) {
+			throw new IllegalStateException("Failed getting timers view.");
+		}
+
 		DateTime to = DateTime.now();
 		DateTime activeFrom = to.minusMinutes(input.active_timespan_minutes);
 
@@ -169,7 +179,7 @@ public class PeriodicAvgTimerFunction {
 
 		DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();
 
-		EventsRequest eventsRequest = EventsRequest.newBuilder().setServiceId(args.serviceId).setViewId(args.viewId)
+		EventsRequest eventsRequest = EventsRequest.newBuilder().setServiceId(args.serviceId).setViewId(timersView.id)
 				.setFrom(baselineFrom.toString(fmt)).setTo(to.toString(fmt)).build();
 
 		Response<EventsResult> eventsResponse = apiClient.get(eventsRequest);
@@ -213,6 +223,11 @@ public class PeriodicAvgTimerFunction {
 
 		for (Map.Entry<TransactionGraph, PerformanceScore> entry : performance.entrySet()) {
 			TransactionGraph transaction = entry.getKey();
+
+			if (Strings.isNullOrEmpty(transaction.method_name)) {
+				continue;
+			}
+
 			List<EventResult> transactionEvents = eventsMap.get(transaction);
 
 			// Can happen if the transaction didn't have any events in the timeframe.
@@ -221,13 +236,8 @@ public class PeriodicAvgTimerFunction {
 				transactionEvents = Collections.emptyList();
 			}
 
-			TransactionName transactionName = getTransactionName(transaction, transactionEvents);
-
-			if (transactionName == null) {
-				continue;
-			}
-
-			List<EventResult> transactionTimerEvents = getTimerEvents(transactionEvents);
+			TransactionName transactionName = TransactionName.of(JavaUtil.toInternalName(transaction.class_name),
+					transaction.method_name);
 
 			Timer timer = getExistingTransactionTimer(transactionName,
 					transactionTimersResponse.data.transaction_timers);
@@ -237,8 +247,8 @@ public class PeriodicAvgTimerFunction {
 			PerformanceScore score = entry.getValue();
 			PerformanceState state = (excludedTransaction ? PerformanceState.NO_DATA : score.state);
 
-			if (addLabelModifications(transactionTimerEvents, state, labelsRequestBuilder, existingLabels,
-					args.serviceId, apiClient)) {
+			if (addLabelModifications(transactionEvents, state, labelsRequestBuilder, existingLabels, args.serviceId,
+					apiClient)) {
 				labelsUpdateNeeded = true;
 			}
 
@@ -264,7 +274,7 @@ public class PeriodicAvgTimerFunction {
 				updatedTimers.put(timer.id, timerThreshold);
 			}
 
-			for (EventResult event : transactionTimerEvents) {
+			for (EventResult event : transactionEvents) {
 				eventsToForceSnapshot.add(event.id);
 			}
 		}
@@ -307,22 +317,6 @@ public class PeriodicAvgTimerFunction {
 
 			apiClient.post(forceSnapshotsRequest);
 		}
-	}
-
-	private static List<EventResult> getTimerEvents(List<EventResult> events) {
-		if (CollectionUtil.safeIsEmpty(events)) {
-			return Collections.emptyList();
-		}
-
-		List<EventResult> result = Lists.newArrayList();
-
-		for (EventResult event : events) {
-			if ("timer".equalsIgnoreCase(event.type)) {
-				result.add(event);
-			}
-		}
-
-		return result;
 	}
 
 	private static boolean addLabelModifications(List<EventResult> events, PerformanceState state,
@@ -417,26 +411,6 @@ public class PeriodicAvgTimerFunction {
 		}
 
 		return false;
-	}
-
-	private static TransactionName getTransactionName(TransactionGraph transaction, List<EventResult> events) {
-		String internalName = JavaUtil.toInternalName(transaction.class_name);
-
-		if (!Strings.isNullOrEmpty(transaction.method_name)) {
-			return TransactionName.of(internalName, transaction.method_name);
-		}
-
-		if (events.isEmpty()) {
-			return null;
-		}
-
-		for (EventResult event : events) {
-			if (!Strings.isNullOrEmpty(event.entry_point.method_name)) {
-				return TransactionName.of(internalName, event.entry_point.method_name);
-			}
-		}
-
-		return null;
 	}
 
 	private static Timer getExistingTransactionTimer(TransactionName transactionName, List<Timer> timers) {
