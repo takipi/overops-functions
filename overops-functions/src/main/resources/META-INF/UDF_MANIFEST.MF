@@ -32,6 +32,12 @@
 				
 				# Optional (0 to ignore) fixed min volume threshold
 				threshold = 1000
+				
+				# Name of label to apply to anomalous events
+				label = Anomaly
+				
+				# Min interval for alerts
+				minInterval = 2d
 			</default_params>
 		</function>
 		<function>
@@ -57,6 +63,12 @@
 
 				# Min fixed volume that an event must exceed
 				minVolumeThreshold = 1000
+				
+				# Name of label to apply to anomalous events
+				label = Anomaly
+				
+				# Min interval for alerts
+				minInterval = 2d
 			</default_params>
 			<admin_function>false</admin_function>
 		</function>

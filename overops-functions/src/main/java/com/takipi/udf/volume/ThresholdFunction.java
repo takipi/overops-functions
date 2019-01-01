@@ -36,65 +36,7 @@ import com.takipi.udf.input.Input;
 
 public class ThresholdFunction {
 
-	static class ThresholdInput extends Input {
-		
-		public Mode relative_to;
-		public long threshold;
-		public double rate;
-		public int timespan; // minutes
-		public String label;
-		public String minInterval;
-
-		private ThresholdInput(String raw) {
-			super(raw);
-		}
-
-		@Override
-		public String toString() {
-			StringBuilder builder = new StringBuilder();
-
-			builder.append("Threshold(");
-
-			Mode mode;
-
-			if (relative_to != null) {
-				mode = relative_to;
-			} else {
-				mode = Mode.Method_Calls;
-			}
-
-			switch (mode) {
-			case Absolute:
-				builder.append(threshold);
-				break;
-
-			case Method_Calls:
-			case Thread_Calls: {
-				builder.append(String.format("%.2f", rate));
-				builder.append('%');
-				builder.append(", ");
-				builder.append(threshold);
-				if (relative_to == Mode.Thread_Calls) {
-					builder.append(" of ");
-					builder.append(relative_to);
-				}
-			}
-				break;
-			}
-
-			builder.append(")");
-
-			return builder.toString();
-		}
-
-		static ThresholdInput of(String raw) {
-			return new ThresholdInput(raw);
-		}
-	}
-
-	public enum Mode {
-		Absolute, Method_Calls, Thread_Calls
-	}
+	
 	
 	private static final int DEFAULT_TIME_WINDOW = 60;
 	
@@ -471,5 +413,68 @@ public class ThresholdFunction {
 		applyAnomalyLabels(apiClient, args.serviceId, input.label, contributors);
 
 		AnomalyUtil.send(apiClient, args.serviceId, args.viewId, contributors, from, to, input.toString());
+	}
+	
+	static class ThresholdInput extends Input {
+		
+		public Mode relative_to;
+		
+		public long threshold;
+		public double rate;
+		
+		public int timespan; // minutes
+		
+		public String label;
+		public String minInterval;
+
+		private ThresholdInput(String raw) {
+			super(raw);
+		}
+
+		@Override
+		public String toString() {
+			StringBuilder builder = new StringBuilder();
+
+			builder.append("Threshold(");
+
+			Mode mode;
+
+			if (relative_to != null) {
+				mode = relative_to;
+			} else {
+				mode = Mode.Method_Calls;
+			}
+
+			switch (mode) {
+			case Absolute:
+				builder.append(threshold);
+				break;
+
+			case Method_Calls:
+			case Thread_Calls: {
+				builder.append(String.format("%.2f", rate));
+				builder.append('%');
+				builder.append(", ");
+				builder.append(threshold);
+				if (relative_to == Mode.Thread_Calls) {
+					builder.append(" of ");
+					builder.append(relative_to);
+				}
+			}
+				break;
+			}
+
+			builder.append(")");
+
+			return builder.toString();
+		}
+
+		static ThresholdInput of(String raw) {
+			return new ThresholdInput(raw);
+		}
+	}
+
+	public enum Mode {
+		Absolute, Method_Calls, Thread_Calls
 	}
 }

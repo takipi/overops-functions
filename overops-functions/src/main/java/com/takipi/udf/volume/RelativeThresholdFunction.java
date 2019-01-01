@@ -39,7 +39,7 @@ public class RelativeThresholdFunction extends ThresholdFunction {
 			
 		String[] sampleValues = new String[] { "relative_to=Method_Calls", 
 			"threshold=100", "rate=0.01",
-			"label=Anomaly", "interval=24h", };
+			"label=Anomaly", "minInterval=24h", };
 
 		String rawContextArgs = new Gson().toJson(contextArgs);
 		RelativeThresholdFunction.execute(rawContextArgs, String.join("\n", sampleValues));
