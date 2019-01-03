@@ -25,8 +25,8 @@ import com.takipi.api.client.request.event.EventsRequest;
 import com.takipi.api.client.request.label.BatchModifyLabelsRequest;
 import com.takipi.api.client.request.redaction.CodeRedactionExcludeRequest;
 import com.takipi.api.client.request.transactiontimer.CreateTransactionTimerRequest;
-import com.takipi.api.client.request.transactiontimer.DeleteTransactionTimerRequest;
 import com.takipi.api.client.request.transactiontimer.EditTransactionTimerRequest;
+import com.takipi.api.client.request.transactiontimer.ToggleTransactionTimerRequest;
 import com.takipi.api.client.request.transactiontimer.TransactionTimersRequest;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsResult;
@@ -301,10 +301,10 @@ public class PeriodicAvgTimerFunction {
 		}
 
 		for (String timerId : removedTimers) {
-			DeleteTransactionTimerRequest deleteTransactionTimerRequest = DeleteTransactionTimerRequest.newBuilder()
-					.setServiceId(args.serviceId).setTimerId(Integer.parseInt(timerId)).build();
+			ToggleTransactionTimerRequest toggleTransactionTimerRequest = ToggleTransactionTimerRequest.newBuilder()
+					.setServiceId(args.serviceId).setTimerId(Integer.parseInt(timerId)).setEnable(false).build();
 
-			apiClient.delete(deleteTransactionTimerRequest);
+			apiClient.post(toggleTransactionTimerRequest);
 		}
 
 		if (labelsUpdateNeeded) {
