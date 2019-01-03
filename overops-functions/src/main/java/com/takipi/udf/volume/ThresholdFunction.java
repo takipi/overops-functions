@@ -4,6 +4,7 @@ import java.net.HttpURLConnection;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,12 +23,11 @@ import com.takipi.api.client.request.event.EventActionsRequest;
 import com.takipi.api.client.request.event.EventsVolumeRequest;
 import com.takipi.api.client.request.label.BatchModifyLabelsRequest;
 import com.takipi.api.client.request.label.CreateLabelRequest;
-import com.takipi.api.client.request.transaction.TransactionsVolumeRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.client.result.event.EventActionsResult;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsVolumeResult;
-import com.takipi.api.client.result.transaction.TransactionsVolumeResult;
+import com.takipi.api.client.util.transaction.TransactionUtil;
 import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
@@ -115,28 +115,11 @@ public class ThresholdFunction {
 	private static long getTransactionVolume(ApiClient apiClient, String serviceId, String viewId, DateTime from,
 			DateTime to) {
 
-		TransactionsVolumeRequest transactionsVolumeRequest = TransactionsVolumeRequest.newBuilder()
-				.setServiceId(serviceId).setViewId(viewId).setFrom(from.toString(fmt)).setTo(to.toString(fmt)).build();
-
-		Response<TransactionsVolumeResult> transactionsVolumeResponse = apiClient.get(transactionsVolumeRequest);
-
-		if (transactionsVolumeResponse.isBadResponse()) {
-			throw new IllegalStateException("Can't create transactions volume.");
-		}
-
-		TransactionsVolumeResult transactionsVolumeResult = transactionsVolumeResponse.data;
-
-		if (transactionsVolumeResult == null) {
-			throw new IllegalStateException("Missing events volume result.");
-		}
-
-		if (transactionsVolumeResult.transactions == null) {
-			return 0;
-		}
+		Map<String, Transaction> transactions = TransactionUtil.getTransactions(apiClient, serviceId, viewId, from, to);
 
 		long result = 0;
 
-		for (Transaction transaction : transactionsVolumeResult.transactions) {
+		for (Transaction transaction : transactions.values()) {
 			if (transaction.stats != null) {
 				result += transaction.stats.invocations;
 			}
