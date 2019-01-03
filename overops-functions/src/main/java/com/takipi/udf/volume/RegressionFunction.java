@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
 import com.google.common.base.Strings;
@@ -113,22 +112,15 @@ public class RegressionFunction {
 			candidates.add(regressionResult.getEvent());
 		}
 
-		Collection<EventResult> contributors = ThresholdFunction.getContributors(candidates, apiClient, args.serviceId,
+		Collection<EventResult> contributors = AnomalyUtil.getContributors(candidates, apiClient, args.serviceId,
 				input.minInterval, input.label);
 
 		if (CollectionUtil.safeIsEmpty(contributors)) {
 			return;
 		}
 
-		System.out.println(
-				"Alerting on " + contributors.size() + " anomalies: " + StringUtils.join(contributors.toArray(), ','));
-
-		ThresholdFunction.resetEventsSnapshots(apiClient, args.serviceId, contributors);
-
-		ThresholdFunction.applyAnomalyLabels(apiClient, args.serviceId, input.label, contributors);
-
-		AnomalyUtil.send(apiClient, args.serviceId, args.viewId, contributors, rateRegression.getActiveWndowStart(),
-				DateTime.now(), input.toString());
+		AnomalyUtil.reportAnomaly(apiClient, args.serviceId, args.viewId, contributors, input.label,
+				rateRegression.getActiveWndowStart(), DateTime.now(), input.toString());
 	}
 
 	static class RegressionFunctionInput extends Input {
