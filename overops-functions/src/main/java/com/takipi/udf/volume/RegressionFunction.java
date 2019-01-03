@@ -124,6 +124,8 @@ public class RegressionFunction {
 		System.out.println("Alerting on " + contributors.size() + " anomalies: "
 				+ StringUtils.join(contributors.toArray(), ','));
 
+		ThresholdFunction.resetEventsSnapshots(apiClient, args.serviceId, contributors);
+		
 		ThresholdFunction.applyAnomalyLabels(apiClient, args.serviceId,
 				input.label, contributors);
 		

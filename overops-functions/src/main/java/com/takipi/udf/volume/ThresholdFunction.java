@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.event.Action;
 import com.takipi.api.client.data.transaction.Transaction;
+import com.takipi.api.client.request.event.BatchForceSnapshotsRequest;
 import com.takipi.api.client.request.event.EventActionsRequest;
 import com.takipi.api.client.request.event.EventsVolumeRequest;
 import com.takipi.api.client.request.label.BatchModifyLabelsRequest;
@@ -412,7 +413,25 @@ public class ThresholdFunction {
 
 		applyAnomalyLabels(apiClient, args.serviceId, input.label, contributors);
 
+		resetEventsSnapshots(apiClient, args.serviceId, contributors);
+		
 		AnomalyUtil.send(apiClient, args.serviceId, args.viewId, contributors, from, to, input.toString());
+	}
+	
+	public static void resetEventsSnapshots(ApiClient apiClient, String serviceId, 
+		Collection<EventResult> events) {
+		
+		BatchForceSnapshotsRequest.Builder builder = BatchForceSnapshotsRequest.newBuilder().setServiceId(serviceId);
+
+		for (EventResult event : events) {
+			builder.addEventId(event.id);
+		}
+		
+		Response<EmptyResult> reponse = apiClient.post(builder.build());
+		
+		if (reponse.isBadResponse()) {
+			System.err.println("Cannot reset snapshots, code: " + reponse.responseCode);
+		}
 	}
 	
 	static class ThresholdInput extends Input {
