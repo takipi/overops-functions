@@ -21,6 +21,7 @@ import com.takipi.api.client.util.view.ViewUtil;
 import com.takipi.common.util.CollectionUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.input.Input;
+import com.takipi.udf.input.TimeInterval;
 
 public class RegressionFunction {
 	public static String validateInput(String rawInput) {
@@ -42,23 +43,24 @@ public class RegressionFunction {
 			throw new IllegalArgumentException(e.getMessage(), e);
 		}
 
-		if ((input.activeTimespan == null) || (input.activeTimespan.length() == 0)) {
+		if (input.activeTimespan == null) {
 			throw new IllegalArgumentException("'activeTimespan' must not be empty");
-		} else {
-			ThresholdFunction.parseInterval(input.activeTimespan);
-		}
-
-		if ((input.baseTimespan == null) || (input.baseTimespan.length() == 0)) {
-			throw new IllegalArgumentException("'base timespan' must not be empty");
-		} else {
-			ThresholdFunction.parseInterval(input.baseTimespan);
+		} else if (input.activeTimespan.isNegative()) {
+			throw new IllegalArgumentException("'activeTimespan' can't be negative time");
 		}
 		
-		try {
-			ThresholdFunction.parseInterval(input.minInterval);
-		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException("invalid anomaly interval " + input.minInterval);
+		if (input.baseTimespan == null) {
+			throw new IllegalArgumentException("'baseTimespan' must not be empty");
+		} else if (input.baseTimespan.isNegative()) {
+			throw new IllegalArgumentException("'baseTimespan' can't be negative time");
 		}
+		
+		if (input.minInterval == null) {
+			input.minInterval = TimeInterval.of(0);
+		} else if (input.minInterval.isNegative()) {
+			throw new IllegalArgumentException("'minInterval' can't be negative time");
+		}
+		
 		if (input.regressionDelta <= 0) {
 			throw new IllegalArgumentException("'regressionDelta' must be positive");
 		}
@@ -85,8 +87,8 @@ public class RegressionFunction {
 
 		regressionInput.serviceId = args.serviceId;
 		regressionInput.viewId = args.viewId;
-		regressionInput.activeTimespan = ThresholdFunction.parseInterval(input.activeTimespan);
-		regressionInput.baselineTimespan = ThresholdFunction.parseInterval(input.baseTimespan);
+		regressionInput.activeTimespan = input.activeTimespan.asMinutes();
+		regressionInput.baselineTimespan = input.baseTimespan.asMinutes();
 		regressionInput.minVolumeThreshold = input.minVolumeThreshold;
 		regressionInput.minErrorRateThreshold = input.minErrorRateThreshold / 100;
 		regressionInput.regressionDelta = input.regressionDelta / 100;
@@ -112,10 +114,8 @@ public class RegressionFunction {
 			candidates.add(regressionResult.getEvent());
 		}
 
-		int interval = ThresholdFunction.parseInterval(input.minInterval);
-		
 		Collection<EventResult> contributors = ThresholdFunction.getContributors(candidates, apiClient, 
-			args.serviceId, interval, input.label);
+			args.serviceId, input.minInterval, input.label);
 		
 		if (CollectionUtil.safeIsEmpty(contributors)) {
 			return;
@@ -137,8 +137,8 @@ public class RegressionFunction {
 		
 		public String appName;
 		
-		public String activeTimespan;
-		public String baseTimespan;
+		public TimeInterval activeTimespan;
+		public TimeInterval baseTimespan;
 
 		public double regressionDelta;
 		
@@ -146,7 +146,7 @@ public class RegressionFunction {
 		public int minVolumeThreshold;
 		
 		public String label;
-		public String minInterval;
+		public TimeInterval minInterval;
 
 		private RegressionFunctionInput(String raw) {
 			super(raw);

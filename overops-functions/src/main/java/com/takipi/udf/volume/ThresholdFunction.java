@@ -34,6 +34,7 @@ import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.input.Input;
+import com.takipi.udf.input.TimeInterval;
 
 public class ThresholdFunction {
 
@@ -84,10 +85,10 @@ public class ThresholdFunction {
 			throw new IllegalArgumentException("'rate' must be positive");
 		}
 		
-		try {
-			parseInterval(input.minInterval);
-		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException("invalid anomaly interval " + input.minInterval);
+		if (input.minInterval == null) {
+			input.minInterval = TimeInterval.of(0);
+		} else if (input.minInterval.isNegative()) {
+			throw new IllegalArgumentException("'minInterval' can't be negative time");
 		}
 
 		return input;
@@ -232,7 +233,7 @@ public class ThresholdFunction {
 	}
 	
 	private static boolean isAlertAllowed(ApiClient apiClient, String serviceId, 
-		EventResult event, String label, int interval) {
+		EventResult event, String label, TimeInterval interval) {
 		
 		EventActionsRequest request = EventActionsRequest.newBuilder().
 			setServiceId(serviceId).setEventId(event.id).build();
@@ -263,9 +264,9 @@ public class ThresholdFunction {
 			DateTime actionTime = fmt.parseDateTime(action.timestamp);
 			
 			long delta = DateTime.now().minus(actionTime.getMillis()).getMillis();
-			long actionInterval = TimeUnit.MILLISECONDS.toMinutes(delta);
+			long actionMinutesInterval = TimeUnit.MILLISECONDS.toMinutes(delta);
 			
-			if (actionInterval < interval) {
+			if (actionMinutesInterval < interval.asMinutes()) {
 				return false;
 			}
 		}
@@ -274,10 +275,10 @@ public class ThresholdFunction {
 	}
 	
 	public static Collection<EventResult> getContributors(Collection<EventResult> events, 
-		ApiClient apiClient, String serviceId, int interval, String label) {
+		ApiClient apiClient, String serviceId, TimeInterval interval, String label) {
 		
 		List<EventResult> result = Lists.newArrayList();
-		boolean checkAlertAllowed = (interval > 0) && (label != null) && (label.length() > 0);
+		boolean checkAlertAllowed = (interval.isPositive()) && (!Strings.isNullOrEmpty(label));
 		
 		int index = 0;
 		
@@ -303,27 +304,6 @@ public class ThresholdFunction {
 		return result;
 	}
 	
-	public static int parseInterval(String timeWindowWithUnit) {
-
-		if ((timeWindowWithUnit == null) || (timeWindowWithUnit.length() == 0)) {
-			return 0;
-		}
-		
-		String timeWindow = timeWindowWithUnit.substring(0, timeWindowWithUnit.length() - 1);
-		char timeUnit = timeWindowWithUnit.charAt(timeWindowWithUnit.length() - 1);
-
-		int delta = Integer.valueOf(timeWindow);
-		if (timeUnit == 'd') {
-			return delta * 24 * 60;
-		} else if (timeUnit == 'h') {
-			return delta * 60;
-		} else if (timeUnit == 'm') {
-			return delta;
-		} else {
-			return Integer.valueOf(timeWindowWithUnit);
-		}
-	}
-		
 	static void execute(String rawContextArgs, ThresholdInput input) {
 		
 		System.out.println("execute:" + rawContextArgs);
@@ -358,8 +338,6 @@ public class ThresholdFunction {
 			return;
 		}
 		
-		int interval = parseInterval(input.minInterval);
-
 		boolean thresholdExceeded = false;
 
 		Mode mode = (input.relative_to != null) ? input.relative_to : Mode.Method_Calls;
@@ -402,7 +380,7 @@ public class ThresholdFunction {
 			return;
 		}
 
-		Collection<EventResult> contributors = getContributors(events, apiClient, args.serviceId, interval, input.label);
+		Collection<EventResult> contributors = getContributors(events, apiClient, args.serviceId, input.minInterval, input.label);
 		
 		if (CollectionUtil.safeIsEmpty(contributors)) {
 			return;
@@ -444,7 +422,7 @@ public class ThresholdFunction {
 		public int timespan; // minutes
 		
 		public String label;
-		public String minInterval;
+		public TimeInterval minInterval;
 
 		private ThresholdInput(String raw) {
 			super(raw);
