@@ -62,7 +62,7 @@ public class ThresholdFunction {
 			throw new IllegalArgumentException(e.getMessage(), e);
 		}
 
-		if (input.timespan < 0) {
+		if ((input.timespan != null) && (!input.timespan.isPositive())) {
 			throw new IllegalArgumentException("'timespan' must be positive");
 		}
 
@@ -313,7 +313,7 @@ public class ThresholdFunction {
 				? VolumeType.all
 				: VolumeType.hits);
 
-		int timespan = (input.timespan != 0) ? input.timespan : DEFAULT_TIME_WINDOW;
+		int timespan = (input.timespan != null) ? input.timespan.asMinutes() : DEFAULT_TIME_WINDOW;
 
 		DateTime to = DateTime.now();
 		DateTime from = to.minusMinutes(timespan);
@@ -410,7 +410,7 @@ public class ThresholdFunction {
 		public long threshold;
 		public double rate;
 
-		public int timespan; // minutes
+		public TimeInterval timespan;
 
 		public String label;
 		public TimeInterval minInterval;
