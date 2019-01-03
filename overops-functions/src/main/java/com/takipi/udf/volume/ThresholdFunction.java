@@ -3,7 +3,6 @@ package com.takipi.udf.volume;
 import java.net.HttpURLConnection;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -111,55 +110,6 @@ public class ThresholdFunction {
 		}
 
 		return eventsVolumeResult.events;
-	}
-
-	private static long getHits(EventResult event) {
-
-		if (event.stats == null) {
-			return 0l;
-		}
-
-		return event.stats.hits;
-	}
-
-	private static void sortEventsByHitsDesc(List<EventResult> events) {
-
-		Collections.sort(events, new Comparator<EventResult>() {
-			@Override
-			public int compare(EventResult o1, EventResult o2) {
-				return (int) (getHits(o2) - getHits(o1));
-			}
-		});
-	}
-
-	private static long getEventsHits(Collection<EventResult> events) {
-
-		long result = 0l;
-
-		for (EventResult event : events) {
-			result += getHits(event);
-		}
-
-		return result;
-	}
-
-	private static long getEventsInvocations(Collection<EventResult> events, long hitCount) {
-
-		long invocations = 0;
-
-		for (EventResult event : events) {
-
-			if (event.stats != null) {
-				System.out.println(event.id + ": " + event.summary + " - hits: " + event.stats.hits + " - inv: "
-						+ event.stats.invocations);
-
-				invocations += Math.max(event.stats.invocations, event.stats.hits);
-			}
-		}
-
-		long result = Math.max(invocations, hitCount);
-
-		return result;
 	}
 
 	private static long getTransactionVolume(ApiClient apiClient, String serviceId, String viewId, DateTime from,
@@ -283,7 +233,7 @@ public class ThresholdFunction {
 
 			index++;
 
-			if (getHits(event) == 0) {
+			if (ThresholdUtil.getEventHits(event) == 0) {
 				continue;
 			}
 
@@ -324,7 +274,7 @@ public class ThresholdFunction {
 			return;
 		}
 
-		long hitCount = getEventsHits(events);
+		long hitCount = ThresholdUtil.getEventsHits(events);
 
 		if ((input.threshold > 0) && (hitCount <= input.threshold)) {
 			return;
@@ -334,7 +284,7 @@ public class ThresholdFunction {
 
 		Mode mode = (input.relative_to != null) ? input.relative_to : Mode.Method_Calls;
 
-		sortEventsByHitsDesc(events);
+		ThresholdUtil.sortEventsByHitsDesc(events);
 
 		switch (mode) {
 
@@ -345,7 +295,7 @@ public class ThresholdFunction {
 
 		case Method_Calls: {
 
-			long invocationsCount = getEventsInvocations(events, hitCount);
+			long invocationsCount = ThresholdUtil.getEventsInvocations(events, hitCount);
 			double failRate = (hitCount / (double) invocationsCount) * 100.0;
 
 			thresholdExceeded = (failRate >= input.rate);
