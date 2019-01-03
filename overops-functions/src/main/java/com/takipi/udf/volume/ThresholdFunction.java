@@ -38,16 +38,13 @@ import com.takipi.udf.input.TimeInterval;
 
 public class ThresholdFunction {
 
-	
-	
 	private static final int DEFAULT_TIME_WINDOW = 60;
-	
+
 	private static final String LABEL_ADD = "ADD_LABEL";
 	private static final String LABEL_TYPE = "LABEL";
-	
-	private static final int MAX_CONTRIBUTORS = 10; 
 
-	
+	private static final int MAX_CONTRIBUTORS = 10;
+
 	private static final DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();
 
 	static ThresholdInput getThresholdInput(String rawInput) {
@@ -84,7 +81,7 @@ public class ThresholdFunction {
 		if ((input.relative_to == Mode.Thread_Calls) && (input.rate <= 0.0)) {
 			throw new IllegalArgumentException("'rate' must be positive");
 		}
-		
+
 		if (input.minInterval == null) {
 			input.minInterval = TimeInterval.of(0);
 		} else if (input.minInterval.isNegative()) {
@@ -93,9 +90,9 @@ public class ThresholdFunction {
 
 		return input;
 	}
-	
-	private static List<EventResult> getEventVolume(ApiClient apiClient, String serviceId,
-		String viewId, DateTime from, DateTime to, VolumeType volumeType) {
+
+	private static List<EventResult> getEventVolume(ApiClient apiClient, String serviceId, String viewId, DateTime from,
+			DateTime to, VolumeType volumeType) {
 
 		EventsVolumeRequest eventsVolumeRequest = EventsVolumeRequest.newBuilder().setServiceId(serviceId)
 				.setViewId(viewId).setFrom(from.toString(fmt)).setTo(to.toString(fmt)).setVolumeType(volumeType)
@@ -115,43 +112,43 @@ public class ThresholdFunction {
 
 		return eventsVolumeResult.events;
 	}
-	
+
 	private static long getHits(EventResult event) {
-		
+
 		if (event.stats == null) {
 			return 0l;
 		}
-		
+
 		return event.stats.hits;
 	}
-	
+
 	private static void sortEventsByHitsDesc(List<EventResult> events) {
-		
+
 		Collections.sort(events, new Comparator<EventResult>() {
 			@Override
 			public int compare(EventResult o1, EventResult o2) {
-				return (int)(getHits(o2) - getHits(o1));
+				return (int) (getHits(o2) - getHits(o1));
 			}
 		});
 	}
-	
+
 	private static long getEventsHits(Collection<EventResult> events) {
-		
+
 		long result = 0l;
 
-		for (EventResult event : events) {			
+		for (EventResult event : events) {
 			result += getHits(event);
 		}
-		
+
 		return result;
 	}
-	
+
 	private static long getEventsInvocations(Collection<EventResult> events, long hitCount) {
-		
+
 		long invocations = 0;
-		
+
 		for (EventResult event : events) {
-			
+
 			if (event.stats != null) {
 				System.out.println(event.id + ": " + event.summary + " - hits: " + event.stats.hits + " - inv: "
 						+ event.stats.invocations);
@@ -161,17 +158,15 @@ public class ThresholdFunction {
 		}
 
 		long result = Math.max(invocations, hitCount);
-		
+
 		return result;
 	}
-	
-	private static long getTransactionVolume(ApiClient apiClient,
-		String serviceId, String viewId, DateTime from, DateTime to) {
-		
+
+	private static long getTransactionVolume(ApiClient apiClient, String serviceId, String viewId, DateTime from,
+			DateTime to) {
+
 		TransactionsVolumeRequest transactionsVolumeRequest = TransactionsVolumeRequest.newBuilder()
-				.setServiceId(serviceId).setViewId(viewId)
-				.setFrom(from.toString(fmt)).setTo(to.toString(fmt))
-				.build();
+				.setServiceId(serviceId).setViewId(viewId).setFrom(from.toString(fmt)).setTo(to.toString(fmt)).build();
 
 		Response<TransactionsVolumeResult> transactionsVolumeResponse = apiClient.get(transactionsVolumeRequest);
 
@@ -184,13 +179,13 @@ public class ThresholdFunction {
 		if (transactionsVolumeResult == null) {
 			throw new IllegalStateException("Missing events volume result.");
 		}
-		
+
 		if (transactionsVolumeResult.transactions == null) {
 			return 0;
 		}
-		
+
 		long result = 0;
-		
+
 		for (Transaction transaction : transactionsVolumeResult.transactions) {
 			if (transaction.stats != null) {
 				result += transaction.stats.invocations;
@@ -199,16 +194,15 @@ public class ThresholdFunction {
 
 		return result;
 	}
-	
-	public static void applyAnomalyLabels(ApiClient apiClient, String serviceId, String label, 
-		Collection<EventResult> contributors) {
-		
+
+	public static void applyAnomalyLabels(ApiClient apiClient, String serviceId, String label,
+			Collection<EventResult> contributors) {
+
 		if (StringUtils.isEmpty(label)) {
 			return;
 		}
-			
-		CreateLabelRequest createLabel = CreateLabelRequest.newBuilder().setServiceId(serviceId)
-			.setName(label).build();
+
+		CreateLabelRequest createLabel = CreateLabelRequest.newBuilder().setServiceId(serviceId).setName(label).build();
 
 		Response<EmptyResult> createResult = apiClient.post(createLabel);
 
@@ -216,96 +210,95 @@ public class ThresholdFunction {
 			throw new IllegalStateException("Cannot create label " + label);
 		}
 
-		BatchModifyLabelsRequest.Builder builder = BatchModifyLabelsRequest.newBuilder().
-			setServiceId(serviceId).setForceHistory(true);
-		
+		BatchModifyLabelsRequest.Builder builder = BatchModifyLabelsRequest.newBuilder().setServiceId(serviceId)
+				.setForceHistory(true);
+
 		for (EventResult contributor : contributors) {
-			
-			builder.addLabelModifications(contributor.id, Collections.singleton(label), 
-				Collections.emptyList());
+
+			builder.addLabelModifications(contributor.id, Collections.singleton(label), Collections.emptyList());
 		}
-		
+
 		Response<EmptyResult> addResult = apiClient.post(builder.build());
 
 		if (addResult.isBadResponse()) {
 			throw new IllegalStateException("Can't apply label " + label + " to contribs");
 		}
 	}
-	
-	private static boolean isAlertAllowed(ApiClient apiClient, String serviceId, 
-		EventResult event, String label, TimeInterval interval) {
-		
-		EventActionsRequest request = EventActionsRequest.newBuilder().
-			setServiceId(serviceId).setEventId(event.id).build();
-			
+
+	private static boolean isAlertAllowed(ApiClient apiClient, String serviceId, EventResult event, String label,
+			TimeInterval interval) {
+
+		EventActionsRequest request = EventActionsRequest.newBuilder().setServiceId(serviceId).setEventId(event.id)
+				.build();
+
 		Response<EventActionsResult> response = apiClient.get(request);
-			
+
 		if (response.isBadResponse()) {
-			//in case of API failure we should not prevent an alert
+			// in case of API failure we should not prevent an alert
 			System.err.println("Could not get event actions for " + event + " code: " + response.responseCode);
 			return true;
-		} 
-		
+		}
+
 		if (response.data == null) {
 			return true;
 		}
-		
+
 		if (response.data.event_actions == null) {
 			return true;
 		}
-				
+
 		for (Action action : response.data.event_actions) {
-			
-			if (!(LABEL_ADD.equals(action.action)) || (!LABEL_TYPE.equals(action.type)) 
-			|| (!label.equals(action.data))) {
+
+			if (!(LABEL_ADD.equals(action.action)) || (!LABEL_TYPE.equals(action.type))
+					|| (!label.equals(action.data))) {
 				continue;
 			}
-			
+
 			DateTime actionTime = fmt.parseDateTime(action.timestamp);
-			
+
 			long delta = DateTime.now().minus(actionTime.getMillis()).getMillis();
 			long actionMinutesInterval = TimeUnit.MILLISECONDS.toMinutes(delta);
-			
+
 			if (actionMinutesInterval < interval.asMinutes()) {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
-	
-	public static Collection<EventResult> getContributors(Collection<EventResult> events, 
-		ApiClient apiClient, String serviceId, TimeInterval interval, String label) {
-		
+
+	public static Collection<EventResult> getContributors(Collection<EventResult> events, ApiClient apiClient,
+			String serviceId, TimeInterval interval, String label) {
+
 		List<EventResult> result = Lists.newArrayList();
 		boolean checkAlertAllowed = (interval.isPositive()) && (!Strings.isNullOrEmpty(label));
-		
+
 		int index = 0;
-		
+
 		for (EventResult event : events) {
-		
+
 			if (index >= MAX_CONTRIBUTORS) {
 				break;
 			}
-			
+
 			index++;
-			
+
 			if (getHits(event) == 0) {
 				continue;
 			}
-			
+
 			if ((checkAlertAllowed) && (!isAlertAllowed(apiClient, serviceId, event, label, interval))) {
 				continue;
 			}
-			
+
 			result.add(event);
 		}
-		
+
 		return result;
 	}
-	
+
 	static void execute(String rawContextArgs, ThresholdInput input) {
-		
+
 		System.out.println("execute:" + rawContextArgs);
 
 		ContextArgs args = (new Gson()).fromJson(rawContextArgs, ContextArgs.class);
@@ -324,10 +317,9 @@ public class ThresholdFunction {
 
 		DateTime to = DateTime.now();
 		DateTime from = to.minusMinutes(timespan);
-		
-		List<EventResult> events = getEventVolume(apiClient, args.serviceId,
-			args.viewId, from, to, volumeType);
-		
+
+		List<EventResult> events = getEventVolume(apiClient, args.serviceId, args.viewId, from, to, volumeType);
+
 		if (events == null) {
 			return;
 		}
@@ -337,7 +329,7 @@ public class ThresholdFunction {
 		if ((input.threshold > 0) && (hitCount <= input.threshold)) {
 			return;
 		}
-		
+
 		boolean thresholdExceeded = false;
 
 		Mode mode = (input.relative_to != null) ? input.relative_to : Mode.Method_Calls;
@@ -345,33 +337,32 @@ public class ThresholdFunction {
 		sortEventsByHitsDesc(events);
 
 		switch (mode) {
-		
-			case Absolute: {
-				thresholdExceeded = true;
-			}
-				break;
-	
-			case Method_Calls: {
-					
-				long invocationsCount = getEventsInvocations(events, hitCount);		
-				double failRate = (hitCount / (double) invocationsCount) * 100.0;
-	
+
+		case Absolute: {
+			thresholdExceeded = true;
+		}
+			break;
+
+		case Method_Calls: {
+
+			long invocationsCount = getEventsInvocations(events, hitCount);
+			double failRate = (hitCount / (double) invocationsCount) * 100.0;
+
+			thresholdExceeded = (failRate >= input.rate);
+		}
+			break;
+
+		case Thread_Calls: {
+
+			long transactionInvocationsCount = getTransactionVolume(apiClient, args.serviceId, args.viewId, from, to);
+
+			if (transactionInvocationsCount > 0l) {
+				double failRate = (hitCount / (double) transactionInvocationsCount) * 100.0;
 				thresholdExceeded = (failRate >= input.rate);
 			}
-				break;
-	
-			case Thread_Calls: {
-				
-				long transactionInvocationsCount  = getTransactionVolume(apiClient, args.serviceId, 
-					args.viewId, from, to);
-				
-				if (transactionInvocationsCount > 0l) {
-					double failRate = (hitCount / (double) transactionInvocationsCount) * 100.0;
-					thresholdExceeded = (failRate >= input.rate);
-				}
-				
-				break;
-			}			
+
+			break;
+		}
 		}
 
 		System.out.println("Threshold response: " + thresholdExceeded);
@@ -380,47 +371,47 @@ public class ThresholdFunction {
 			return;
 		}
 
-		Collection<EventResult> contributors = getContributors(events, apiClient, args.serviceId, input.minInterval, input.label);
-		
+		Collection<EventResult> contributors = getContributors(events, apiClient, args.serviceId, input.minInterval,
+				input.label);
+
 		if (CollectionUtil.safeIsEmpty(contributors)) {
 			return;
 		}
-		
-		System.out.println("Alerting on " + contributors.size() + " anomalies: "
-				+ StringUtils.join(contributors.toArray(), ','));
+
+		System.out.println(
+				"Alerting on " + contributors.size() + " anomalies: " + StringUtils.join(contributors.toArray(), ','));
 
 		applyAnomalyLabels(apiClient, args.serviceId, input.label, contributors);
 
 		resetEventsSnapshots(apiClient, args.serviceId, contributors);
-		
+
 		AnomalyUtil.send(apiClient, args.serviceId, args.viewId, contributors, from, to, input.toString());
 	}
-	
-	public static void resetEventsSnapshots(ApiClient apiClient, String serviceId, 
-		Collection<EventResult> events) {
-		
+
+	public static void resetEventsSnapshots(ApiClient apiClient, String serviceId, Collection<EventResult> events) {
+
 		BatchForceSnapshotsRequest.Builder builder = BatchForceSnapshotsRequest.newBuilder().setServiceId(serviceId);
 
 		for (EventResult event : events) {
 			builder.addEventId(event.id);
 		}
-		
+
 		Response<EmptyResult> reponse = apiClient.post(builder.build());
-		
+
 		if (reponse.isBadResponse()) {
 			System.err.println("Cannot reset snapshots, code: " + reponse.responseCode);
 		}
 	}
-	
+
 	static class ThresholdInput extends Input {
-		
+
 		public Mode relative_to;
-		
+
 		public long threshold;
 		public double rate;
-		
+
 		public int timespan; // minutes
-		
+
 		public String label;
 		public TimeInterval minInterval;
 
