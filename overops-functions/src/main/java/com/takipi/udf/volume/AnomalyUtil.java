@@ -47,15 +47,15 @@ public class AnomalyUtil {
 		List<EventResult> result = Lists.newArrayListWithCapacity(MAX_ANOMALY_CONTRIBUTORS);
 		boolean checkAlertAllowed = (interval.isPositive()) && (!Strings.isNullOrEmpty(label));
 
-		int index = 0;
+		int count = 0;
 
 		for (EventResult event : events) {
 
-			if (index >= MAX_ANOMALY_CONTRIBUTORS) {
+			if (count >= MAX_ANOMALY_CONTRIBUTORS) {
 				break;
 			}
 
-			index++;
+			count++;
 
 			if (ThresholdUtil.getEventHits(event) == 0) {
 				continue;
@@ -85,11 +85,7 @@ public class AnomalyUtil {
 			return true;
 		}
 
-		if (response.data == null) {
-			return true;
-		}
-
-		if (response.data.event_actions == null) {
+		if ((response.data == null) || (CollectionUtil.safeIsEmpty(response.data.event_actions))) {
 			return true;
 		}
 
