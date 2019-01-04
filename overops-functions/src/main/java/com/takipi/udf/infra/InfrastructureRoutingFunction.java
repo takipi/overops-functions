@@ -27,6 +27,7 @@ import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.input.Input;
+import com.takipi.udf.util.TestUtil;
 
 public class InfrastructureRoutingFunction {
 	public static String validateInput(String rawInput) {
@@ -145,9 +146,9 @@ public class InfrastructureRoutingFunction {
 		String categoryId = CategoryUtil.createCategory(input.category_name, args.serviceId, apiClient);
 
 		Categories categories = input.getCategories();
-		
-		InfraUtil.categorizeEvent(args.eventId, args.serviceId, categoryId, categories, Sets.newHashSet(),
-				apiClient, true);
+
+		InfraUtil.categorizeEvent(args.eventId, args.serviceId, categoryId, categories, Sets.newHashSet(), apiClient,
+				true);
 	}
 
 	static class InfrastructureInput extends Input {
@@ -201,25 +202,15 @@ public class InfrastructureRoutingFunction {
 			return new InfrastructureInput(raw);
 		}
 	}
-	
+
 	// A sample program on how to programmatically activate
 	// InfrastructureRoutingFunction
 	public static void main(String[] args) {
-		if ((args == null) || (args.length < 4)) {
-			throw new IllegalArgumentException("args");
-		}
-
-		ContextArgs contextArgs = new ContextArgs();
-
-		contextArgs.apiHost = args[0];
-		contextArgs.apiKey = args[1];
-		contextArgs.serviceId = args[2];
-		contextArgs.eventId = args[3];
+		String rawContextArgs = TestUtil.getEventContextArgs(args);
 
 		// some test values
 		String[] sampleValues = new String[] { "category_name=tiers", "namespaces=org.comp=Comp" };
 
-		String rawContextArgs = new Gson().toJson(contextArgs);
 		InfrastructureRoutingFunction.execute(rawContextArgs, String.join("\n", sampleValues));
 	}
 }

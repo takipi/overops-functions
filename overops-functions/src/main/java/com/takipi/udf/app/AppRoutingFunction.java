@@ -19,6 +19,7 @@ import com.takipi.api.client.util.client.ClientUtil;
 import com.takipi.api.client.util.view.ViewUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.input.Input;
+import com.takipi.udf.util.TestUtil;
 
 public class AppRoutingFunction {
 	private static final boolean SHARED = true;
@@ -156,24 +157,11 @@ public class AppRoutingFunction {
 
 	// A sample program on how to programmatically activate AppRoutingFunction
 	public static void main(String[] args) {
-		if ((args == null) || (args.length < 3)) {
-			throw new IllegalArgumentException("args");
-		}
-
-		ContextArgs contextArgs = new ContextArgs();
-
-		contextArgs.apiHost = args[0];
-		contextArgs.apiKey = args[1];
-		contextArgs.serviceId = args[2];
-
-		SummarizedView view = ViewUtil.getServiceViewByName(contextArgs.apiClient(), contextArgs.serviceId,
-				"All Events");
-		contextArgs.viewId = view.id;
+		String rawContextArgs = TestUtil.getViewContextArgs(args, "All Events");
 
 		// some test values
 		String[] sampleValues = new String[] { "category_name=Apps", "max_views=50" };
 
-		String rawContextArgs = new Gson().toJson(contextArgs);
 		AppRoutingFunction.execute(rawContextArgs, String.join("\n", sampleValues));
 	}
 }

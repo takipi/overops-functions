@@ -40,6 +40,13 @@ public class Input {
 					fld.set(this, getLong(value));
 				} else if ((type == Double.class) || (type == double.class)) {
 					fld.set(this, getDouble(value));
+				} else if (type == TimeInterval.class) {
+					try {
+						fld.set(this, getTimeInterval(value));
+					}
+					catch (NumberFormatException e) {
+						throw new IllegalArgumentException("Invalid value for " + key + " - " + value);
+					}
 				} else if (type == List.class) {
 					Type genericType = getGenericType(fld);
 
@@ -103,6 +110,10 @@ public class Input {
 		}
 
 		return Double.parseDouble(value.trim());
+	}
+
+	private static TimeInterval getTimeInterval(String value) {
+		return TimeInterval.parse(value.trim());
 	}
 
 	private static List<String> getStringList(String value) {
