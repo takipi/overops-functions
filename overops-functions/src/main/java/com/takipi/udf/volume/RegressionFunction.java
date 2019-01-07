@@ -53,6 +53,10 @@ public class RegressionFunction {
 			throw new IllegalArgumentException("'baseTimespan' can't be negative time");
 		}
 
+		if (input.label == null) {
+			input.label = "Anomaly";
+		}
+
 		if (input.min_interval == null) {
 			input.min_interval = TimeInterval.parse("2d");
 		} else if (input.min_interval.isNegative()) {
