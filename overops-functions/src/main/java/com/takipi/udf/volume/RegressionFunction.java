@@ -54,9 +54,19 @@ public class RegressionFunction {
 		}
 
 		if (input.min_interval == null) {
-			input.min_interval = TimeInterval.of(0);
+			input.min_interval = TimeInterval.parse("2d");
 		} else if (input.min_interval.isNegative()) {
 			throw new IllegalArgumentException("'min_interval' can't be negative time");
+		}
+
+		if (input.max_interval == null) {
+			input.max_interval = TimeInterval.parse("3d");
+		} else if (input.max_interval.isNegative()) {
+			throw new IllegalArgumentException("'max_interval' can't be negative time");
+		}
+
+		if (input.max_interval.asMinutes() <= input.min_interval.asMinutes()) {
+			throw new IllegalArgumentException("'max_interval' must be greater than 'min_interval'");
 		}
 
 		if (input.regressionDelta <= 0) {
@@ -99,6 +109,9 @@ public class RegressionFunction {
 		RateRegression rateRegression = RegressionUtil.calculateRateRegressions(apiClient, regressionInput, System.out,
 				false);
 
+		AnomalyUtil.removeAnomalyLabel(rateRegression.getNonRegressions(), apiClient, args.serviceId,
+				input.max_interval, input.label);
+
 		Collection<RegressionResult> activeRegressions = rateRegression.getAllRegressions().values();
 
 		if (activeRegressions.size() == 0) {
@@ -112,8 +125,8 @@ public class RegressionFunction {
 			candidates.add(regressionResult.getEvent());
 		}
 
-		Collection<EventResult> contributors = AnomalyUtil.getContributors(candidates, apiClient, args.serviceId,
-				input.min_interval, input.label);
+		Collection<EventResult> contributors = AnomalyUtil.processContributors(candidates, apiClient, args.serviceId,
+				input.min_interval, input.max_interval, input.label);
 
 		if (CollectionUtil.safeIsEmpty(contributors)) {
 			return;
@@ -137,6 +150,7 @@ public class RegressionFunction {
 
 		public String label;
 		public TimeInterval min_interval;
+		public TimeInterval max_interval;
 
 		private RegressionFunctionInput(String raw) {
 			super(raw);

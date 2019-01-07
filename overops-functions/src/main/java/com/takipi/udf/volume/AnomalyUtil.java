@@ -4,7 +4,6 @@ import java.net.HttpURLConnection;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -37,42 +36,106 @@ public class AnomalyUtil {
 	private static final String LABEL_ADD = "ADD_LABEL";
 	private static final String LABEL_TYPE = "LABEL";
 
-	public static List<EventResult> getContributors(Collection<EventResult> events, ApiClient apiClient,
-			String serviceId, TimeInterval interval, String label) {
+	public static void removeAnomalyLabel(Collection<EventResult> events, ApiClient apiClient, String serviceId,
+			TimeInterval maxInterval, String label) {
+
+		if ((CollectionUtil.safeIsEmpty(events)) || (!maxInterval.isPositive()) || (Strings.isNullOrEmpty(label))) {
+			return;
+		}
+
+		DateTime now = DateTime.now();
+		boolean labelsUpdateNeeded = false;
+		BatchModifyLabelsRequest.Builder labelsRequest = BatchModifyLabelsRequest.newBuilder().setServiceId(serviceId);
+
+		for (EventResult event : events) {
+			if (!CollectionUtil.safeContains(event.labels, label)) {
+				continue;
+			}
+
+			DateTime lastestLabeling = getLatestLabelingTime(apiClient, serviceId, event, label);
+
+			if (lastestLabeling == null) {
+				continue;
+			}
+
+			if (lastestLabeling.plusMinutes(maxInterval.asMinutes()).isBefore(now)) {
+
+				labelsUpdateNeeded = true;
+				labelsRequest.addLabelModifications(event.id, Collections.emptyList(),
+						Collections.singletonList(label));
+			}
+		}
+
+		if (labelsUpdateNeeded) {
+			Response<EmptyResult> response = apiClient.post(labelsRequest.build());
+
+			if (response.isBadResponse()) {
+				System.err.println("Could not remove label from events. Code: " + response.responseCode);
+			}
+		}
+	}
+
+	public static List<EventResult> processContributors(Collection<EventResult> events, ApiClient apiClient,
+			String serviceId, TimeInterval minInterval, TimeInterval maxInterval, String label) {
 
 		if (CollectionUtil.safeIsEmpty(events)) {
 			return Collections.emptyList();
 		}
 
 		List<EventResult> result = Lists.newArrayListWithCapacity(MAX_ANOMALY_CONTRIBUTORS);
-		boolean checkAlertAllowed = (interval.isPositive()) && (!Strings.isNullOrEmpty(label));
 
-		int count = 0;
+		DateTime now = DateTime.now();
+
+		boolean labelProcessingNeeded = ((!Strings.isNullOrEmpty(label))
+				&& ((minInterval.isPositive()) || (maxInterval.isPositive())));
+
+		boolean labelsUpdateNeeded = false;
+		BatchModifyLabelsRequest.Builder labelsRequest = BatchModifyLabelsRequest.newBuilder().setServiceId(serviceId);
 
 		for (EventResult event : events) {
 
-			if (count >= MAX_ANOMALY_CONTRIBUTORS) {
-				break;
+			if ((labelProcessingNeeded) && (CollectionUtil.safeContains(event.labels, label))) {
+
+				DateTime lastestLabeling = getLatestLabelingTime(apiClient, serviceId, event, label);
+
+				if (lastestLabeling != null) {
+					if (lastestLabeling.plusMinutes(minInterval.asMinutes()).isAfter(now)) {
+						continue;
+					}
+
+					if (lastestLabeling.plusMinutes(maxInterval.asMinutes()).isBefore(now)) {
+
+						labelsUpdateNeeded = true;
+						labelsRequest.addLabelModifications(event.id, Collections.emptyList(),
+								Collections.singletonList(label));
+					}
+				}
 			}
 
-			count++;
-
-			if (ThresholdUtil.getEventHits(event) == 0) {
+			if (result.size() >= MAX_ANOMALY_CONTRIBUTORS) {
 				continue;
 			}
 
-			if ((checkAlertAllowed) && (!isAlertAllowed(apiClient, serviceId, event, label, interval))) {
+			if (ThresholdUtil.getEventHits(event) == 0) {
 				continue;
 			}
 
 			result.add(event);
 		}
 
+		if (labelsUpdateNeeded) {
+			Response<EmptyResult> response = apiClient.post(labelsRequest.build());
+
+			if (response.isBadResponse()) {
+				System.err.println("Could not remove label from events. Code: " + response.responseCode);
+			}
+		}
+
 		return result;
 	}
 
-	private static boolean isAlertAllowed(ApiClient apiClient, String serviceId, EventResult event, String label,
-			TimeInterval interval) {
+	private static DateTime getLatestLabelingTime(ApiClient apiClient, String serviceId, EventResult event,
+			String label) {
 
 		EventActionsRequest request = EventActionsRequest.newBuilder().setServiceId(serviceId).setEventId(event.id)
 				.build();
@@ -80,14 +143,16 @@ public class AnomalyUtil {
 		Response<EventActionsResult> response = apiClient.get(request);
 
 		if (response.isBadResponse()) {
-			// in case of API failure we should not prevent an alert
 			System.err.println("Could not get event actions for " + event + " code: " + response.responseCode);
-			return true;
+
+			return null;
 		}
 
 		if ((response.data == null) || (CollectionUtil.safeIsEmpty(response.data.event_actions))) {
-			return true;
+			return null;
 		}
+
+		DateTime result = null;
 
 		for (Action action : response.data.event_actions) {
 
@@ -98,15 +163,12 @@ public class AnomalyUtil {
 
 			DateTime actionTime = fmt.parseDateTime(action.timestamp);
 
-			long delta = DateTime.now().minus(actionTime.getMillis()).getMillis();
-			long actionMinutesInterval = TimeUnit.MILLISECONDS.toMinutes(delta);
-
-			if (actionMinutesInterval < interval.asMinutes()) {
-				return false;
+			if ((result == null) || (actionTime.isAfter(result))) {
+				result = actionTime;
 			}
 		}
 
-		return true;
+		return result;
 	}
 
 	public static void reportAnomaly(ApiClient apiClient, String serviceId, String viewId,

@@ -65,9 +65,19 @@ public class ThresholdFunction {
 		}
 
 		if (input.min_interval == null) {
-			input.min_interval = TimeInterval.of(0);
+			input.min_interval = TimeInterval.parse("2d");
 		} else if (input.min_interval.isNegative()) {
 			throw new IllegalArgumentException("'min_interval' can't be negative time");
+		}
+
+		if (input.max_interval == null) {
+			input.max_interval = TimeInterval.parse("3d");
+		} else if (input.max_interval.isNegative()) {
+			throw new IllegalArgumentException("'max_interval' can't be negative time");
+		}
+
+		if (input.max_interval.asMinutes() <= input.min_interval.asMinutes()) {
+			throw new IllegalArgumentException("'max_interval' must be greater than 'min_interval'");
 		}
 
 		return input;
@@ -141,6 +151,8 @@ public class ThresholdFunction {
 		long hitCount = ThresholdUtil.getEventsHits(events);
 
 		if ((input.threshold > 0) && (hitCount <= input.threshold)) {
+			AnomalyUtil.removeAnomalyLabel(events, apiClient, args.serviceId, input.max_interval, input.label);
+
 			return;
 		}
 
@@ -182,17 +194,20 @@ public class ThresholdFunction {
 		System.out.println("Threshold response: " + thresholdExceeded);
 
 		if (!thresholdExceeded) {
+			AnomalyUtil.removeAnomalyLabel(events, apiClient, args.serviceId, input.max_interval, input.label);
+
 			return;
 		}
 
-		Collection<EventResult> contributors = AnomalyUtil.getContributors(events, apiClient, args.serviceId,
-				input.min_interval, input.label);
+		Collection<EventResult> contributors = AnomalyUtil.processContributors(events, apiClient, args.serviceId,
+				input.min_interval, input.max_interval, input.label);
 
 		if (CollectionUtil.safeIsEmpty(contributors)) {
 			return;
 		}
 
-		AnomalyUtil.reportAnomaly(apiClient, args.serviceId, args.viewId, contributors, input.label, from, to, input.toString());
+		AnomalyUtil.reportAnomaly(apiClient, args.serviceId, args.viewId, contributors, input.label, from, to,
+				input.toString());
 	}
 
 	static class ThresholdInput extends Input {
@@ -206,6 +221,7 @@ public class ThresholdFunction {
 
 		public String label;
 		public TimeInterval min_interval;
+		public TimeInterval max_interval;
 
 		private ThresholdInput(String raw) {
 			super(raw);

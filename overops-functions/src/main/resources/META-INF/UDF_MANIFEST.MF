@@ -38,6 +38,9 @@
 				
 				# Min interval for alerts
 				min_interval = 2d
+
+				# Max interval to retain anomaly label
+				max_interval = 3d
 			</default_params>
 		</function>
 		<function>
@@ -69,6 +72,9 @@
 				
 				# Min interval for alerts
 				min_interval = 2d
+
+				# Max interval to retain anomaly label
+				max_interval = 3d
 			</default_params>
 			<admin_function>false</admin_function>
 		</function>
