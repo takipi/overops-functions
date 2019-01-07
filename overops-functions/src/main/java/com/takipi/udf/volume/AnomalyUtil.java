@@ -31,10 +31,10 @@ import com.takipi.udf.input.TimeInterval;
 public class AnomalyUtil {
 	private static final DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();
 
-	private static final int MAX_ANOMALY_CONTRIBUTORS = 10;
-
 	private static final String LABEL_ADD = "ADD_LABEL";
 	private static final String LABEL_TYPE = "LABEL";
+
+	public static final int MAX_ANOMALY_CONTRIBUTORS = 10;
 
 	public static void removeAnomalyLabel(Collection<EventResult> events, ApiClient apiClient, String serviceId,
 			TimeInterval maxInterval, String label) {
@@ -58,12 +58,18 @@ public class AnomalyUtil {
 				continue;
 			}
 
-			if (lastestLabeling.plusMinutes(maxInterval.asMinutes()).isBefore(now)) {
-
-				labelsUpdateNeeded = true;
-				labelsRequest.addLabelModifications(event.id, Collections.emptyList(),
-						Collections.singletonList(label));
+			if (lastestLabeling.plusMinutes(maxInterval.asMinutes()).isAfter(now)) {
+				continue;
 			}
+
+			labelsUpdateNeeded = true;
+
+			labelsRequest.addLabelModifications(event.id, Collections.emptyList(), Collections.singletonList(label));
+
+			// By removing the label from the event we save up on redundant querying when
+			// later checking on anomalies.
+			//
+			event.labels.remove(label);
 		}
 
 		if (labelsUpdateNeeded) {
@@ -75,44 +81,22 @@ public class AnomalyUtil {
 		}
 	}
 
-	public static List<EventResult> processContributors(Collection<EventResult> events, ApiClient apiClient,
-			String serviceId, TimeInterval minInterval, TimeInterval maxInterval, String label) {
+	public static List<EventResult> filterAnomalyEvents(Collection<EventResult> events, ApiClient apiClient,
+			String serviceId, TimeInterval minInterval, String label, int maxEvents) {
 
 		if (CollectionUtil.safeIsEmpty(events)) {
 			return Collections.emptyList();
 		}
 
-		List<EventResult> result = Lists.newArrayListWithCapacity(MAX_ANOMALY_CONTRIBUTORS);
+		List<EventResult> result = Lists.newArrayList();
 
 		DateTime now = DateTime.now();
 
-		boolean labelProcessingNeeded = ((!Strings.isNullOrEmpty(label))
-				&& ((minInterval.isPositive()) || (maxInterval.isPositive())));
-
-		boolean labelsUpdateNeeded = false;
-		BatchModifyLabelsRequest.Builder labelsRequest = BatchModifyLabelsRequest.newBuilder().setServiceId(serviceId);
+		boolean labelFilteringNeeded = ((!Strings.isNullOrEmpty(label)) && (minInterval.isPositive()));
 
 		for (EventResult event : events) {
 
-			if ((labelProcessingNeeded) && (CollectionUtil.safeContains(event.labels, label))) {
-
-				DateTime lastestLabeling = getLatestLabelingTime(apiClient, serviceId, event, label);
-
-				if (lastestLabeling != null) {
-					if (lastestLabeling.plusMinutes(minInterval.asMinutes()).isAfter(now)) {
-						continue;
-					}
-
-					if (lastestLabeling.plusMinutes(maxInterval.asMinutes()).isBefore(now)) {
-
-						labelsUpdateNeeded = true;
-						labelsRequest.addLabelModifications(event.id, Collections.emptyList(),
-								Collections.singletonList(label));
-					}
-				}
-			}
-
-			if (result.size() >= MAX_ANOMALY_CONTRIBUTORS) {
+			if ((maxEvents > 0) && (result.size() >= maxEvents)) {
 				continue;
 			}
 
@@ -120,15 +104,16 @@ public class AnomalyUtil {
 				continue;
 			}
 
-			result.add(event);
-		}
+			if ((labelFilteringNeeded) && (CollectionUtil.safeContains(event.labels, label))) {
 
-		if (labelsUpdateNeeded) {
-			Response<EmptyResult> response = apiClient.post(labelsRequest.build());
+				DateTime lastestLabeling = getLatestLabelingTime(apiClient, serviceId, event, label);
 
-			if (response.isBadResponse()) {
-				System.err.println("Could not remove label from events. Code: " + response.responseCode);
+				if ((lastestLabeling != null) && (lastestLabeling.plusMinutes(minInterval.asMinutes()).isAfter(now))) {
+					continue;
+				}
 			}
+
+			result.add(event);
 		}
 
 		return result;

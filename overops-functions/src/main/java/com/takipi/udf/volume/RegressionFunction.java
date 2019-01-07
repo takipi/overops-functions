@@ -125,8 +125,8 @@ public class RegressionFunction {
 			candidates.add(regressionResult.getEvent());
 		}
 
-		Collection<EventResult> contributors = AnomalyUtil.processContributors(candidates, apiClient, args.serviceId,
-				input.min_interval, input.max_interval, input.label);
+		Collection<EventResult> contributors = AnomalyUtil.filterAnomalyEvents(candidates, apiClient, args.serviceId,
+				input.min_interval, input.label, AnomalyUtil.MAX_ANOMALY_CONTRIBUTORS);
 
 		if (CollectionUtil.safeIsEmpty(contributors)) {
 			return;

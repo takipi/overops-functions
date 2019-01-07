@@ -1,6 +1,5 @@
 package com.takipi.udf.volume;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +17,6 @@ import com.takipi.api.client.result.event.EventsVolumeResult;
 import com.takipi.api.client.util.transaction.TransactionUtil;
 import com.takipi.api.client.util.validation.ValidationUtil.VolumeType;
 import com.takipi.api.core.url.UrlClient.Response;
-import com.takipi.common.util.CollectionUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.input.Input;
 import com.takipi.udf.input.TimeInterval;
@@ -148,11 +146,18 @@ public class ThresholdFunction {
 			return;
 		}
 
-		long hitCount = ThresholdUtil.getEventsHits(events);
+		AnomalyUtil.removeAnomalyLabel(events, apiClient, args.serviceId, input.max_interval, input.label);
+
+		List<EventResult> relevantEvents = AnomalyUtil.filterAnomalyEvents(events, apiClient, args.serviceId,
+				input.min_interval, input.label, 0);
+
+		if (relevantEvents.isEmpty()) {
+			return;
+		}
+
+		long hitCount = ThresholdUtil.getEventsHits(relevantEvents);
 
 		if ((input.threshold > 0) && (hitCount <= input.threshold)) {
-			AnomalyUtil.removeAnomalyLabel(events, apiClient, args.serviceId, input.max_interval, input.label);
-
 			return;
 		}
 
@@ -160,7 +165,7 @@ public class ThresholdFunction {
 
 		Mode mode = (input.relative_to != null) ? input.relative_to : Mode.Method_Calls;
 
-		ThresholdUtil.sortEventsByHitsDesc(events);
+		ThresholdUtil.sortEventsByHitsDesc(relevantEvents);
 
 		switch (mode) {
 
@@ -171,7 +176,7 @@ public class ThresholdFunction {
 
 		case Method_Calls: {
 
-			long invocationsCount = ThresholdUtil.getEventsInvocations(events, hitCount);
+			long invocationsCount = ThresholdUtil.getEventsInvocations(relevantEvents, hitCount);
 			double failRate = (hitCount / (double) invocationsCount) * 100.0;
 
 			thresholdExceeded = (failRate >= input.rate);
@@ -194,17 +199,11 @@ public class ThresholdFunction {
 		System.out.println("Threshold response: " + thresholdExceeded);
 
 		if (!thresholdExceeded) {
-			AnomalyUtil.removeAnomalyLabel(events, apiClient, args.serviceId, input.max_interval, input.label);
-
 			return;
 		}
 
-		Collection<EventResult> contributors = AnomalyUtil.processContributors(events, apiClient, args.serviceId,
-				input.min_interval, input.max_interval, input.label);
-
-		if (CollectionUtil.safeIsEmpty(contributors)) {
-			return;
-		}
+		List<EventResult> contributors = relevantEvents.subList(0,
+				Math.min(relevantEvents.size(), AnomalyUtil.MAX_ANOMALY_CONTRIBUTORS));
 
 		AnomalyUtil.reportAnomaly(apiClient, args.serviceId, args.viewId, contributors, input.label, from, to,
 				input.toString());
