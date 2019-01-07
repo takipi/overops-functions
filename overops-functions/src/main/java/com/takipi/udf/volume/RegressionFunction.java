@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 
 import com.google.common.base.Strings;
@@ -16,8 +15,10 @@ import com.takipi.api.client.util.regression.RateRegression;
 import com.takipi.api.client.util.regression.RegressionInput;
 import com.takipi.api.client.util.regression.RegressionResult;
 import com.takipi.api.client.util.regression.RegressionUtil;
+import com.takipi.common.util.CollectionUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.input.Input;
+import com.takipi.udf.input.TimeInterval;
 import com.takipi.udf.util.TestUtil;
 
 public class RegressionFunction {
@@ -40,16 +41,32 @@ public class RegressionFunction {
 			throw new IllegalArgumentException(e.getMessage(), e);
 		}
 
-		if ((input.activeTimespan == null) || (input.activeTimespan.length() == 0)) {
+		if (input.activeTimespan == null) {
 			throw new IllegalArgumentException("'activeTimespan' must not be empty");
-		} else {
-			parseInterval(input.activeTimespan);
+		} else if (input.activeTimespan.isNegative()) {
+			throw new IllegalArgumentException("'activeTimespan' can't be negative time");
 		}
 
-		if ((input.baseTimespan == null) || (input.baseTimespan.length() == 0)) {
-			throw new IllegalArgumentException("'base timespan' must not be empty");
-		} else {
-			parseInterval(input.baseTimespan);
+		if (input.baseTimespan == null) {
+			throw new IllegalArgumentException("'baseTimespan' must not be empty");
+		} else if (input.baseTimespan.isNegative()) {
+			throw new IllegalArgumentException("'baseTimespan' can't be negative time");
+		}
+
+		if (input.min_interval == null) {
+			input.min_interval = TimeInterval.parse("2d");
+		} else if (input.min_interval.isNegative()) {
+			throw new IllegalArgumentException("'min_interval' can't be negative time");
+		}
+
+		if (input.max_interval == null) {
+			input.max_interval = TimeInterval.parse("3d");
+		} else if (input.max_interval.isNegative()) {
+			throw new IllegalArgumentException("'max_interval' can't be negative time");
+		}
+
+		if (input.max_interval.asMinutes() <= input.min_interval.asMinutes()) {
+			throw new IllegalArgumentException("'max_interval' must be greater than 'min_interval'");
 		}
 
 		if (input.regressionDelta <= 0) {
@@ -78,8 +95,8 @@ public class RegressionFunction {
 
 		regressionInput.serviceId = args.serviceId;
 		regressionInput.viewId = args.viewId;
-		regressionInput.activeTimespan = parseInterval(input.activeTimespan);
-		regressionInput.baselineTimespan = parseInterval(input.baseTimespan);
+		regressionInput.activeTimespan = input.activeTimespan.asMinutes();
+		regressionInput.baselineTimespan = input.baseTimespan.asMinutes();
 		regressionInput.minVolumeThreshold = input.minVolumeThreshold;
 		regressionInput.minErrorRateThreshold = input.minErrorRateThreshold / 100;
 		regressionInput.regressionDelta = input.regressionDelta / 100;
@@ -92,6 +109,9 @@ public class RegressionFunction {
 		RateRegression rateRegression = RegressionUtil.calculateRateRegressions(apiClient, regressionInput, System.out,
 				false);
 
+		AnomalyUtil.removeAnomalyLabel(rateRegression.getNonRegressions(), apiClient, args.serviceId,
+				input.max_interval, input.label);
+
 		Collection<RegressionResult> activeRegressions = rateRegression.getAllRegressions().values();
 
 		if (activeRegressions.size() == 0) {
@@ -99,45 +119,38 @@ public class RegressionFunction {
 			return;
 		}
 
-		List<EventResult> contributors = Lists.newArrayList();
+		List<EventResult> candidates = Lists.newArrayList();
 
 		for (RegressionResult regressionResult : activeRegressions) {
-			contributors.add(regressionResult.getEvent());
+			candidates.add(regressionResult.getEvent());
 		}
 
-		System.out.println("Alerting on " + activeRegressions.size() + " anomalies: "
-				+ StringUtils.join(contributors.toArray(), ','));
+		Collection<EventResult> contributors = AnomalyUtil.filterAnomalyEvents(candidates, apiClient, args.serviceId,
+				input.min_interval, input.label, AnomalyUtil.MAX_ANOMALY_CONTRIBUTORS);
 
-		String message = input.toString();
-
-		AnomalyUtil.send(apiClient, args.serviceId, args.viewId, contributors, rateRegression.getActiveWndowStart(),
-				DateTime.now(), message);
-	}
-
-	private static int parseInterval(String timeWindowWithUnit) {
-
-		String timeWindow = timeWindowWithUnit.substring(0, timeWindowWithUnit.length() - 1);
-		char timeUnit = timeWindowWithUnit.charAt(timeWindowWithUnit.length() - 1);
-
-		int delta = Integer.valueOf(timeWindow);
-		if (timeUnit == 'd') {
-			return delta * 24 * 60;
-		} else if (timeUnit == 'h') {
-			return delta * 60;
-		} else if (timeUnit == 'm') {
-			return delta;
-		} else {
-			return Integer.valueOf(timeWindowWithUnit);
+		if (CollectionUtil.safeIsEmpty(contributors)) {
+			return;
 		}
+
+		AnomalyUtil.reportAnomaly(apiClient, args.serviceId, args.viewId, contributors, input.label,
+				rateRegression.getActiveWndowStart(), DateTime.now(), input.toString());
 	}
 
 	static class RegressionFunctionInput extends Input {
-		public String activeTimespan;
-		public String baseTimespan;
+
+		public String appName;
+
+		public TimeInterval activeTimespan;
+		public TimeInterval baseTimespan;
+
 		public double regressionDelta;
+
 		public double minErrorRateThreshold;
 		public int minVolumeThreshold;
-		public String appName;
+
+		public String label;
+		public TimeInterval min_interval;
+		public TimeInterval max_interval;
 
 		private RegressionFunctionInput(String raw) {
 			super(raw);
@@ -160,11 +173,11 @@ public class RegressionFunction {
 	//
 	public static void main(String[] args) {
 		String rawContextArgs = TestUtil.getViewContextArgs(args, "All Events");
-		
-		// some test values
+
+		// example values
 		//
-		String[] sampleValues = new String[] { "activeTimespan=60m", "baseTimespan=7d", "regressionDelta=100",
-				"minErrorRateThreshold=10", "minVolumeThreshold=100", };
+		String[] sampleValues = new String[] { "activeTimespan=1d", "baseTimespan=14d", "regressionDelta=100",
+				"minErrorRateThreshold=1", "minVolumeThreshold=100", "label=Anomaly", "min_interval=1d" };
 
 		RegressionFunction.execute(rawContextArgs, String.join("\n", sampleValues));
 	}
