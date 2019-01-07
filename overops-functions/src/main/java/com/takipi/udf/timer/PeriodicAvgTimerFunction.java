@@ -43,6 +43,7 @@ import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.input.Input;
+import com.takipi.udf.input.TimeInterval;
 import com.takipi.udf.util.JavaUtil;
 
 public class PeriodicAvgTimerFunction {
@@ -67,25 +68,32 @@ public class PeriodicAvgTimerFunction {
 			throw new IllegalArgumentException(e.getMessage(), e);
 		}
 
-		if (input.active_timespan_minutes <= 0) {
-			throw new IllegalArgumentException("'active_timespan_minutes' must be positive");
+		if (input.active_timespan == null) {
+			throw new IllegalArgumentException("Missing 'active_timespan_minutes'");
 		}
 
-		if (input.baseline_timespan_minutes <= 0) {
-			throw new IllegalArgumentException("'baseline_timespan_minutes' must be positive");
+		if (!input.active_timespan.isPositive()) {
+			throw new IllegalArgumentException("'active_timespan' must be positive");
 		}
 
-		if (input.baseline_timespan_minutes <= input.active_timespan_minutes) {
-			throw new IllegalArgumentException(
-					"'baseline_timespan_minutes' must be larger than 'active_timespan_minutes'");
+		if (input.baseline_timespan == null) {
+			throw new IllegalArgumentException("Missing 'baseline_timespan'");
+		}
+
+		if (!input.baseline_timespan.isPositive()) {
+			throw new IllegalArgumentException("'active_timespan' must be positive");
+		}
+
+		if (input.baseline_timespan.asMinutes() <= input.active_timespan.asMinutes()) {
+			throw new IllegalArgumentException("'baseline_timespan' must be larger than 'active_timespan'");
 		}
 
 		if (input.active_timespan_point_res <= 0) {
 			throw new IllegalArgumentException("'active_timespan_point_res' must be positive");
 		}
 
-		if (input.baseline_timespan_minutes <= 0) {
-			throw new IllegalArgumentException("'baseline_timespan_minutes' must be positive");
+		if (input.baseline_timespan_point_res <= 0) {
+			throw new IllegalArgumentException("'baseline_timespan_point_res' must be positive");
 		}
 
 		if (input.active_invocations_threshold <= 0) {
@@ -156,7 +164,7 @@ public class PeriodicAvgTimerFunction {
 		}
 
 		DateTime to = DateTime.now();
-		DateTime activeFrom = to.minusMinutes(input.active_timespan_minutes);
+		DateTime activeFrom = to.minusMinutes(input.active_timespan.asMinutes());
 
 		Map<String, TransactionGraph> activeTransactions = TransactionUtil.getTransactionGraphs(apiClient,
 				args.serviceId, args.viewId, activeFrom, to, input.active_timespan_point_res);
@@ -165,7 +173,7 @@ public class PeriodicAvgTimerFunction {
 			return;
 		}
 
-		DateTime baselineFrom = to.minusMinutes(input.baseline_timespan_minutes);
+		DateTime baselineFrom = to.minusMinutes(input.baseline_timespan.asMinutes());
 
 		Map<String, TransactionGraph> baselineTransactions = TransactionUtil.getTransactionGraphs(apiClient,
 				args.serviceId, args.viewId, baselineFrom, to, input.baseline_timespan_point_res);
@@ -463,9 +471,9 @@ public class PeriodicAvgTimerFunction {
 	}
 
 	static class PeriodicAvgTimerInput extends Input {
-		public int active_timespan_minutes;
+		public TimeInterval active_timespan;
 		public int active_timespan_point_res;
-		public int baseline_timespan_minutes;
+		public TimeInterval baseline_timespan;
 		public int baseline_timespan_point_res;
 
 		public long active_invocations_threshold;
@@ -486,7 +494,7 @@ public class PeriodicAvgTimerFunction {
 			StringBuilder builder = new StringBuilder();
 
 			builder.append("PeriodicAvgTimer(");
-			builder.append(active_timespan_minutes);
+			builder.append(active_timespan.asMinutes());
 			builder.append(")");
 
 			return builder.toString();

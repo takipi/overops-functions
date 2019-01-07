@@ -105,14 +105,14 @@
 			<param_type>TEXT</param_type>
 			<class_file>com.takipi.udf.timer.PeriodicAvgTimerFunction</class_file>
 			<default_params>
-				# Active time period to look at, in minutes.
-				active_timespan_minutes = 60
+				# Active time period to look at.
+				active_timespan = 1h
 
 				# Required resolution for active period.
 				active_timespan_point_res = 100
 
-				# Baseline time period to look at, in minutes.
-				baseline_timespan_minutes = 10080
+				# Baseline time period to look at.
+				baseline_timespan_minutes = 7d
 
 				# Required resolution for baseline period.
 				baseline_timespan_point_res = 100
