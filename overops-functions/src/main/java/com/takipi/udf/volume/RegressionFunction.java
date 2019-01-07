@@ -177,7 +177,7 @@ public class RegressionFunction {
 		// example values
 		//
 		String[] sampleValues = new String[] { "activeTimespan=1d", "baseTimespan=14d", "regressionDelta=100",
-				"minErrorRateThreshold=1", "minVolumeThreshold=100", "label=Anomaly", "minInterval=1d" };
+				"minErrorRateThreshold=1", "minVolumeThreshold=100", "label=Anomaly", "min_interval=1d" };
 
 		RegressionFunction.execute(rawContextArgs, String.join("\n", sampleValues));
 	}

@@ -19,7 +19,7 @@ public class RelativeThresholdFunction extends ThresholdFunction {
 
 		// example values
 		String[] sampleValues = new String[] { "relative_to=Method_Calls", "threshold=100", "rate=0.01",
-				"label=Anomaly", "minInterval=24h", };
+				"label=Anomaly", "min_interval=24h", };
 
 		RelativeThresholdFunction.execute(rawContextArgs, String.join("\n", sampleValues));
 	}
