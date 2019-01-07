@@ -37,7 +37,7 @@
 				label = Anomaly
 				
 				# Min interval for alerts
-				minInterval = 2d
+				min_interval = 2d
 			</default_params>
 		</function>
 		<function>
@@ -68,7 +68,7 @@
 				label = Anomaly
 				
 				# Min interval for alerts
-				minInterval = 2d
+				min_interval = 2d
 			</default_params>
 			<admin_function>false</admin_function>
 		</function>

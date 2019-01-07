@@ -64,10 +64,10 @@ public class ThresholdFunction {
 			throw new IllegalArgumentException("'rate' must be positive");
 		}
 
-		if (input.minInterval == null) {
-			input.minInterval = TimeInterval.of(0);
-		} else if (input.minInterval.isNegative()) {
-			throw new IllegalArgumentException("'minInterval' can't be negative time");
+		if (input.min_interval == null) {
+			input.min_interval = TimeInterval.of(0);
+		} else if (input.min_interval.isNegative()) {
+			throw new IllegalArgumentException("'min_interval' can't be negative time");
 		}
 
 		return input;
@@ -186,7 +186,7 @@ public class ThresholdFunction {
 		}
 
 		Collection<EventResult> contributors = AnomalyUtil.getContributors(events, apiClient, args.serviceId,
-				input.minInterval, input.label);
+				input.min_interval, input.label);
 
 		if (CollectionUtil.safeIsEmpty(contributors)) {
 			return;
@@ -205,7 +205,7 @@ public class ThresholdFunction {
 		public TimeInterval timespan;
 
 		public String label;
-		public TimeInterval minInterval;
+		public TimeInterval min_interval;
 
 		private ThresholdInput(String raw) {
 			super(raw);

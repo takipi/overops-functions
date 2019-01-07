@@ -53,10 +53,10 @@ public class RegressionFunction {
 			throw new IllegalArgumentException("'baseTimespan' can't be negative time");
 		}
 
-		if (input.minInterval == null) {
-			input.minInterval = TimeInterval.of(0);
-		} else if (input.minInterval.isNegative()) {
-			throw new IllegalArgumentException("'minInterval' can't be negative time");
+		if (input.min_interval == null) {
+			input.min_interval = TimeInterval.of(0);
+		} else if (input.min_interval.isNegative()) {
+			throw new IllegalArgumentException("'min_interval' can't be negative time");
 		}
 
 		if (input.regressionDelta <= 0) {
@@ -113,7 +113,7 @@ public class RegressionFunction {
 		}
 
 		Collection<EventResult> contributors = AnomalyUtil.getContributors(candidates, apiClient, args.serviceId,
-				input.minInterval, input.label);
+				input.min_interval, input.label);
 
 		if (CollectionUtil.safeIsEmpty(contributors)) {
 			return;
@@ -136,7 +136,7 @@ public class RegressionFunction {
 		public int minVolumeThreshold;
 
 		public String label;
-		public TimeInterval minInterval;
+		public TimeInterval min_interval;
 
 		private RegressionFunctionInput(String raw) {
 			super(raw);
