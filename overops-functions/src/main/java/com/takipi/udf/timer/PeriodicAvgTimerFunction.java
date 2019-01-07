@@ -69,7 +69,7 @@ public class PeriodicAvgTimerFunction {
 		}
 
 		if (input.active_timespan == null) {
-			throw new IllegalArgumentException("Missing 'active_timespan_minutes'");
+			throw new IllegalArgumentException("Missing 'active_timespan'");
 		}
 
 		if (!input.active_timespan.isPositive()) {

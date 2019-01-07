@@ -112,7 +112,7 @@
 				active_timespan_point_res = 100
 
 				# Baseline time period to look at.
-				baseline_timespan_minutes = 7d
+				baseline_timespan = 7d
 
 				# Required resolution for baseline period.
 				baseline_timespan_point_res = 100
