@@ -5,10 +5,13 @@ import com.google.common.base.Strings;
 public class TimeInterval {
 	private static final int M_TO_H = 60;
 	private static final int M_TO_D = 60 * 24;
+	private static final int M_TO_W = 60 * 24 * 7;
 
+	private final String raw;
 	private final int minutes;
 
-	private TimeInterval(int minutes) {
+	private TimeInterval(String raw, int minutes) {
+		this.raw = raw;
 		this.minutes = minutes;
 	}
 
@@ -24,6 +27,10 @@ public class TimeInterval {
 		return (minutes / (M_TO_D));
 	}
 
+	public int asWeeks() {
+		return (minutes / (M_TO_W));
+	}
+
 	public boolean isPositive() {
 		return (minutes > 0);
 	}
@@ -36,8 +43,17 @@ public class TimeInterval {
 		return (minutes < 0);
 	}
 
+	@Override
+	public String toString() {
+		return raw;
+	}
+
+	private static TimeInterval of(String raw, int minutes) {
+		return new TimeInterval(raw, minutes);
+	}
+	
 	public static TimeInterval of(int minutes) {
-		return new TimeInterval(minutes);
+		return new TimeInterval(minutes + "m", minutes);
 	}
 
 	public static TimeInterval parse(String s) {
@@ -49,12 +65,14 @@ public class TimeInterval {
 		String timeWindow = s.substring(0, s.length() - 1);
 
 		switch (timeUnit) {
+		case 'w':
+			return of(s, Integer.valueOf(timeWindow) * M_TO_W);
 		case 'd':
-			return of(Integer.valueOf(timeWindow) * M_TO_D);
+			return of(s, Integer.valueOf(timeWindow) * M_TO_D);
 		case 'h':
-			return of(Integer.valueOf(timeWindow) * M_TO_H);
+			return of(s, Integer.valueOf(timeWindow) * M_TO_H);
 		case 'm':
-			return of(Integer.valueOf(timeWindow));
+			return of(s, Integer.valueOf(timeWindow));
 		}
 
 		return of(Integer.valueOf(s));
