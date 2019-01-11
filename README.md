@@ -1,4 +1,5 @@
-# overops-functions
+# OverOps Functions
+
 Public OverOps User Defined Functions
 
 Full manifest of all libraries can be found here - https://git.io/fxDIW
@@ -32,3 +33,101 @@ See code at: https://git.io/fx6s8
 #### 2. Apply Label -
 Applies a specific input label to events.
 See code at: https://git.io/fx6sc
+
+## UDF Structure
+
+Every UDF must have two methods: `validateInput` and `execute`. Optionally, there may also be an `install` method.
+
+```java
+public class MyFunction {
+
+  // required - return string if valid, throw exception if not
+  public static String validateInput(String rawInput) {
+    return getMyInput(rawInput).toString();
+  }
+
+  // required - this method is called when the UDF is executed
+  public static void execute(String rawContextArgs, String rawInput) {
+
+    // parse raw parameter input
+    MyInput input = getMyInput(rawInput);
+
+    // parse context
+    ContextArgs args = (new Gson()).fromJson(rawContextArgs, ContextArgs.class);
+
+    // get an API Client
+    ApiClient apiClient = args.apiClient();
+
+    //
+    //  Make API calls
+    //
+    //  "meat and potatoes" of the UDF goes here
+    //
+
+  }
+
+  // optional - this method is called when the UDF is applied to a view
+  public static void install(String rawContextArgs, String rawInput) {
+
+    //
+    //  This code is run once
+    //  For example, retroactively apply the function to historic data
+    //
+
+  }
+
+  // helper for parsing input parameters
+  private static MyInput getMyInput(String rawInput) {
+
+    // params cannot be empty
+    if (Strings.isNullOrEmpty(rawInput))
+      throw new IllegalArgumentException("Input is empty");
+
+    MyInput input;
+
+    // parse params
+    try {
+      input = MyInput.of(rawInput);
+    } catch (Exception e) {
+      throw new IllegalArgumentException(e.getMessage(), e);
+    }
+
+    // validate input
+    if (input.foo <= 0)
+      throw new IllegalArgumentException("'foo' must be positive");
+
+    return input;
+  }
+
+  // extend Input to easily parse parameters
+  static class MyInput extends Input {
+
+    // input parameters
+    public int foo;
+
+    // parse input
+    private MyInput(String raw) {
+      super(raw);
+    }
+
+    @Override
+    public String toString() {
+      StringBuilder builder = new StringBuilder();
+
+      builder.append("MyUDF (");
+      builder.append(foo);
+      builder.append(")");
+
+      return builder.toString();
+    }
+
+    static MyInput of(String raw) {
+      return new MyInput(raw);
+    }
+
+  }
+
+}
+```
+
+For more details on UDFs and how to write your own, see [User Defined Functions](https://github.com/takipi-field/udf).
