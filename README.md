@@ -130,4 +130,4 @@ public class MyFunction {
 }
 ```
 
-For more details on UDFs and how to write your own, see [User Defined Functions](https://github.com/takipi-field/udf).
+For more details on UDFs and how to write your own, see [User Defined Functions](https://github.com/takipi-field/udf). UDFs can be uploaded through the OverOps UI or with the [UDF Uploader](https://github.com/takipi/udf-uploader/).
