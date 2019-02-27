@@ -15,7 +15,15 @@ import com.google.common.collect.Maps;
 public class Input {
 	private static final String COMMENT_LINE = "#";
 
+	protected Input() {
+
+	}
+
 	protected Input(String raw) {
+		initFields(raw);
+	}
+
+	protected void initFields(String raw) {
 		reflectiveSetFields(getPropertyMap(raw));
 	}
 
@@ -43,8 +51,7 @@ public class Input {
 				} else if (type == TimeInterval.class) {
 					try {
 						fld.set(this, getTimeInterval(value));
-					}
-					catch (NumberFormatException e) {
+					} catch (NumberFormatException e) {
 						throw new IllegalArgumentException("Invalid value for " + key + " - " + value);
 					}
 				} else if (type == List.class) {
