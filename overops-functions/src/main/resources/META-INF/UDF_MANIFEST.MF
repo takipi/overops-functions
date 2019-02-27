@@ -153,6 +153,15 @@
 				# Number of std deviations from the mean time for a transaction to be considered slow.
 				std_dev_factor = 1.5
 
+				# Number of std deviations from the mean time to set automatic timer to.
+				timer_std_dev_factor = 1.0
+
+				# Should maintain active timer for non-slow transactions.
+				timer_always_on = false
+
+				# Should actively place timers on non-slow transactions.
+				monitor_ok_transactions = false
+
 				# Minimum value allowed for a given threshold.
 				min_timer_threshold = 30
 			</default_params>

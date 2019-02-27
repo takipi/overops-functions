@@ -133,6 +133,10 @@ public class PeriodicAvgTimerFunction {
 			throw new IllegalArgumentException("'std_dev_factor' must be positive");
 		}
 
+		if (input.timer_std_dev_factor < 0.0) {
+			throw new IllegalArgumentException("'timer_std_dev_factor' can't be negative");
+		}
+
 		if (input.min_timer_threshold <= 0) {
 			throw new IllegalArgumentException("'min_timer_threshold' must be positive");
 		}
@@ -260,17 +264,33 @@ public class PeriodicAvgTimerFunction {
 				labelsUpdateNeeded = true;
 			}
 
-			if ((state == PerformanceState.NO_DATA) || (state == PerformanceState.OK)) {
-				if (timer != null) {
+			if (state == PerformanceState.NO_DATA) {
+				if ((timer != null) && (!input.timer_always_on)) {
 					removedTimers.add(timer.id);
 				}
 
 				continue;
 			}
 
+			if (state == PerformanceState.OK) {
+				if (timer == null) {
+					if (!input.monitor_ok_transactions) {
+						// If no timer, don't create a new one for OK transaction.
+						//
+						continue;
+					}
+				} else if ((!input.monitor_ok_transactions) && (!input.timer_always_on)) {
+					// If timer exist and we don't maintain, remove and move on.
+					// If we do maintain, we want to proceed and adapt the threshold.
+					//
+					removedTimers.add(timer.id);
+					continue;
+				}
+			}
+
 			Stats stats = TransactionUtil.aggregateGraph(transaction);
 
-			long timerThreshold = (long) (stats.avg_time + stats.avg_time_std_deviation);
+			long timerThreshold = (long) (stats.avg_time + (stats.avg_time_std_deviation * input.timer_std_dev_factor));
 
 			if (timerThreshold < input.min_timer_threshold) {
 				continue;
@@ -482,11 +502,19 @@ public class PeriodicAvgTimerFunction {
 		public double over_avg_slowing_percentage;
 		public double over_avg_critical_percentage;
 		public double std_dev_factor;
+		public double timer_std_dev_factor;
+		public boolean timer_always_on;
+		public boolean monitor_ok_transactions;
 
 		public long min_timer_threshold;
 
 		private PeriodicAvgTimerInput(String raw) {
-			super(raw);
+			// purposefully not calling super(raw), as we want to first set
+			// the default value, and only then reflectively set the fields.
+			//
+			this.timer_std_dev_factor = 1.0;
+
+			initFields(raw);
 		}
 
 		@Override
