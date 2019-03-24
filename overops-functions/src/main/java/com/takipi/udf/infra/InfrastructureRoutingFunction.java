@@ -1,6 +1,7 @@
 package com.takipi.udf.infra;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -21,7 +22,10 @@ import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.client.util.category.CategoryUtil;
 import com.takipi.api.client.util.infra.Categories;
+import com.takipi.api.client.util.infra.Categories.Category;
 import com.takipi.api.client.util.infra.InfraUtil;
+import com.takipi.api.client.util.settings.ServiceSettingsData;
+import com.takipi.api.client.util.settings.SettingsUtil;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.Pair;
@@ -96,7 +100,9 @@ public class InfrastructureRoutingFunction {
 		}
 
 		String categoryId = CategoryUtil.createCategory(input.category_name, args.serviceId, apiClient);
-		Categories categories = input.getCategories();
+
+		Categories categories = getCategories(apiClient, args.serviceId, input);
+
 		Set<String> createdLabels = Sets.newHashSet();
 
 		boolean hasModifications = false;
@@ -145,10 +151,27 @@ public class InfrastructureRoutingFunction {
 
 		String categoryId = CategoryUtil.createCategory(input.category_name, args.serviceId, apiClient);
 
-		Categories categories = input.getCategories();
+		Categories categories = getCategories(apiClient, args.serviceId, input);
 
 		InfraUtil.categorizeEvent(args.eventId, args.serviceId, categoryId, categories, Sets.newHashSet(), apiClient,
 				true);
+	}
+
+	private static Categories getCategories(ApiClient apiClient, String serviceId, InfrastructureInput input) {
+		Collection<Category> categories = Lists.newArrayList();
+
+		if (!CollectionUtil.safeIsEmpty(input.getCategories())) {
+			categories.addAll(input.getCategories());
+		}
+
+		ServiceSettingsData settings = SettingsUtil.getServiceReliabilitySettings(apiClient, serviceId);
+
+		if ((settings != null) && (!CollectionUtil.safeIsEmpty(settings.tiers))) {
+			Categories.fillMissingCategoryNames(settings.tiers);
+			categories.addAll(settings.tiers);
+		}
+
+		return Categories.expandWithDefaultCategories(categories);
 	}
 
 	static class InfrastructureInput extends Input {
@@ -156,18 +179,24 @@ public class InfrastructureRoutingFunction {
 		public String template_view;
 		public String category_name;
 
-		private final List<Pair<String, String>> namespaceToLabel = Lists.newArrayList();
+		private final List<Category> categories;
 
 		InfrastructureInput(String raw) {
 			super(raw);
 
-			processNamespaces();
+			this.categories = processNamespaces();
 		}
 
-		private void processNamespaces() {
+		public List<Category> getCategories() {
+			return categories;
+		}
+
+		private List<Category> processNamespaces() {
 			if (CollectionUtil.safeIsEmpty(namespaces)) {
-				return;
+				return Collections.emptyList();
 			}
+
+			List<Category> result = Lists.newArrayList();
 
 			for (String namespace : namespaces) {
 				int index = namespace.indexOf('=');
@@ -183,17 +212,12 @@ public class InfrastructureRoutingFunction {
 					throw new IllegalArgumentException("Invalid namespaces");
 				}
 
-				namespaceToLabel.add(Pair.of(key, value));
-			}
-		}
+				Category category = new Category();
+				category.names = Collections.singletonList(key);
+				category.labels = Collections.singletonList(value);
 
-		public Categories getCategories() {
-			if (CollectionUtil.safeIsEmpty(namespaceToLabel)) {
-				return Categories.defaultCategories();
+				result.add(category);
 			}
-
-			Categories result = Categories.from(namespaceToLabel);
-			result.categories.addAll(Categories.defaultCategories().categories);
 
 			return result;
 		}
