@@ -21,7 +21,7 @@ import com.takipi.api.client.request.label.BatchModifyLabelsRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.client.result.event.EventActionsResult;
 import com.takipi.api.client.result.event.EventResult;
-import com.takipi.api.client.result.event.EventsVolumeResult;
+import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.client.util.category.CategoryUtil;
 import com.takipi.api.client.util.label.LabelUtil;
 import com.takipi.api.client.util.regression.RateRegression;
@@ -206,7 +206,7 @@ public class SeverityFunction {
 			return;
 		}
 
-		EventsVolumeResult previousEvents = ViewUtil.getEventsVolume(apiClient, args.serviceId, view.id, retentionTime,
+		EventsResult previousEvents = ViewUtil.getEventsVolume(apiClient, args.serviceId, view.id, retentionTime,
 				now);
 
 		DateTime retentionWindow = DateTime.now().minusMinutes(labelRetention);
