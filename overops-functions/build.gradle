@@ -14,10 +14,25 @@ buildscript {
 
 dependencies {
 	compile (
-		"org.apache.commons:commons-lang3:3.7",
-		"com.takipi:api-client:2.18.0",
-		"com.takipi:api-client-util:2.18.0"
+		"org.apache.commons:commons-lang3:3.7"
 	)
+	
+	if (gradle.hasProperty("localApiClient") &&
+		"$gradle.localApiClient" == "true") {
+		println "Compiling overops functions with project api-client"
+
+		compile (
+			project(":api-client"),
+			project(":api-client-util"),
+		)
+	} else {
+		println "Compiling overops functions with maven api-client"
+
+		compile (
+			"com.takipi:api-client:2.18.0",
+			"com.takipi:api-client-util:2.18.0",
+		)
+	}
 }
 
 fatJar {
