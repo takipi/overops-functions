@@ -8,6 +8,7 @@ import com.takipi.api.client.RemoteApiClient;
 import com.takipi.api.core.url.UrlClient.LogLevel;
 
 public class ContextArgs {
+	public String appHost;
 	public String apiHost;
 	public String serviceId;
 	public String eventId;
