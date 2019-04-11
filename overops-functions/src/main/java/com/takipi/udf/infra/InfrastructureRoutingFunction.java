@@ -139,10 +139,10 @@ public class InfrastructureRoutingFunction {
 		
 		Map<CategoryType, String> result = Maps.newHashMap();
 		
-		result.put(CategoryType.Infra, 
+		result.put(CategoryType.infra, 
 			CategoryUtil.createCategory(input.category_name, args.serviceId, apiClient));
 		
-		result.put(CategoryType.App, 
+		result.put(CategoryType.app, 
 			CategoryUtil.createCategory(input.apps_category_name, args.serviceId, apiClient));
 		
 		return result;
