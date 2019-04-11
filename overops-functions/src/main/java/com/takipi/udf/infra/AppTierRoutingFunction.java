@@ -22,7 +22,7 @@ public class AppTierRoutingFunction extends RoutingFunction {
 	}
 
 	// A sample program on how to programmatically activate
-	// InfrastructureRoutingFunction
+	// AppTierRoutingFunction
 	public static void main(String[] args) {
 		String rawContextArgs = TestUtil.getEventContextArgs(args);
 
