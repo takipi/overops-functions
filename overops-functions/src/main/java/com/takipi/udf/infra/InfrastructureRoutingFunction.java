@@ -3,6 +3,7 @@ package com.takipi.udf.infra;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +24,7 @@ import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.client.util.category.CategoryUtil;
 import com.takipi.api.client.util.infra.Categories;
 import com.takipi.api.client.util.infra.Categories.Category;
+import com.takipi.api.client.util.infra.Categories.CategoryType;
 import com.takipi.api.client.util.infra.InfraUtil;
 import com.takipi.api.client.util.settings.ServiceSettingsData;
 import com.takipi.api.client.util.settings.SettingsUtil;
@@ -100,6 +102,7 @@ public class InfrastructureRoutingFunction {
 		}
 
 		String categoryId = CategoryUtil.createCategory(input.category_name, args.serviceId, apiClient);
+		Map<CategoryType, String> categoryIds = Collections.singletonMap(input.routing_type, categoryId);
 
 		Categories categories = getCategories(apiClient, args.serviceId, input);
 
@@ -110,7 +113,7 @@ public class InfrastructureRoutingFunction {
 
 		for (EventResult event : eventsResult.events) {
 			Pair<Collection<String>, Collection<String>> eventCategories = InfraUtil.categorizeEvent(event,
-					args.serviceId, categoryId, categories, createdLabels, apiClient, false);
+					args.serviceId, categoryIds, categories, createdLabels, apiClient, false);
 
 			Collection<String> labelsToAdd = eventCategories.getFirst();
 			Collection<String> labelsToRemove = eventCategories.getSecond();
@@ -150,10 +153,11 @@ public class InfrastructureRoutingFunction {
 		ApiClient apiClient = args.apiClient();
 
 		String categoryId = CategoryUtil.createCategory(input.category_name, args.serviceId, apiClient);
+		Map<CategoryType, String> categoryIds = Collections.singletonMap(input.routing_type, categoryId);
 
 		Categories categories = getCategories(apiClient, args.serviceId, input);
 
-		InfraUtil.categorizeEvent(args.eventId, args.serviceId, categoryId, categories, Sets.newHashSet(), apiClient,
+		InfraUtil.categorizeEvent(args.eventId, args.serviceId, categoryIds, categories, Sets.newHashSet(), apiClient,
 				true);
 	}
 
@@ -178,6 +182,7 @@ public class InfrastructureRoutingFunction {
 		public List<String> namespaces;
 		public String template_view;
 		public String category_name;
+		public CategoryType routing_type;
 
 		private final List<Category> categories;
 
@@ -185,6 +190,10 @@ public class InfrastructureRoutingFunction {
 			super(raw);
 
 			this.categories = processNamespaces();
+
+			if (this.routing_type == null) {
+				routing_type = CategoryType.infra;
+			}
 		}
 
 		public List<Category> getCategories() {
