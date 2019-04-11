@@ -117,6 +117,10 @@ public class RoutingFunction {
 			}
 		}
 
+		if (input.routing_type == CategoryType.app) {
+			builder.setHandleSimilarEvents(false);
+		}
+
 		if (!hasModifications) {
 			return;
 		}
