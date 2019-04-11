@@ -3,6 +3,7 @@ package com.takipi.udf.infra;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -12,6 +13,7 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.takipi.api.client.ApiClient;
@@ -23,6 +25,7 @@ import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.client.util.category.CategoryUtil;
 import com.takipi.api.client.util.infra.Categories;
 import com.takipi.api.client.util.infra.Categories.Category;
+import com.takipi.api.client.util.infra.Categories.CategoryType;
 import com.takipi.api.client.util.infra.InfraUtil;
 import com.takipi.api.client.util.settings.ServiceSettingsData;
 import com.takipi.api.client.util.settings.SettingsUtil;
@@ -99,8 +102,7 @@ public class InfrastructureRoutingFunction {
 			return;
 		}
 
-		String categoryId = CategoryUtil.createCategory(input.category_name, args.serviceId, apiClient);
-
+		Map<CategoryType, String> categoryIds = getCategoryIds(input, args, apiClient);
 		Categories categories = getCategories(apiClient, args.serviceId, input);
 
 		Set<String> createdLabels = Sets.newHashSet();
@@ -110,7 +112,7 @@ public class InfrastructureRoutingFunction {
 
 		for (EventResult event : eventsResult.events) {
 			Pair<Collection<String>, Collection<String>> eventCategories = InfraUtil.categorizeEvent(event,
-					args.serviceId, categoryId, categories, createdLabels, apiClient, false);
+					args.serviceId, categoryIds, categories, createdLabels, apiClient, false);
 
 			Collection<String> labelsToAdd = eventCategories.getFirst();
 			Collection<String> labelsToRemove = eventCategories.getSecond();
@@ -131,6 +133,20 @@ public class InfrastructureRoutingFunction {
 			throw new IllegalStateException("Failed batch apply of labels.");
 		}
 	}
+	
+	private static Map<CategoryType, String> getCategoryIds(InfrastructureInput input,
+		ContextArgs args,ApiClient apiClient) {
+		
+		Map<CategoryType, String> result = Maps.newHashMap();
+		
+		result.put(CategoryType.Infra, 
+			CategoryUtil.createCategory(input.category_name, args.serviceId, apiClient));
+		
+		result.put(CategoryType.App, 
+			CategoryUtil.createCategory(input.apps_category_name, args.serviceId, apiClient));
+		
+		return result;
+	}
 
 	public static void execute(String rawContextArgs, String rawInput) {
 		InfrastructureInput input = getInfrastructureInput(rawInput);
@@ -149,12 +165,11 @@ public class InfrastructureRoutingFunction {
 
 		ApiClient apiClient = args.apiClient();
 
-		String categoryId = CategoryUtil.createCategory(input.category_name, args.serviceId, apiClient);
-
 		Categories categories = getCategories(apiClient, args.serviceId, input);
+		Map<CategoryType, String> categoryIds = getCategoryIds(input, args, apiClient);
 
-		InfraUtil.categorizeEvent(args.eventId, args.serviceId, categoryId, categories, Sets.newHashSet(), apiClient,
-				true);
+		InfraUtil.categorizeEvent(args.eventId, args.serviceId, categoryIds, categories, Sets.newHashSet(), apiClient,
+			true);
 	}
 
 	private static Categories getCategories(ApiClient apiClient, String serviceId, InfrastructureInput input) {
@@ -170,7 +185,7 @@ public class InfrastructureRoutingFunction {
 			Categories.fillMissingCategoryNames(settings.tiers);
 			categories.addAll(settings.tiers);
 		}
-
+		
 		return Categories.expandWithDefaultCategories(categories);
 	}
 
@@ -178,6 +193,8 @@ public class InfrastructureRoutingFunction {
 		public List<String> namespaces;
 		public String template_view;
 		public String category_name;
+		public String apps_category_name;
+
 
 		private final List<Category> categories;
 
@@ -230,10 +247,15 @@ public class InfrastructureRoutingFunction {
 	// A sample program on how to programmatically activate
 	// InfrastructureRoutingFunction
 	public static void main(String[] args) {
+
+		
 		String rawContextArgs = TestUtil.getEventContextArgs(args);
 
 		// some test values
-		String[] sampleValues = new String[] { "category_name=tiers", "namespaces=org.comp=Comp" };
+		String[] sampleValues = new String[] { 
+			"category_name=tiers",
+			"apps_category_name=Apps",
+			"namespaces=com.acme=acme" };
 
 		InfrastructureRoutingFunction.execute(rawContextArgs, String.join("\n", sampleValues));
 	}

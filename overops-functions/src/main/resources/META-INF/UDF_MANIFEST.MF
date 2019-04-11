@@ -89,6 +89,9 @@
 			<default_params>
 				# Category name where tiers views will be created.
 				category_name = tiers
+				
+				# Category name where app tiers views will be created.
+				apps_category_name = Apps
 
 				# Link to the full tiers list: https://git.io/fpPT0 
 				# Enhance it with a delimited list: A=B;C=D;E=F, where the first item is a package (e.g com.mongo), and the second is a tier (e.g MongoDB).
