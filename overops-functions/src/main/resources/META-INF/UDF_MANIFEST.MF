@@ -115,6 +115,23 @@
 			<admin_function>true</admin_function>
 		</function>
 		<function>
+			<function_type>CHANNEL</function_type>
+			<function_name>App Tier Routing</function_name>
+			<description>
+				Classify incoming events to logical applications according to the functional component within the code from which they originated. See code at: https://git.io/fjqwv
+			</description>
+			<param_type>TEXT</param_type>
+			<class_file>com.takipi.udf.infra.AppTierRoutingFunction</class_file>
+			<default_params>
+				# Category name where app tiers views will be created.
+				category_name = Apps
+
+				# Enhance application tiers with  a delimited list: A=B;C=D;E=F, where the first item is a package (e.g com.acme.analyzing), and the second is an application tier (e.g AcmeAnalyzerApp).
+				# namespaces = com.acme.analyzing=AcmeAnalyzerApp; com.acme.manipulate=AcmeManipulatorApp
+			</default_params>
+			<admin_function>true</admin_function>
+		</function>
+		<function>
 			<function_type>ANOMALY</function_type>
 			<function_name>Automatic entry point timers</function_name>
 			<description>
