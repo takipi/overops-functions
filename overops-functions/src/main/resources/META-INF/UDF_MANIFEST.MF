@@ -130,6 +130,7 @@
 				# namespaces = com.acme.analyzing=AcmeAnalyzerApp; com.acme.manipulate=AcmeManipulatorApp
 			</default_params>
 			<admin_function>true</admin_function>
+			<work_on_every_entrypoint>true</work_on_every_entrypoint>
 		</function>
 		<function>
 			<function_type>ANOMALY</function_type>

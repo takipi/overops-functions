@@ -102,11 +102,12 @@ public class RoutingFunction {
 		Set<String> createdLabels = Sets.newHashSet();
 
 		boolean hasModifications = false;
-		BatchModifyLabelsRequest.Builder builder = BatchModifyLabelsRequest.newBuilder().setServiceId(args.serviceId);
+		BatchModifyLabelsRequest.Builder builder = BatchModifyLabelsRequest.newBuilder().setServiceId(args.serviceId)
+				.setHandleSimilarEvents(input.handleSimilarEvents());
 
 		for (EventResult event : eventsResult.events) {
 			Pair<Collection<String>, Collection<String>> eventCategories = InfraUtil.categorizeEvent(event,
-					args.serviceId, categoryIds, categories, createdLabels, apiClient, false);
+					args.serviceId, categoryIds, categories, createdLabels, apiClient, false, false);
 
 			Collection<String> labelsToAdd = eventCategories.getFirst();
 			Collection<String> labelsToRemove = eventCategories.getSecond();
@@ -115,10 +116,6 @@ public class RoutingFunction {
 				builder.addLabelModifications(event.id, labelsToAdd, labelsToRemove);
 				hasModifications = true;
 			}
-		}
-
-		if (input.routing_type == CategoryType.app) {
-			builder.setHandleSimilarEvents(false);
 		}
 
 		if (!hasModifications) {
@@ -153,7 +150,7 @@ public class RoutingFunction {
 		Categories categories = getCategories(apiClient, args.serviceId, input);
 
 		InfraUtil.categorizeEvent(args.eventId, args.serviceId, categoryIds, categories, Sets.newHashSet(), apiClient,
-				true);
+				true, input.handleSimilarEvents());
 	}
 
 	private static Categories getCategories(ApiClient apiClient, String serviceId, RoutingInput input) {
@@ -193,6 +190,10 @@ public class RoutingFunction {
 
 		public List<Category> getCategories() {
 			return categories;
+		}
+
+		public boolean handleSimilarEvents() {
+			return (routing_type != CategoryType.app);
 		}
 
 		private List<Category> processNamespaces() {
