@@ -183,8 +183,8 @@ public class PeriodicAvgTimerFunction {
 				args.serviceId, args.viewId, baselineFrom, to, input.baseline_timespan_point_res);
 
 		GraphPerformanceCalculator calculator = GraphPerformanceCalculator.of(input.active_invocations_threshold,
-				input.baseline_invocations_threshold, input.min_delta_threshold, input.over_avg_slowing_percentage,
-				input.over_avg_critical_percentage, input.std_dev_factor);
+				input.baseline_invocations_threshold, input.min_delta_threshold, input.min_delta_threshold_percentage,
+				input.over_avg_slowing_percentage, input.over_avg_critical_percentage, input.std_dev_factor);
 
 		Map<TransactionGraph, PerformanceScore> performance = PerformanceUtil.getPerformanceStates(activeTransactions,
 				baselineTransactions, calculator);
@@ -499,6 +499,7 @@ public class PeriodicAvgTimerFunction {
 		public long active_invocations_threshold;
 		public long baseline_invocations_threshold;
 		public int min_delta_threshold;
+		public double min_delta_threshold_percentage;
 		public double over_avg_slowing_percentage;
 		public double over_avg_critical_percentage;
 		public double std_dev_factor;
@@ -513,6 +514,7 @@ public class PeriodicAvgTimerFunction {
 			// the default value, and only then reflectively set the fields.
 			//
 			this.timer_std_dev_factor = 1.0;
+			this.min_delta_threshold_percentage = 0.20;
 
 			initFields(raw);
 		}
