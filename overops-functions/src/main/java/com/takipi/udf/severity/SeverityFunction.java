@@ -154,7 +154,7 @@ public class SeverityFunction {
 		}
 
 		if (views.size() > 0) {
-			ViewUtil.createLabelViewsIfNotExists(args.apiClient(), args.serviceId, views, categoryId);
+			ViewUtil.createLabelViewsIfNotExists(args.apiClient(), args.serviceId, views, true, categoryId);
 		}
 	}
 

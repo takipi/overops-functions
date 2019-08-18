@@ -23,6 +23,7 @@ import com.takipi.udf.util.TestUtil;
 
 public class AppRoutingFunction {
 	private static final boolean SHARED = true;
+	private static final boolean IMMUTABLE_VIEWS = true;
 
 	public static String validateInput(String rawInput) {
 		return parseAppRoutingInput(rawInput).toString();
@@ -114,6 +115,7 @@ public class AppRoutingFunction {
 			viewInfo.filters = new ViewFilters();
 			viewInfo.filters.apps = Collections.singletonList(app);
 			viewInfo.shared = SHARED;
+			viewInfo.immutable = IMMUTABLE_VIEWS;
 
 			viewInfos.add(viewInfo);
 		}
