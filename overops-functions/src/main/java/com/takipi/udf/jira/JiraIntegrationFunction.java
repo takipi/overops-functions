@@ -7,8 +7,6 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-import com.amazonaws.services.lambda.runtime.Context;
-
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.takipi.api.client.ApiClient;
@@ -21,7 +19,7 @@ import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.input.Input;
-
+import com.takipi.udf.util.TestUtil;
 import com.atlassian.jira.rest.client.JiraRestClient;
 import com.atlassian.jira.rest.client.JiraRestClientFactory;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
@@ -187,13 +185,6 @@ public class JiraIntegrationFunction {
 		}
 	}
 
-	// for testing in aws lambda
-	public static void lambdaHandler(String input, Context context) {
-		System.out.println("lambdaHandler()");
-		System.out.println(input);
-		main(input.split(" "));
-	}
-
 	// for testing locally
 	public static void main(String[] args) {
 		Instant start = Instant.now(); // timer
@@ -203,15 +194,8 @@ public class JiraIntegrationFunction {
 				"java JiraIntegrationFunction API_URL API_KEY SERVICE_ID JIRA_URL JIRA_USER JIRA_PASS " + 
 				"DAYS RESOLVED_STATUS HIDDEN_STATUS");
 
-		ContextArgs contextArgs = new ContextArgs();
-
-		contextArgs.apiHost = args[0];
-		contextArgs.apiKey = args[1];
-		contextArgs.serviceId = args[2];
-
-		// Use "Jira UDF" View
-		SummarizedView view = ViewUtil.getServiceViewByName(contextArgs.apiClient(), contextArgs.serviceId, "Jira UDF");
-		contextArgs.viewId = view.id;
+		// Use "Jira UDF" view for testing
+		String rawContextArgs = TestUtil.getViewContextArgs(args, "Jira UDF");
 
 		// some test values
 		String[] sampleValues = new String[] {
@@ -223,7 +207,6 @@ public class JiraIntegrationFunction {
 			"hiddenStatus=" + args[8] // Won't Fix, Closed
 		};
 
-		String rawContextArgs = new Gson().toJson(contextArgs);
 		JiraIntegrationFunction.execute(rawContextArgs, String.join("\n", sampleValues));
 
 		Instant finish = Instant.now(); // timer
