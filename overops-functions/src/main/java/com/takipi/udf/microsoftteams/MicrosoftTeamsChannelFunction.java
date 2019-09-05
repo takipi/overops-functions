@@ -8,10 +8,8 @@ import com.takipi.api.client.data.service.SummarizedService;
 import com.takipi.api.client.data.view.SummarizedView;
 import com.takipi.api.client.request.event.EventRequest;
 import com.takipi.api.client.request.event.EventsRequest;
-import com.takipi.api.client.request.team.TeamMembersRequest;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsResult;
-import com.takipi.api.client.result.team.TeamMembersResult;
 import com.takipi.api.client.util.event.EventUtil;
 import com.takipi.api.client.util.validation.ValidationUtil;
 import com.takipi.api.client.util.view.ViewUtil;
@@ -21,6 +19,7 @@ import com.takipi.udf.ContextArgs;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
+import java.util.Base64;
 import java.util.List;
 
 import static com.takipi.udf.microsoftteams.MicrosoftTeamsUtil.getEventData;
@@ -28,7 +27,7 @@ import static com.takipi.udf.microsoftteams.MicrosoftTeamsUtil.getTimeSlot;
 
 public class MicrosoftTeamsChannelFunction {
 
-    public static final int MINUTES_TIME_SPAN = 5;
+    public static final int MINUTES_TIME_SPAN = 7005;
 
     public static String validateInput(String rawInput) {
         return getInput(rawInput).toString();
@@ -75,24 +74,26 @@ public class MicrosoftTeamsChannelFunction {
                 timeSlot.from, timeSlot.to, eventData.applications,
                 eventData.servers, eventData.deployments);
 
-        TeamMembersRequest teamMembersRequest = TeamMembersRequest.newBuilder().setServiceId(args.serviceId).build();
-        UrlClient.Response<TeamMembersResult> teamMembersResultResponse = apiClient.get(teamMembersRequest);
-
         MicrosoftTeamsChannelRequest microsoftTeamsChannelRequest = MicrosoftTeamsChannelRequest.newBuilder()
                 .setUrl(input.url)
                 .setEventResult(eventResultResponse.data)
-                .setExceptionLinkToOverOps(exceptionLinkToOverOps)
+                .setExceptionLink(exceptionLinkToOverOps)
                 .setServer(eventsGraph.machine_name)
                 .setApplication(eventsGraph.application_name)
                 .setEnvironmentName(getEnvironmentName(eventData.environments, args.serviceId))
                 .setDeployment(eventsGraph.deployment_name)
-                .setReportedBy(teamMembersResultResponse.data.team_members.get(0).email)
+                .setDoNotAlertLink(getDoNotAlertLink(args, eventResultResponse.data.type))
                 .build();
 
         UrlClient.Response<String> post = SimpleUrlClient.newBuilder().build().post(microsoftTeamsChannelRequest);
 
         if (post.isBadResponse())
             throw new IllegalStateException("Can't send card to " + input.url);
+    }
+
+    private static String getDoNotAlertLink(ContextArgs args, String exceptionType) {
+        return args.appHost + "/index.html?key=" + args.serviceId +
+                "&nav=alertset&nav=archivemailitem&exception_class=" + Base64.getEncoder().encodeToString(exceptionType.getBytes());
     }
 
     private static UrlClient.Response<EventResult> getEventResultResponse(ContextArgs args, ApiClient apiClient) {
@@ -163,7 +164,8 @@ public class MicrosoftTeamsChannelFunction {
         contextArgs.eventId = events.get(0).id;
 
         // set url similar to "url=https://outlook.office.com/webhook/..."
-        String rawInput = "url=https://outlook.office.com/webhook/...";
+        //String rawInput = "url=https://outlook.office.com/webhook/...";
+        String rawInput = "url=https://outlook.office.com/webhook/c6026788-b312-4945-9025-4b325396a4ec@6cafb6d8-a6b9-48e7-8761-0243a113f4a3/IncomingWebhook/c100819cbe804823b45e18591a3d0c96/9b2474ae-8678-46b8-917e-08f77f2605d9";
 
         // convert context args to a JSON string
         String rawContextArgs = new Gson().toJson(contextArgs);

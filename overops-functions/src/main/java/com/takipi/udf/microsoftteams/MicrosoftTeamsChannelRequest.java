@@ -7,6 +7,7 @@ import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.api.core.request.intf.ApiPostRequest;
 import com.takipi.udf.microsoftteams.card.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class MicrosoftTeamsChannelRequest implements ApiPostRequest<EmptyResult>
     private String server = "";
     private String environmentsName = "";
     private String reportedBy = "";
-
+    private String doNotAlertLink = "";
 
     public MicrosoftTeamsChannelRequest(String url,
                                         String exceptionLinkToOverOps,
@@ -36,7 +37,8 @@ public class MicrosoftTeamsChannelRequest implements ApiPostRequest<EmptyResult>
                                         String application,
                                         String server,
                                         String environmentsName,
-                                        String reportedBy) {
+                                        String reportedBy,
+                                        String doNotAlertLink) {
         this.url = url;
         this.exceptionLinkToOverOps = exceptionLinkToOverOps;
         this.exceptionClassName = exceptionClassName;
@@ -47,6 +49,7 @@ public class MicrosoftTeamsChannelRequest implements ApiPostRequest<EmptyResult>
         this.server = server;
         this.environmentsName = environmentsName;
         this.reportedBy = reportedBy;
+        this.doNotAlertLink = doNotAlertLink;
     }
 
     @Override
@@ -72,7 +75,8 @@ public class MicrosoftTeamsChannelRequest implements ApiPostRequest<EmptyResult>
                         .add("A new ").addBold(exceptionClassName).add(" in ")
                         .addBold(exceptionLocationPath)
                         .add(" has been detected in ").addBold(environmentsName)
-                        .add(" (alert added by ").addBold(reportedBy).add(")")
+                        .add(StringUtils.isNotEmpty(reportedBy) ?
+                                new MicrosoftTextBuilder().add(" (alert added by ").addBold(reportedBy).add(")").build() : "" )
                         .build())
                 .addSections(new MicrosoftTextSection(new MicrosoftTextBuilder()
                                 .addLink(exceptionLinkToOverOps, exceptionClassName)
@@ -89,7 +93,7 @@ public class MicrosoftTeamsChannelRequest implements ApiPostRequest<EmptyResult>
                                 .build(),
                         MicrosoftPotentialAction.newBuilder()
                                 .setName("Do not alert on new " + exceptionClassName)
-                                .addTargets(new MicrosoftTarget("TD Link to turnoff alerting"))
+                                .addTargets(new MicrosoftTarget(doNotAlertLink))
                                 .build())
                 .build();
 
@@ -114,8 +118,9 @@ public class MicrosoftTeamsChannelRequest implements ApiPostRequest<EmptyResult>
         private String server = "";
         private String environmentsName = "";
         private String url;
-        private String exceptionLinkToOverOps = "";
+        private String exceptionLink = "";
         private String reportedBy = "";
+        private String doNotAlertLink = "";
 
         public Builder setUrl(String url) {
             this.url = url;
@@ -133,8 +138,8 @@ public class MicrosoftTeamsChannelRequest implements ApiPostRequest<EmptyResult>
             return this;
         }
 
-        public Builder setExceptionLinkToOverOps(String exceptionLinkToOverOps) {
-            this.exceptionLinkToOverOps = exceptionLinkToOverOps;
+        public Builder setExceptionLink(String exceptionLink) {
+            this.exceptionLink = exceptionLink;
             return this;
         }
 
@@ -166,11 +171,16 @@ public class MicrosoftTeamsChannelRequest implements ApiPostRequest<EmptyResult>
             return this;
         }
 
+        public Builder setDoNotAlertLink(String doNotAlertLink) {
+            this.doNotAlertLink = doNotAlertLink;
+            return this;
+        }
+
         public MicrosoftTeamsChannelRequest build() {
-            return new MicrosoftTeamsChannelRequest(url, exceptionLinkToOverOps, exceptionClassName,
+            return new MicrosoftTeamsChannelRequest(url, exceptionLink, exceptionClassName,
                     exceptionLocationPath, stack_frames, deployment,
                     application, server, environmentsName,
-                    reportedBy);
+                    reportedBy, doNotAlertLink);
         }
     }
 }
