@@ -69,7 +69,7 @@ public class MicrosoftTeamsAnomalyFunction {
                 .setUrl(input.url)
                 .setEnvironmentsName(getEnvironmentName(eventData.environments, args.serviceId))
                 .setViewErrorsLink(viewErrorsLink)
-                .setManageSettingsLink("https://app.overops.com/index.html?nav=mailset")
+                .setManageSettingsLink(getManageSettingsLink(args))
                 .setReportedByName(getReporterMail(args, apiClient))
                 .setViewErrorsLink(viewErrorsLink)
                 .setThresholdCount(String.valueOf(input.threshold))
@@ -84,11 +84,15 @@ public class MicrosoftTeamsAnomalyFunction {
             throw new IllegalStateException("Can't send anomaly card to " + input.url);
     }
 
+    private static String getManageSettingsLink(ContextArgs args) {
+        return args.appHost + "/index.html?key=" + args.serviceId + "&nav=alertset";
+    }
+
     private static String getViewLink(ContextArgs args, String viewName){
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("https://app.overops.com/index.html?key=").append(args.serviceId).append("&timeframe=last-24-hours");
+        stringBuilder.append(args.appHost).append("/index.html?key=").append(args.serviceId).append("&timeframe=last-24-hours");
         try {
-            stringBuilder.append(URLEncoder.encode(viewName, StandardCharsets.UTF_8.toString()));
+            stringBuilder.append("&view=").append(URLEncoder.encode(viewName, StandardCharsets.UTF_8.toString()));
         } catch (Exception e) {System.out.println("Couldn't encode " + viewName);}
         return  stringBuilder.toString();
     }
