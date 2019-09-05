@@ -5,10 +5,8 @@ import com.google.gson.Gson;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.view.SummarizedView;
 import com.takipi.api.client.request.event.EventsVolumeRequest;
-import com.takipi.api.client.request.team.TeamMembersRequest;
 import com.takipi.api.client.request.view.ViewRequest;
 import com.takipi.api.client.result.event.EventsResult;
-import com.takipi.api.client.result.team.TeamMembersResult;
 import com.takipi.api.client.result.view.ViewResult;
 import com.takipi.api.client.util.validation.ValidationUtil;
 import com.takipi.api.client.util.view.ViewUtil;
@@ -94,17 +92,6 @@ public class MicrosoftTeamsAnomalyFunction {
             stringBuilder.append("&view=").append(URLEncoder.encode(viewName, StandardCharsets.UTF_8.toString()));
         } catch (Exception e) {System.out.println("Couldn't encode " + viewName);}
         return  stringBuilder.toString();
-    }
-
-    private static String getReporterMail(ContextArgs args, ApiClient apiClient) {
-        String reporterMail = "";
-        TeamMembersRequest teamMembersRequest = TeamMembersRequest.newBuilder().setServiceId(args.serviceId).build();
-        UrlClient.Response<TeamMembersResult> teamMembersResultResponse = apiClient.get(teamMembersRequest);
-        if (teamMembersResultResponse.isOK() && teamMembersResultResponse.data.team_members != null && teamMembersResultResponse.data.team_members.size() > 0) {
-            reporterMail = teamMembersResultResponse.data.team_members.get(0).email;
-        }
-
-        return reporterMail;
     }
 
     private static long getHitSum(UrlClient.Response<EventsResult> volumeResponse) {

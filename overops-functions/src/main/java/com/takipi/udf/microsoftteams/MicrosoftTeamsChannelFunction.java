@@ -27,7 +27,7 @@ import static com.takipi.udf.microsoftteams.MicrosoftTeamsUtil.getTimeSlot;
 
 public class MicrosoftTeamsChannelFunction {
 
-    public static final int MINUTES_TIME_SPAN = 7005;
+    public static final int MINUTES_TIME_SPAN = 5;
 
     public static String validateInput(String rawInput) {
         return getInput(rawInput).toString();
@@ -164,8 +164,7 @@ public class MicrosoftTeamsChannelFunction {
         contextArgs.eventId = events.get(0).id;
 
         // set url similar to "url=https://outlook.office.com/webhook/..."
-        //String rawInput = "url=https://outlook.office.com/webhook/...";
-        String rawInput = "url=https://outlook.office.com/webhook/c6026788-b312-4945-9025-4b325396a4ec@6cafb6d8-a6b9-48e7-8761-0243a113f4a3/IncomingWebhook/c100819cbe804823b45e18591a3d0c96/9b2474ae-8678-46b8-917e-08f77f2605d9";
+        String rawInput = "url=https://outlook.office.com/webhook/...";
 
         // convert context args to a JSON string
         String rawContextArgs = new Gson().toJson(contextArgs);
