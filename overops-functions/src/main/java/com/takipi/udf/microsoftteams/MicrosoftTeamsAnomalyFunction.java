@@ -70,7 +70,6 @@ public class MicrosoftTeamsAnomalyFunction {
                 .setEnvironmentsName(getEnvironmentName(eventData.environments, args.serviceId))
                 .setViewErrorsLink(viewErrorsLink)
                 .setManageSettingsLink(getManageSettingsLink(args))
-                .setReportedByName(getReporterMail(args, apiClient))
                 .setViewErrorsLink(viewErrorsLink)
                 .setThresholdCount(String.valueOf(input.threshold))
                 .setEventsVolume(volumeResponse.data.events, apiClient, args, timeSlot, eventData)

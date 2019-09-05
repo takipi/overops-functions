@@ -9,6 +9,7 @@ import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.api.core.request.intf.ApiPostRequest;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.microsoftteams.card.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -94,7 +95,8 @@ public class MicrosoftTeamsAnomalyRequest implements ApiPostRequest<EmptyResult>
                 .add("Events in view ").addBold(viewName).add(" have occurred more than ")
                 .addBold(thresholdCount)
                 .add(" has been detected in ").addBold(environmentsName)
-                .add(" (alert added by ").addBold(reportedByName).add(")")
+                .add(StringUtils.isNotEmpty(reportedByName) ?
+                        new MicrosoftTextBuilder().add(" (alert added by ").addBold(reportedByName).add(")").build() : "" )
                 .build();
     }
 
