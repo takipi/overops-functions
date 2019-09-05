@@ -93,7 +93,7 @@ public class MicrosoftTeamsChannelFunction {
 
     private static String getDoNotAlertLink(ContextArgs args, String exceptionType) {
         return args.appHost + "/index.html?key=" + args.serviceId +
-                "&nav=alertset&nav=archivemailitem&exception_class=" + Base64.getEncoder().encodeToString(exceptionType.getBytes());
+                "&nav=archivemailitem&exception_class=" + Base64.getEncoder().encodeToString(exceptionType.getBytes());
     }
 
     private static UrlClient.Response<EventResult> getEventResultResponse(ContextArgs args, ApiClient apiClient) {
