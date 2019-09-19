@@ -11,6 +11,8 @@ public class ContextArgs {
 	public String appHost;
 	public String apiHost;
 	public String serviceId;
+	public String libraryId;
+	public String functionId;
 	public String eventId;
 	public String viewId;
 	public String apiKey;
