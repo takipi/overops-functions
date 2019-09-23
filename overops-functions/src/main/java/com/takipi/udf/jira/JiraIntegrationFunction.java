@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.atlassian.jira.rest.client.JiraRestClient;
 import com.atlassian.jira.rest.client.JiraRestClientFactory;
+import com.atlassian.jira.rest.client.domain.Session;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -62,6 +63,29 @@ public class JiraIntegrationFunction {
 			throw new IllegalArgumentException("'jiraPassword' is required");
 		}
 
+		// validate credentials by logging in
+		JiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
+
+		URI uri;
+
+		try {
+			uri = new URI(input.jiraURL);
+
+			// Construct the JRJC client
+			JiraRestClient client = factory.createWithBasicHttpAuthentication(uri, input.jiraUsername, input.jiraPassword);
+
+			// Make the client log in by requesting session info
+			Session session = client.getSessionClient().getCurrentSession().claim();
+			System.out.println("Valid login, username: " + session.getUsername());
+
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException("Invalid URL. Check jiraURL and try again");
+		} catch (Exception e) {
+			// invalid credentials results in org.codehaus.jettison.json.JSONException in JiraClient
+			throw new IllegalArgumentException("Invalid credentials. Unable to authenticate with Jira.");
+		}
+
+
 		if (StringUtils.isEmpty(input.resolvedStatus)) {
 			throw new IllegalArgumentException("'resolvedStatus' is required");
 		}
@@ -103,6 +127,11 @@ public class JiraIntegrationFunction {
 
 		} catch (URISyntaxException e) {
 			System.out.println("Caught URISyntaxException. Check jiraURL and try again.");
+			System.out.println(e.getMessage());
+			System.exit(1);
+		} catch (Exception e) {
+			// invalid credentials results in org.codehaus.jettison.json.JSONException in JiraClient
+			System.out.println("Caught Exception from Jira Client.");
 			System.out.println(e.getMessage());
 			System.exit(1);
 		}
