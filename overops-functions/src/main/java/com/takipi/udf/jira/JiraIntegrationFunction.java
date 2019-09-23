@@ -77,7 +77,6 @@ public class JiraIntegrationFunction {
 			// Make the client log in by requesting session info
 			Session session = client.getSessionClient().getCurrentSession().claim();
 			System.out.println("Valid login, username: " + session.getUsername());
-
 		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException("Invalid URL. Check jiraURL and try again");
 		} catch (Exception e) {
@@ -135,6 +134,8 @@ public class JiraIntegrationFunction {
 			System.out.println(e.getMessage());
 			System.exit(1);
 		}
+
+		System.exit(0);
 	}
 
 	// fetch overops events that have a jira url from the last int days
@@ -245,7 +246,11 @@ public class JiraIntegrationFunction {
 				"hiddenStatus=" + args[8]		// Won't Fix, Closed
 		};
 
-		JiraIntegrationFunction.execute(rawContextArgs, String.join("\n", sampleValues));
+		try {
+			JiraIntegrationFunction.execute(rawContextArgs, String.join("\n", sampleValues));
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
 
 		Instant finish = Instant.now(); // timer
 		long timeElapsed = Duration.between(start, finish).toMillis(); // in millis
@@ -253,5 +258,7 @@ public class JiraIntegrationFunction {
 		System.err.print("Sync complete. Time elapsed: ");
 		System.err.print(timeElapsed);
 		System.err.println("ms");
+
+		System.exit(0);
 	}
 }
