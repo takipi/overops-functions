@@ -194,7 +194,7 @@ public class MicrosoftTeamsAnomalyRequest implements ApiPostRequest<EmptyResult>
                         .add(evt.error_location.prettified_name)
                         .add("| ")
                         .addBold(String.valueOf(evt.stats.hits))
-                        .addBold(evt.stats.hits > 1 ? " times" : "time")
+                        .addBold(evt.stats.hits > 1 ? " times" : " time")
                         .build());
                 eventSections.add(microsoftTextSection);
             });
