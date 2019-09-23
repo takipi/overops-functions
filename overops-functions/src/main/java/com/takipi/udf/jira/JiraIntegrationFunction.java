@@ -59,8 +59,8 @@ public class JiraIntegrationFunction {
 			throw new IllegalArgumentException("'jiraUsername' is required");
 		}
 
-		if (StringUtils.isEmpty(input.jiraPassword)) {
-			throw new IllegalArgumentException("'jiraPassword' is required");
+		if (StringUtils.isEmpty(input.jiraToken)) {
+			throw new IllegalArgumentException("'jiraToken' is required");
 		}
 
 		// validate credentials by logging in
@@ -72,7 +72,7 @@ public class JiraIntegrationFunction {
 			uri = new URI(input.jiraURL);
 
 			// Construct the JRJC client
-			JiraRestClient client = factory.createWithBasicHttpAuthentication(uri, input.jiraUsername, input.jiraPassword);
+			JiraRestClient client = factory.createWithBasicHttpAuthentication(uri, input.jiraUsername, input.jiraToken);
 
 			// Make the client log in by requesting session info
 			Session session = client.getSessionClient().getCurrentSession().claim();
@@ -116,7 +116,7 @@ public class JiraIntegrationFunction {
 
 			// Construct the JRJC client
 			JiraRestClient client = factory.createWithBasicHttpAuthentication(uri, input.jiraUsername,
-					input.jiraPassword);
+					input.jiraToken);
 
 			// fetch events with jira issue URLs
 			JiraEventList jiraEvents = fetchJiraEvents(args, input);
@@ -199,7 +199,7 @@ public class JiraIntegrationFunction {
 
 		public String jiraURL;
 		public String jiraUsername;
-		public String jiraPassword;
+		public String jiraToken;
 
 		public String resolvedStatus;
 		public String hiddenStatus;
@@ -240,7 +240,7 @@ public class JiraIntegrationFunction {
 		String[] sampleValues = new String[] {
 				"jiraURL=" + args[3],
 				"jiraUsername=" + args[4],
-				"jiraPassword=" + args[5],
+				"jiraToken=" + args[5],
 				"days=" + args[6],				// 14
 				"resolvedStatus=" + args[7],	// Resolved
 				"hiddenStatus=" + args[8]		// Won't Fix, Closed

@@ -293,7 +293,7 @@
 
 				# For cloud-hosted Jira, use API token.
 				# For self-hosted Jira, use password.
-				jiraPassword=
+				jiraToken=
 
 				# Jira status for "Resolved" in OverOps
 				resolvedStatus=Resolved
