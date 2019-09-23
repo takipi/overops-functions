@@ -27,10 +27,13 @@ import com.takipi.common.util.TimeUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.input.Input;
 import com.takipi.udf.input.TimeInterval;
+import com.takipi.udf.quality.gate.CriticalVolumeGate;
 import com.takipi.udf.quality.gate.IncreasingErrorsGate;
 import com.takipi.udf.quality.gate.NewEventsGate;
 import com.takipi.udf.quality.gate.QualityGate;
 import com.takipi.udf.quality.gate.SlowdownsGate;
+import com.takipi.udf.quality.gate.UniqueEventsGate;
+import com.takipi.udf.quality.gate.VolumeGate;
 
 public class QualityGatesFunction {
 	private static final String SETTINGS_SUFFIX = "-settings";
@@ -270,15 +273,15 @@ public class QualityGatesFunction {
 			}
 
 			if (min_unique_events > 0) {
-
+				gates.add(new UniqueEventsGate(min_unique_events));
 			}
 
 			if (min_total_volume > 0) {
-
+				gates.add(new VolumeGate(min_total_volume));
 			}
 
 			if (min_critical_volume > 0) {
-
+				gates.add(new CriticalVolumeGate(min_critical_volume));
 			}
 
 			return gates;
