@@ -22,8 +22,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import java.util.Base64;
 import java.util.List;
 
-import static com.takipi.udf.microsoftteams.MicrosoftTeamsUtil.getEventData;
-import static com.takipi.udf.microsoftteams.MicrosoftTeamsUtil.getTimeSlot;
+import static com.takipi.udf.microsoftteams.MicrosoftTeamsUtil.*;
 
 public class MicrosoftTeamsChannelFunction {
 
@@ -51,29 +50,40 @@ public class MicrosoftTeamsChannelFunction {
     }
 
     public static void execute(String rawContextArgs, String rawInput) {
-        MicrosoftTeamsInput input = getInput(rawInput);
+        try {
+            executeImplementation(rawContextArgs, rawInput);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
+    private static void executeImplementation(String rawContextArgs, String rawInput) {
+        logUDFInput(rawContextArgs, rawInput);
+        MicrosoftTeamsInput input = getInput(rawInput);
         ContextArgs args = (new Gson()).fromJson(rawContextArgs, ContextArgs.class);
 
         if (!args.validate())
             throw new IllegalArgumentException("Bad context args: " + rawContextArgs);
-
         if (!args.eventValidate())
             return;
 
         ApiClient apiClient = args.apiClient();
-
         UrlClient.Response<EventResult> eventResultResponse = getEventResultResponse(args, apiClient);
+        System.out.println("Got exceptionClassName, exception type, exceptionLocationPath, stack_frames, deployment");
         MicrosoftTeamsUtil.EventData eventData = getEventData(apiClient, args);
-
+        System.out.println("Got applications, environments, deployments and servers");
         MicrosoftTeamsUtil.TimeSlot timeSlot = getTimeSlot(MINUTES_TIME_SPAN);
 
-        Graph eventsGraph = ViewUtil.getEventsGraph(apiClient, args.serviceId, args.viewId,
+        SummarizedView view = getSummarizedView(rawContextArgs, args, apiClient);
+        System.out.println("Got viewId");
+
+        Graph eventsGraph = ViewUtil.getEventsGraph(apiClient, args.serviceId, view.id,
                 1, ValidationUtil.VolumeType.all, timeSlot.from, timeSlot.to);
+        System.out.println("Got machine_name, application_name, deployment_name");
         String exceptionLinkToOverOps = EventUtil.getEventRecentLink(apiClient, args.serviceId, args.eventId,
                 timeSlot.from, timeSlot.to, eventData.applications,
                 eventData.servers, eventData.deployments);
-
+        System.out.println("Got ARC link");
         MicrosoftTeamsChannelRequest microsoftTeamsChannelRequest = MicrosoftTeamsChannelRequest.newBuilder()
                 .setUrl(input.url)
                 .setEventResult(eventResultResponse.data)
@@ -84,8 +94,8 @@ public class MicrosoftTeamsChannelFunction {
                 .setDeployment(eventsGraph.deployment_name)
                 .setDoNotAlertLink(getDoNotAlertLink(args, eventResultResponse.data.type))
                 .build();
-
         UrlClient.Response<String> post = SimpleUrlClient.newBuilder().build().post(microsoftTeamsChannelRequest);
+        System.out.println("Post Microsoft Teams Webhook Channel request");
 
         if (post.isBadResponse())
             throw new IllegalStateException("Can't send card to " + input.url);
@@ -125,38 +135,28 @@ public class MicrosoftTeamsChannelFunction {
 
         // get "All Events" view
         SummarizedView view = ViewUtil.getServiceViewByName(contextArgs.apiClient(), contextArgs.serviceId,
-                "view 2");
-
+                "view2");
         contextArgs.viewId = view.id;
-
         MicrosoftTeamsUtil.TimeSlot timeSlot = getTimeSlot(MINUTES_TIME_SPAN);
-
         // date parameter must be properly formatted
         DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();
-
         // get all events within the date range
         EventsRequest eventsRequest = EventsRequest.newBuilder().setServiceId(contextArgs.serviceId)
                 .setViewId(contextArgs.viewId).setFrom(timeSlot.from.toString(fmt)).setTo(timeSlot.to.toString(fmt)).build();
-
         // create a new API Client
         ApiClient apiClient = contextArgs.apiClient();
-
         // execute API GET request
         UrlClient.Response<EventsResult> eventsResponse = apiClient.get(eventsRequest);
-
         // check for a bad API response
         if (eventsResponse.isBadResponse())
             throw new IllegalStateException("Failed getting events.");
-
         // retrieve event data from the result
         EventsResult eventsResult = eventsResponse.data;
-
         // exit if there are no events - increase date range if this occurs
         if (CollectionUtil.safeIsEmpty(eventsResult.events)) {
             System.out.println("NO EVENTS");
             return;
         }
-
         // retrieve a list of events from the result
         List<EventResult> events = eventsResult.events;
 
@@ -165,7 +165,6 @@ public class MicrosoftTeamsChannelFunction {
 
         // set url similar to "url=https://outlook.office.com/webhook/..."
         String rawInput = "url=https://outlook.office.com/webhook/...";
-
         // convert context args to a JSON string
         String rawContextArgs = new Gson().toJson(contextArgs);
 
@@ -180,14 +179,15 @@ public class MicrosoftTeamsChannelFunction {
             contextArgs.apiHost = "https://api.overops.com";
             contextArgs.apiKey = "api_token";
             contextArgs.serviceId = "SXXXXX";
-        } else  {
+        } else {
             // pass API Host, Key, and Service ID as command line arguments
-            if ((args == null) || (args.length < 3))
+            if ((args == null) || (args.length < 4))
                 throw new IllegalArgumentException("java MicrosoftTeamsFunction");
 
             contextArgs.apiHost = args[0];
             contextArgs.apiKey = args[1];
             contextArgs.serviceId = args[2];
+            contextArgs.appHost = args[3];
         }
 
         return contextArgs;

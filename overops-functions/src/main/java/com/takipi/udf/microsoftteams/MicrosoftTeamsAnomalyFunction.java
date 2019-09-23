@@ -9,7 +9,6 @@ import com.takipi.api.client.request.view.ViewRequest;
 import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.client.result.view.ViewResult;
 import com.takipi.api.client.util.validation.ValidationUtil;
-import com.takipi.api.client.util.view.ViewUtil;
 import com.takipi.api.core.url.UrlClient;
 import com.takipi.udf.ContextArgs;
 import org.joda.time.format.DateTimeFormatter;
@@ -20,44 +19,47 @@ import java.nio.charset.StandardCharsets;
 
 import static com.takipi.udf.microsoftteams.MicrosoftTeamsChannelFunction.getContextArgs;
 import static com.takipi.udf.microsoftteams.MicrosoftTeamsChannelFunction.getEnvironmentName;
-import static com.takipi.udf.microsoftteams.MicrosoftTeamsUtil.getEventData;
-import static com.takipi.udf.microsoftteams.MicrosoftTeamsUtil.getTimeSlot;
+import static com.takipi.udf.microsoftteams.MicrosoftTeamsUtil.*;
 
 public class MicrosoftTeamsAnomalyFunction {
+
     public static String validateInput(String rawInput) {
         return getInput(rawInput).toString();
     }
 
     public static void execute(String rawContextArgs, String rawInput) {
+        try {
+            executeImplementation(rawContextArgs, rawInput);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void executeImplementation(String rawContextArgs, String rawInput) {
+        logUDFInput(rawContextArgs, rawInput);
         MicrosoftTeamsAnomalyInput input = getInput(rawInput);
-
         ContextArgs args = (new Gson()).fromJson(rawContextArgs, ContextArgs.class);
-
-        System.out.println("execute context: " + rawContextArgs);
-
         if (!args.validate())
             throw new IllegalArgumentException("Bad context args: " + rawContextArgs);
 
-        if (!args.viewValidate())
-            return;
-
         ApiClient apiClient = args.apiClient();
-
         MicrosoftTeamsUtil.TimeSlot timeSlot = getTimeSlot(input.timespan);
 
         DateTimeFormatter fmt = ISODateTimeFormat.dateTime().withZoneUTC();
 
+        SummarizedView view = getSummarizedView(rawContextArgs, args, apiClient);
+        System.out.println("Got viewId");
+
         EventsVolumeRequest eventsVolumeRequest = EventsVolumeRequest.newBuilder().setServiceId(args.serviceId)
-                .setViewId(args.viewId).setFrom(timeSlot.from.toString(fmt)).setTo(timeSlot.to.toString(fmt))
+                .setViewId(view.id).setFrom(timeSlot.from.toString(fmt)).setTo(timeSlot.to.toString(fmt))
                 .setVolumeType(ValidationUtil.VolumeType.all).build();
         UrlClient.Response<EventsResult> volumeResponse = apiClient.get(eventsVolumeRequest);
-
+        System.out.println("Got events volume data ");
         MicrosoftTeamsUtil.EventData eventData = getEventData(apiClient, args);
-
-        String viewName = getViewName(args, apiClient);
-
+        System.out.println("Got applications, environments, deployments and servers");
+        String viewName = getViewName(args, apiClient, view.id);
         String viewErrorsLink = getViewLink(args, viewName);
-
+        System.out.println("Got View link");
         long hitSum = getHitSum(volumeResponse);
         if (input.threshold != 0 && input.threshold > hitSum) {
             return;
@@ -66,7 +68,6 @@ public class MicrosoftTeamsAnomalyFunction {
         MicrosoftTeamsAnomalyRequest microsoftTeamsAnomalyRequest = MicrosoftTeamsAnomalyRequest.newBuilder()
                 .setUrl(input.url)
                 .setEnvironmentsName(getEnvironmentName(eventData.environments, args.serviceId))
-                .setViewErrorsLink(viewErrorsLink)
                 .setManageSettingsLink(getManageSettingsLink(args))
                 .setViewErrorsLink(viewErrorsLink)
                 .setThresholdCount(String.valueOf(input.threshold))
@@ -75,8 +76,8 @@ public class MicrosoftTeamsAnomalyFunction {
                 .setTotalEventsOccurred(String.valueOf(hitSum))
                 .setViewName(viewName)
                 .build();
-
         UrlClient.Response<String> post = SimpleUrlClient.newBuilder().build().post(microsoftTeamsAnomalyRequest);
+        System.out.println("Post Microsoft Teams Webhook Anomaly request");
         if (post.isBadResponse())
             throw new IllegalStateException("Can't send anomaly card to " + input.url);
     }
@@ -104,10 +105,10 @@ public class MicrosoftTeamsAnomalyFunction {
         return hitSum;
     }
 
-    private static String getViewName(ContextArgs args, ApiClient apiClient) {
+    private static String getViewName(ContextArgs args, ApiClient apiClient, String viewId) {
         String viewName = "";
 
-        ViewRequest viewRequest = ViewRequest.newBuilder().setServiceId(args.serviceId).setViewId(args.viewId).build();
+        ViewRequest viewRequest = ViewRequest.newBuilder().setServiceId(args.serviceId).setViewId(viewId).build();
         UrlClient.Response<ViewResult> viewResultResponse = apiClient.get(viewRequest);
         if (viewResultResponse.isOK()) viewName = viewResultResponse.data.name;
 
@@ -144,16 +145,13 @@ public class MicrosoftTeamsAnomalyFunction {
     public static void main(String[] args) {
         ContextArgs contextArgs = getContextArgs(args);
 
-        SummarizedView view = ViewUtil.getServiceViewByName(contextArgs.apiClient(), contextArgs.serviceId,
-                "All Exceptions (1)");
-
-        contextArgs.viewId = view.id;
-
         String rawContextArgs = new Gson().toJson(contextArgs);
         String rawInput = "url=https://outlook.office.com/webhook/..." +
                 "\n" +
                 "timespan=5" + "\n" +
                 "threshold = 1";
+
+
         MicrosoftTeamsAnomalyFunction.execute(rawContextArgs, rawInput);
     }
 }
