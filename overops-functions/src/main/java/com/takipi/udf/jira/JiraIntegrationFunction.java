@@ -28,7 +28,30 @@ import com.takipi.udf.util.TestUtil;
 public class JiraIntegrationFunction {
 
 	public static String validateInput(String rawInput) {
-		return getJiraIntegrationInput(rawInput).toString();
+		JiraIntegrationInput input = getJiraIntegrationInput(rawInput);
+
+		// validate credentials by logging in
+		JiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
+
+		URI uri;
+
+		try {
+			uri = new URI(input.jiraURL);
+
+			// Construct the JRJC client
+			JiraRestClient client = factory.createWithBasicHttpAuthentication(uri, input.jiraUsername, input.jiraToken);
+
+			// Make the client log in by requesting session info
+			Session session = client.getSessionClient().getCurrentSession().claim();
+			System.out.println("Valid login, username: " + session.getUsername());
+		} catch (URISyntaxException e) {
+			throw new IllegalArgumentException("Invalid URL. Check jiraURL and try again");
+		} catch (Exception e) {
+			// invalid credentials results in org.codehaus.jettison.json.JSONException in JiraClient
+			throw new IllegalArgumentException("Invalid credentials. Unable to authenticate with Jira.");
+		}
+
+		return input.toString();
 	}
 
 	static JiraIntegrationInput getJiraIntegrationInput(String rawInput) {
@@ -62,28 +85,6 @@ public class JiraIntegrationFunction {
 		if (StringUtils.isEmpty(input.jiraToken)) {
 			throw new IllegalArgumentException("'jiraToken' is required");
 		}
-
-		// validate credentials by logging in
-		JiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
-
-		URI uri;
-
-		try {
-			uri = new URI(input.jiraURL);
-
-			// Construct the JRJC client
-			JiraRestClient client = factory.createWithBasicHttpAuthentication(uri, input.jiraUsername, input.jiraToken);
-
-			// Make the client log in by requesting session info
-			Session session = client.getSessionClient().getCurrentSession().claim();
-			System.out.println("Valid login, username: " + session.getUsername());
-		} catch (URISyntaxException e) {
-			throw new IllegalArgumentException("Invalid URL. Check jiraURL and try again");
-		} catch (Exception e) {
-			// invalid credentials results in org.codehaus.jettison.json.JSONException in JiraClient
-			throw new IllegalArgumentException("Invalid credentials. Unable to authenticate with Jira.");
-		}
-
 
 		if (StringUtils.isEmpty(input.resolvedStatus)) {
 			throw new IllegalArgumentException("'resolvedStatus' is required");
