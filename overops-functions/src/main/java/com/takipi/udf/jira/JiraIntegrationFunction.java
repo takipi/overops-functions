@@ -41,9 +41,8 @@ public class JiraIntegrationFunction {
 			// Construct the JRJC client
 			JiraRestClient client = factory.createWithBasicHttpAuthentication(uri, input.jiraUsername, input.jiraToken);
 
-			// Make the client log in by requesting session info
-			Session session = client.getSessionClient().getCurrentSession().claim();
-			System.out.println("Valid login, username: " + session.getUsername());
+			// Make the client log in by performing a search
+			client.getSearchClient().searchJql("").claim();
 		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException("Invalid URL. Check jiraURL and try again");
 		} catch (Exception e) {
