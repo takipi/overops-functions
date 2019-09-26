@@ -1,9 +1,8 @@
 package com.takipi.udf.quality.gate;
 
 import com.takipi.api.client.functions.input.ReliabilityReportInput;
-import com.takipi.api.client.functions.output.EventRow;
+import com.takipi.api.client.functions.output.ReliabilityReportRow;
 import com.takipi.api.client.functions.output.Series;
-import com.takipi.api.client.functions.output.SeriesRow;
 import com.takipi.udf.quality.QualityGateType;
 
 public class CriticalVolumeGate extends QualityGate {
@@ -26,19 +25,17 @@ public class CriticalVolumeGate extends QualityGate {
 
 	@Override
 	protected String getRelevantSeriesType() {
-		return ReliabilityReportInput.FAILURES_SERIES;
+		return ReliabilityReportInput.RELIABITY_REPORT_SERIES;
 	}
 
 	@Override
 	protected boolean isBreached(Series series) {
-		long totalVolume = 0;
-
-		for (SeriesRow row : series) {
-			EventRow eventRow = (EventRow) row;
-
-			totalVolume += eventRow.hits;
+		if (series.size() == 0) {
+			return false;
 		}
 
-		return (totalVolume >= volume);
+		ReliabilityReportRow report = (ReliabilityReportRow) series.iterator().next();
+
+		return (report.failureVolume >= volume);
 	}
 }

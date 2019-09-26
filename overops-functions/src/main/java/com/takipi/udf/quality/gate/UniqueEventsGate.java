@@ -1,6 +1,7 @@
 package com.takipi.udf.quality.gate;
 
 import com.takipi.api.client.functions.input.ReliabilityReportInput;
+import com.takipi.api.client.functions.output.ReliabilityReportRow;
 import com.takipi.api.client.functions.output.Series;
 import com.takipi.udf.quality.QualityGateType;
 
@@ -24,11 +25,17 @@ public class UniqueEventsGate extends QualityGate {
 
 	@Override
 	protected String getRelevantSeriesType() {
-		return ReliabilityReportInput.ERRORS_SERIES;
+		return ReliabilityReportInput.RELIABITY_REPORT_SERIES;
 	}
 
 	@Override
 	protected boolean isBreached(Series series) {
-		return (series.size() >= amount);
+		if (series.size() == 0) {
+			return false;
+		}
+
+		ReliabilityReportRow report = (ReliabilityReportRow) series.iterator().next();
+
+		return (report.errorCount >= amount);
 	}
 }
