@@ -17,12 +17,12 @@ public class IncreasingErrorsGate extends QualityGate {
 
 	@Override
 	public QualityGateType getType() {
-		return QualityGateType.NEW_EVENTS;
+		return QualityGateType.INCREASING_EVENTS;
 	}
 
 	@Override
 	public String getDesc() {
-		return "New Events(" + (criticalOnly ? "critical" : "all") + ")";
+		return "Increasing Errors(" + (criticalOnly ? "critical" : "all") + ")";
 	}
 
 	@Override

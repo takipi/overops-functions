@@ -16,12 +16,12 @@ public class CriticalVolumeGate extends QualityGate {
 
 	@Override
 	public QualityGateType getType() {
-		return QualityGateType.TOTAL_VOLUME;
+		return QualityGateType.CRITICAL_EVENTS_VOLUME;
 	}
 
 	@Override
 	public String getDesc() {
-		return "Volume(" + volume + ")";
+		return "Critical Volume(" + volume + ")";
 	}
 
 	@Override

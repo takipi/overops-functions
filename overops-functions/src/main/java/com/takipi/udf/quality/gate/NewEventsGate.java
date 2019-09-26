@@ -22,7 +22,7 @@ public class NewEventsGate extends QualityGate {
 
 	@Override
 	public String getDesc() {
-		return "Increasing Errors(" + (criticalOnly ? "critical" : "all") + ")";
+		return "New Events(" + (criticalOnly ? "critical" : "all") + ")";
 	}
 
 	@Override
