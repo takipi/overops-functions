@@ -277,5 +277,33 @@
 			</default_params>
 			<admin_function>true</admin_function>
 		</function>
+		<function>
+			<function_type>ANOMALY</function_type>
+			<function_name>Sync Jira</function_name>
+			<description>
+				Sync events with Jira.
+			</description>
+			<param_type>TEXT</param_type>
+			<class_file>com.takipi.udf.jira.JiraIntegrationFunction</class_file>
+			<default_params>
+				# Sync events from the last {timespan} days
+				days=30
+
+				# Jira endpoint and credentials
+				jiraURL=
+				jiraUsername=
+
+				# For cloud-hosted Jira, use API token.
+				# For self-hosted Jira, use password.
+				jiraToken=
+
+				# Jira status for "Resolved" in OverOps
+				resolvedStatus=Resolved
+
+				# Jira status for "Hidden" in OverOps
+				hiddenStatus=Won't Fix
+			</default_params>
+			<admin_function>true</admin_function>
+		</function>
 	</functions>
 </udf_manifest>
