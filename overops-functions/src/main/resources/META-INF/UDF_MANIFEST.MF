@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <udf_manifest>
-	<version>2.12</version>
+	<version>2.13</version>
 	<library_name>overops-public-lib</library_name>
 	<backwards_compatible>true</backwards_compatible>
 	<!-- The value must be a multiple of 64 MB -->
