@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.atlassian.jira.rest.client.JiraRestClient;
 import com.atlassian.jira.rest.client.JiraRestClientFactory;
-import com.atlassian.jira.rest.client.domain.Session;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -46,7 +45,8 @@ public class JiraIntegrationFunction {
 		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException("Invalid URL. Check jiraURL and try again");
 		} catch (Exception e) {
-			// invalid credentials results in org.codehaus.jettison.json.JSONException in JiraClient
+			// invalid credentials results in org.codehaus.jettison.json.JSONException in
+			// JiraClient
 			throw new IllegalArgumentException("Invalid credentials. Unable to authenticate with Jira.");
 		}
 
@@ -115,8 +115,7 @@ public class JiraIntegrationFunction {
 			uri = new URI(input.jiraURL);
 
 			// Construct the JRJC client
-			JiraRestClient client = factory.createWithBasicHttpAuthentication(uri, input.jiraUsername,
-					input.jiraToken);
+			JiraRestClient client = factory.createWithBasicHttpAuthentication(uri, input.jiraUsername, input.jiraToken);
 
 			// fetch events with jira issue URLs
 			JiraEventList jiraEvents = fetchJiraEvents(args, input);
@@ -129,7 +128,8 @@ public class JiraIntegrationFunction {
 			System.out.println(e.getMessage());
 			System.exit(1);
 		} catch (Exception e) {
-			// invalid credentials results in org.codehaus.jettison.json.JSONException in JiraClient
+			// invalid credentials results in org.codehaus.jettison.json.JSONException in
+			// JiraClient
 			System.out.println("Caught Exception from Jira Client.");
 			System.out.println(e.getMessage());
 			System.exit(1);
