@@ -3,6 +3,7 @@ package com.takipi.udf.quality.gate;
 import com.takipi.api.client.functions.input.ReliabilityReportInput;
 import com.takipi.api.client.functions.output.ReliabilityReportRow;
 import com.takipi.api.client.functions.output.Series;
+import com.takipi.api.client.util.grafana.GrafanaDashboard;
 import com.takipi.udf.quality.QualityGateType;
 
 public class UniqueEventsGate extends QualityGate {
@@ -21,6 +22,11 @@ public class UniqueEventsGate extends QualityGate {
 	@Override
 	public String getDesc() {
 		return "Unique(" + amount + ")";
+	}
+
+	@Override
+	public GrafanaDashboard getGrafanaDashboard() {
+		return GrafanaDashboard.UNIQUE_ERRORS;
 	}
 
 	@Override

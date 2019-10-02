@@ -5,6 +5,7 @@ import com.takipi.api.client.functions.input.ReliabilityReportInput;
 import com.takipi.api.client.functions.output.RegressionRow;
 import com.takipi.api.client.functions.output.Series;
 import com.takipi.api.client.functions.output.SeriesRow;
+import com.takipi.api.client.util.grafana.GrafanaDashboard;
 import com.takipi.udf.quality.QualityGateType;
 
 public class IncreasingErrorsGate extends QualityGate {
@@ -23,6 +24,11 @@ public class IncreasingErrorsGate extends QualityGate {
 	@Override
 	public String getDesc() {
 		return "Increasing Errors(" + (criticalOnly ? "critical" : "all") + ")";
+	}
+
+	@Override
+	public GrafanaDashboard getGrafanaDashboard() {
+		return GrafanaDashboard.INCREASING_ERRORS;
 	}
 
 	@Override
