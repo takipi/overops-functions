@@ -13,14 +13,18 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.takipi.api.client.ApiClient;
+import com.takipi.api.client.data.service.SummarizedService;
 import com.takipi.api.client.functions.input.ReliabilityReportInput;
 import com.takipi.api.client.functions.output.QueryResult;
 import com.takipi.api.client.functions.output.Series;
+import com.takipi.api.client.request.alert.CustomAlertRequest;
 import com.takipi.api.client.request.functions.settings.GetFunctionSettingRequest;
 import com.takipi.api.client.request.functions.settings.PutFunctionSettingRequest;
 import com.takipi.api.client.result.EmptyResult;
 import com.takipi.api.client.result.functions.FunctionSettingsResult;
 import com.takipi.api.client.result.view.ViewResult;
+import com.takipi.api.client.util.client.ClientUtil;
+import com.takipi.api.client.util.grafana.GrafanaUrlBuilder;
 import com.takipi.api.client.util.view.ViewUtil;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.TimeUtil;
@@ -37,6 +41,8 @@ import com.takipi.udf.quality.gate.VolumeGate;
 
 public class QualityGatesFunction {
 	private static final String SETTINGS_SUFFIX = "-settings";
+
+	private static final String ALERT_TITLE_TEMPLATE = "Quality gates in %s have been breached";
 
 	public static String validateInput(String rawInput) {
 		return parseQualityGatesInput(rawInput).toString();
@@ -190,10 +196,42 @@ public class QualityGatesFunction {
 			}
 		}
 
-		// TODO - alert
+		if (breachedGates.isEmpty()) {
+			return;
+		}
+
+		DateTime from = now.minusMinutes(input.period.asMinutes());
+		SummarizedService env = ClientUtil.getEnvironment(apiClient, args.serviceId);
+		String envName = ((env != null) ? env.name : null);
+
+		CustomAlertRequest.Builder alertBuilder = CustomAlertRequest.newBuilder().setServiceId(args.serviceId)
+				.setViewId(args.viewId)
+				.setTitle(String.format(ALERT_TITLE_TEMPLATE,
+						(Strings.isNullOrEmpty(envName) ? args.serviceId : envName)))
+				.setBody("The following quality gates have been breached:");
 
 		for (QualityGate gate : breachedGates) {
 			settings.setLastAlertDate(gate.getType(), now);
+
+			GrafanaUrlBuilder urlBuilder = GrafanaUrlBuilder.create(args.grafanaHost, gate.getGrafanaDashboard())
+					.withFrom(from).withTo(now);
+
+			urlBuilder.withEnrivonment(envName, args.serviceId);
+
+			if (view.filters != null) {
+				urlBuilder.withApplications(view.filters.apps).withDeployments(view.filters.deployments)
+						.withMachines(view.filters.servers);
+			}
+
+			String grafanaUrl = urlBuilder.buildUrl();
+
+			alertBuilder.addLink(gate.getDesc(), grafanaUrl);
+		}
+
+		Response<EmptyResult> alertResponse = apiClient.post(alertBuilder.build());
+
+		if (alertResponse.isBadResponse()) {
+			System.err.println("Failed sending alert on quality gates");
 		}
 
 		String newSettingsStr = settings.serialize();
