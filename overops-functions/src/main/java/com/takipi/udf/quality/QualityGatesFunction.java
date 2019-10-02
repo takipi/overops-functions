@@ -132,7 +132,7 @@ public class QualityGatesFunction {
 
 		FunctionSettings settings = FunctionSettings.from(settingsStr);
 
-		DateTime now = DateTime.now().withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0);
+		DateTime now = DateTime.now().withSecondOfMinute(0).withMillisOfSecond(0);
 		DateTime maxLastAlertTime = now.minusMinutes(input.min_alert_interval.asMinutes());
 
 		Collection<QualityGate> activeGates = Lists.newArrayList();
