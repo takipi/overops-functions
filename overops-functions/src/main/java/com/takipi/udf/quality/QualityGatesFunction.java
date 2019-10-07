@@ -6,6 +6,9 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
+import org.joda.time.format.ISODateTimeFormat;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -18,6 +21,7 @@ import com.takipi.api.client.functions.input.ReliabilityReportInput;
 import com.takipi.api.client.functions.output.QueryResult;
 import com.takipi.api.client.functions.output.Series;
 import com.takipi.api.client.request.alert.CustomAlertRequest;
+import com.takipi.api.client.request.alert.CustomAlertRequest.AlertLink;
 import com.takipi.api.client.request.functions.settings.GetFunctionSettingRequest;
 import com.takipi.api.client.request.functions.settings.PutFunctionSettingRequest;
 import com.takipi.api.client.result.EmptyResult;
@@ -43,6 +47,7 @@ public class QualityGatesFunction {
 	private static final String SETTINGS_SUFFIX = "-settings";
 
 	private static final String ALERT_TITLE_TEMPLATE = "Quality gates in %s have been breached";
+	private static final String ALERT_BODY_TEMPLATE = "The following quality gates have been breached between %s - %s (GMT)";
 
 	public static String validateInput(String rawInput) {
 		return parseQualityGatesInput(rawInput).toString();
@@ -188,29 +193,19 @@ public class QualityGatesFunction {
 			return;
 		}
 
-		Collection<QualityGate> breachedGates = Lists.newArrayList();
-
-		for (QualityGate gate : activeGates) {
-			if (gate.isBreached(allSeries)) {
-				breachedGates.add(gate);
-			}
-		}
-
-		if (breachedGates.isEmpty()) {
-			return;
-		}
-
 		DateTime from = now.minusMinutes(input.period.asMinutes());
 		SummarizedService env = ClientUtil.getEnvironment(apiClient, args.serviceId);
 		String envName = ((env != null) ? env.name : null);
 
-		CustomAlertRequest.Builder alertBuilder = CustomAlertRequest.newBuilder().setServiceId(args.serviceId)
-				.setViewId(args.viewId)
-				.setTitle(String.format(ALERT_TITLE_TEMPLATE,
-						(Strings.isNullOrEmpty(envName) ? args.serviceId : envName)))
-				.setBody("The following quality gates have been breached:");
+		Collection<AlertLink> links = Lists.newArrayList();
 
-		for (QualityGate gate : breachedGates) {
+		for (QualityGate gate : activeGates) {
+			String breachText = gate.isBreached(allSeries);
+
+			if (Strings.isNullOrEmpty(breachText)) {
+				continue;
+			}
+
 			settings.setLastAlertDate(gate.getType(), now);
 
 			GrafanaUrlBuilder urlBuilder = GrafanaUrlBuilder.create(args.grafanaHost, gate.getGrafanaDashboard())
@@ -225,7 +220,24 @@ public class QualityGatesFunction {
 
 			String grafanaUrl = urlBuilder.buildUrl();
 
-			alertBuilder.addLink(gate.getDesc(), grafanaUrl);
+			links.add(AlertLink.create(breachText + " ", "Click here to view", null, grafanaUrl));
+		}
+
+		if (links.isEmpty()) {
+			return;
+		}
+
+		DateTimeFormatter formatter = new DateTimeFormatterBuilder().append(ISODateTimeFormat.date()).appendLiteral(' ')
+				.append(ISODateTimeFormat.hourMinute()).toFormatter().withZoneUTC();
+
+		CustomAlertRequest.Builder alertBuilder = CustomAlertRequest.newBuilder().setServiceId(args.serviceId)
+				.setViewId(args.viewId)
+				.setTitle(String.format(ALERT_TITLE_TEMPLATE,
+						(Strings.isNullOrEmpty(envName) ? args.serviceId : envName)))
+				.setBody(String.format(ALERT_BODY_TEMPLATE, from.toString(formatter), now.toString(formatter)));
+
+		for (AlertLink link : links) {
+			alertBuilder.addLink(link);
 		}
 
 		Response<EmptyResult> alertResponse = apiClient.post(alertBuilder.build());

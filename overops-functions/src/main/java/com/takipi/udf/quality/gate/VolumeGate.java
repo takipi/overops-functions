@@ -7,6 +7,7 @@ import com.takipi.api.client.util.grafana.GrafanaDashboard;
 import com.takipi.udf.quality.QualityGateType;
 
 public class VolumeGate extends QualityGate {
+	private static final String FORMAT = "There have been a total of %d events (defined threshold is %d).";
 
 	private final long volume;
 
@@ -35,13 +36,17 @@ public class VolumeGate extends QualityGate {
 	}
 
 	@Override
-	protected boolean isBreached(Series series) {
+	protected String isBreached(Series series) {
 		if (series.size() == 0) {
-			return false;
+			return null;
 		}
 
 		ReliabilityReportRow report = (ReliabilityReportRow) series.iterator().next();
 
-		return (report.errorVolume >= volume);
+		if (report.errorVolume < volume) {
+			return null;
+		}
+
+		return String.format(FORMAT, report.errorVolume, volume);
 	}
 }

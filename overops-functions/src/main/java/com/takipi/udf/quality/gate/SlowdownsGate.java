@@ -9,6 +9,8 @@ import com.takipi.api.client.util.grafana.GrafanaDashboard;
 import com.takipi.udf.quality.QualityGateType;
 
 public class SlowdownsGate extends QualityGate {
+	private static final String ALL_FORMAT = "There are %d slowdowns, %d of which are critical.";
+	private static final String CRITICAL_FORMAT = "There are %d critical slowdowns.";
 
 	private final boolean criticalOnly;
 
@@ -37,20 +39,33 @@ public class SlowdownsGate extends QualityGate {
 	}
 
 	@Override
-	protected boolean isBreached(Series series) {
+	protected String isBreached(Series series) {
+		int slowdownsCount = 0;
+		int criticalSlowdownsCount = 0;
+
 		for (SeriesRow row : series) {
 			TransactionRow transactionRow = (TransactionRow) row;
 
-			if (isSlowTransaction(transactionRow)) {
-				return true;
+			if (BaseEventVolumeInput.CRITICAL_ORDINAL == transactionRow.slow_state) {
+				slowdownsCount++;
+				criticalSlowdownsCount++;
+			} else if (BaseEventVolumeInput.SLOWING_ORDINAL == transactionRow.slow_state) {
+				slowdownsCount++;
 			}
 		}
 
-		return false;
-	}
+		if (criticalOnly) {
+			if (criticalSlowdownsCount == 0) {
+				return null;
+			}
 
-	private boolean isSlowTransaction(TransactionRow transactionRow) {
-		return ((transactionRow.slow_state == BaseEventVolumeInput.CRITICAL_ORDINAL)
-				|| ((!criticalOnly) && (transactionRow.slow_state == BaseEventVolumeInput.SLOWING_ORDINAL)));
+			return String.format(CRITICAL_FORMAT, criticalSlowdownsCount);
+		} else {
+			if (slowdownsCount == 0) {
+				return null;
+			}
+
+			return String.format(ALL_FORMAT, slowdownsCount, criticalSlowdownsCount);
+		}
 	}
 }

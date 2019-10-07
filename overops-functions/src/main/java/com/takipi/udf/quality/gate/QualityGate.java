@@ -15,15 +15,15 @@ public abstract class QualityGate {
 
 	protected abstract String getRelevantSeriesType();
 
-	protected abstract boolean isBreached(Series series);
+	protected abstract String isBreached(Series series);
 
-	public boolean isBreached(Collection<Series> allSeries) {
+	public String isBreached(Collection<Series> allSeries) {
 		for (Series series : allSeries) {
 			if (getRelevantSeriesType().equals(series.type)) {
 				return isBreached(series);
 			}
 		}
 
-		return false;
+		return null;
 	}
 }

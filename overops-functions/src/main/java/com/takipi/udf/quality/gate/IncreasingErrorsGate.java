@@ -9,6 +9,8 @@ import com.takipi.api.client.util.grafana.GrafanaDashboard;
 import com.takipi.udf.quality.QualityGateType;
 
 public class IncreasingErrorsGate extends QualityGate {
+	private static final String ALL_FORMAT = "There's an increase in %d events, %d of which are critical.";
+	private static final String CRITICAL_FORMAT = "There's an increase in %d critical events.";
 
 	private final boolean criticalOnly;
 
@@ -37,20 +39,33 @@ public class IncreasingErrorsGate extends QualityGate {
 	}
 
 	@Override
-	protected boolean isBreached(Series series) {
+	protected String isBreached(Series series) {
+		int incresingEventsCount = 0;
+		int increasingCriticalEventsCount = 0;
+
 		for (SeriesRow row : series) {
 			RegressionRow regressionRow = (RegressionRow) row;
 
-			if (isNewEvent(regressionRow)) {
-				return true;
+			if (RegressionsInput.SEVERE_INC_ERROR_REGRESSIONS.equals(regressionRow.regression_type)) {
+				incresingEventsCount++;
+				increasingCriticalEventsCount++;
+			} else if (RegressionsInput.INC_ERROR_REGRESSIONS.equals(regressionRow.regression_type)) {
+				incresingEventsCount++;
 			}
 		}
 
-		return false;
-	}
+		if (criticalOnly) {
+			if (increasingCriticalEventsCount == 0) {
+				return null;
+			}
 
-	private boolean isNewEvent(RegressionRow regressionRow) {
-		return ((RegressionsInput.SEVERE_INC_ERROR_REGRESSIONS.equals(regressionRow.regression_type))
-				|| ((!criticalOnly) && (RegressionsInput.INC_ERROR_REGRESSIONS.equals(regressionRow.regression_type))));
+			return String.format(CRITICAL_FORMAT, increasingCriticalEventsCount);
+		} else {
+			if (incresingEventsCount == 0) {
+				return null;
+			}
+
+			return String.format(ALL_FORMAT, incresingEventsCount, increasingCriticalEventsCount);
+		}
 	}
 }
