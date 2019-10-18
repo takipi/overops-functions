@@ -38,4 +38,10 @@ public class TestUtil {
 
 		return new Gson().toJson(contextArgs);
 	}
+
+	public static ContextArgs.ContextArgsBuilder getDefaultContextArgsBuilder() {
+		return ContextArgs.newBuilder()
+				.setAppHost("https://app.overops.com")
+				.setApiHost("https://api.overops.com");
+	}
 }

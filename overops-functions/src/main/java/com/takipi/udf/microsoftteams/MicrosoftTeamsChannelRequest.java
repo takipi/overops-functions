@@ -16,17 +16,17 @@ import java.util.List;
 public class MicrosoftTeamsChannelRequest implements ApiPostRequest<EmptyResult> {
 
     public static final String THEME_COLOR = "ffc000";
-    private String url;
-    private String exceptionLinkToOverOps = "";
-    private String exceptionClassName = "";
-    private String exceptionLocationPath = "";
-    private List<Location> stack_frames = new ArrayList<>();
-    private String deployment = "";
-    private String application = "";
-    private String server = "";
-    private String environmentsName = "";
-    private String reportedBy = "";
-    private String doNotAlertLink = "";
+    private final String url;
+    private final String exceptionLinkToOverOps;
+    private final String exceptionClassName;
+    private final String exceptionLocationPath;
+    private final List<Location> stack_frames;
+    private final String deployment;
+    private final String application;
+    private final String server;
+    private final String environmentsName;
+    private final String reportedBy;
+    private final String doNotAlertLink;
 
     public MicrosoftTeamsChannelRequest(String url,
                                         String exceptionLinkToOverOps,

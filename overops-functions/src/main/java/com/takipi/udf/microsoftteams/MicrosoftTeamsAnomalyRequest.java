@@ -19,16 +19,16 @@ public class MicrosoftTeamsAnomalyRequest implements ApiPostRequest<EmptyResult>
 
     public static final String SUMMARY_IMAGE = "https://s3.amazonaws.com/www.takipi.com/email/v5/threshold-thumb.png";
 
-    private String url;
-    private String viewErrorsLink = "";
-    private String viewName = "";
-    private String thresholdCount = "";
-    private String totalEventsOccurred = "";
-    private String timeSlot = "";
-    private String environmentsName = "";
-    private String reportedByName = "";
-    private String manageSettingsLink = "";
-    private List<MicrosoftTextSection> eventSections;
+    private final String url;
+    private final String viewErrorsLink;
+    private final String viewName;
+    private final String thresholdCount;
+    private final String totalEventsOccurred;
+    private final String timeSlot;
+    private final String environmentsName;
+    private final String reportedByName;
+    private final String manageSettingsLink;
+    private final List<MicrosoftTextSection> eventSections;
 
     public MicrosoftTeamsAnomalyRequest(String url, String viewErrorsLink,
                                         String viewName, String thresholdCount,
@@ -176,15 +176,15 @@ public class MicrosoftTeamsAnomalyRequest implements ApiPostRequest<EmptyResult>
         }
 
         public Builder setEventsVolume(List<EventResult> events, ApiClient apiClient,
-                                       ContextArgs args, MicrosoftTeamsUtil.TimeSlot timeSlot, MicrosoftTeamsUtil.EventData eventData) {
+                                       ContextArgs args, MicrosoftTeamsUtil.TimeSlot timeSlot) {
             eventSections = new ArrayList<>();
 
             events.forEach(evt -> {
                 String link = "";
                 try {
                     link = EventUtil.getEventRecentLink(apiClient, args.serviceId, evt.id,
-                            timeSlot.from, timeSlot.to, eventData.applications,
-                            eventData.servers, eventData.deployments);
+                            timeSlot.from, timeSlot.to, null,
+                            null, null);
                 } catch (Exception exception) {
                     System.out.println(exception.getMessage());
                 }

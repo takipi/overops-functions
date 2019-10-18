@@ -8,14 +8,14 @@ import java.util.List;
 
 public class MicrosoftCard {
     @SerializedName("@type")
-    public String type;
+    public final String type;
     @SerializedName("@context")
-    public String context;
-    public String themeColor;
-    public String summary;
-    public String text;
-    public List<MicrosoftSection> sections = new ArrayList<>();
-    public List<MicrosoftPotentialAction> potentialAction = new ArrayList<>();
+    public final String context;
+    public final String themeColor;
+    public final String summary;
+    public final String text;
+    public final List<MicrosoftSection> sections;
+    public final List<MicrosoftPotentialAction> potentialAction;
 
     public MicrosoftCard(String type, String context, String themeColor, String summary, String text, List<MicrosoftSection> sections, List<MicrosoftPotentialAction> potentialAction) {
         this.type = type;
@@ -71,14 +71,18 @@ public class MicrosoftCard {
         }
 
         public Builder addSections(MicrosoftSection... sections) {
-            if (this.sections == null) this.sections = new ArrayList<>();
+            if (this.sections == null) {
+                this.sections = new ArrayList<>();
+            }
             this.sections.addAll(Arrays.asList(sections));
 
             return this;
         }
 
         public Builder addSections(List<MicrosoftTextSection> eventSections) {
-            if (this.sections == null) this.sections = new ArrayList<>();
+            if (this.sections == null) {
+                this.sections = new ArrayList<>();
+            }
             this.sections.addAll(eventSections);
 
             return this;
@@ -90,7 +94,9 @@ public class MicrosoftCard {
         }
 
         public Builder addPotentialActions(MicrosoftPotentialAction... potentialActions) {
-            if (this.potentialAction == null) this.potentialAction = new ArrayList<>();
+            if (this.potentialAction == null) {
+                this.potentialAction = new ArrayList<>();
+            }
             this.potentialAction.addAll(Arrays.asList(potentialActions));
 
             return this;

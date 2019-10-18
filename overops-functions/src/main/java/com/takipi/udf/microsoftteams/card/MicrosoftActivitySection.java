@@ -5,12 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MicrosoftActivitySection implements MicrosoftSection {
-    public String activityTitle = "";
-    public String activitySubtitle = "";
-    public String activityImage = "https://s3.amazonaws.com/www.takipi.com/email/v5/threshold-thumb.png";
-    public boolean markdown = true;
-    public List<MicrosoftFact> facts = new ArrayList<>();
-    public String text = "";
+    public final String activityTitle;
+    public final String activitySubtitle;
+    public final String activityImage;
+    public final boolean markdown;
+    public final List<MicrosoftFact> facts;
+    public final String text;
 
     public MicrosoftActivitySection(String activityTitle, String activitySubtitle, String activityImage, boolean markdown, List<MicrosoftFact> facts, String text) {
         this.activityTitle = activityTitle;
@@ -65,7 +65,9 @@ public class MicrosoftActivitySection implements MicrosoftSection {
         }
 
         public Builder addFacts(MicrosoftFact... facts) {
-            if (this.facts == null) this.facts = new ArrayList<>();
+            if (this.facts == null) {
+                this.facts = new ArrayList<>();
+            }
             this.facts.addAll(Arrays.asList(facts));
 
             return this;

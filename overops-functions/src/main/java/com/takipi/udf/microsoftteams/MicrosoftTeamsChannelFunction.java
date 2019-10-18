@@ -10,6 +10,7 @@ import com.takipi.api.client.request.event.EventRequest;
 import com.takipi.api.client.request.event.EventsRequest;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsResult;
+import com.takipi.api.client.util.client.ClientUtil;
 import com.takipi.api.client.util.event.EventUtil;
 import com.takipi.api.client.util.validation.ValidationUtil;
 import com.takipi.api.client.util.view.ViewUtil;
@@ -23,10 +24,11 @@ import java.util.Base64;
 import java.util.List;
 
 import static com.takipi.udf.microsoftteams.MicrosoftTeamsUtil.*;
+import static com.takipi.udf.util.TestUtil.getDefaultContextArgsBuilder;
 
 public class MicrosoftTeamsChannelFunction {
 
-    public static final int MINUTES_TIME_SPAN = 5;
+    public static final int MINUTES_TIME_SPAN = 50000;
 
     public static String validateInput(String rawInput) {
         return getInput(rawInput).toString();
@@ -62,16 +64,16 @@ public class MicrosoftTeamsChannelFunction {
         MicrosoftTeamsInput input = getInput(rawInput);
         ContextArgs args = (new Gson()).fromJson(rawContextArgs, ContextArgs.class);
 
-        if (!args.validate())
+        if (!args.validate()) {
             throw new IllegalArgumentException("Bad context args: " + rawContextArgs);
-        if (!args.eventValidate())
+        }
+        if (!args.eventValidate()) {
             return;
+        }
 
         ApiClient apiClient = args.apiClient();
         UrlClient.Response<EventResult> eventResultResponse = getEventResultResponse(args, apiClient);
         System.out.println("Got exceptionClassName, exception type, exceptionLocationPath, stack_frames, deployment");
-        MicrosoftTeamsUtil.EventData eventData = getEventData(apiClient, args);
-        System.out.println("Got applications, environments, deployments and servers");
         MicrosoftTeamsUtil.TimeSlot timeSlot = getTimeSlot(MINUTES_TIME_SPAN);
 
         SummarizedView view = getSummarizedView(rawContextArgs, args, apiClient);
@@ -81,8 +83,7 @@ public class MicrosoftTeamsChannelFunction {
                 1, ValidationUtil.VolumeType.all, timeSlot.from, timeSlot.to);
         System.out.println("Got machine_name, application_name, deployment_name");
         String exceptionLinkToOverOps = EventUtil.getEventRecentLink(apiClient, args.serviceId, args.eventId,
-                timeSlot.from, timeSlot.to, eventData.applications,
-                eventData.servers, eventData.deployments);
+                timeSlot.from, timeSlot.to, null, null, null);
         System.out.println("Got ARC link");
         MicrosoftTeamsChannelRequest microsoftTeamsChannelRequest = MicrosoftTeamsChannelRequest.newBuilder()
                 .setUrl(input.url)
@@ -90,15 +91,16 @@ public class MicrosoftTeamsChannelFunction {
                 .setExceptionLink(exceptionLinkToOverOps)
                 .setServer(eventsGraph.machine_name)
                 .setApplication(eventsGraph.application_name)
-                .setEnvironmentName(getEnvironmentName(eventData.environments, args.serviceId))
+                .setEnvironmentName(getEnvironmentName(apiClient, args.serviceId))
                 .setDeployment(eventsGraph.deployment_name)
                 .setDoNotAlertLink(getDoNotAlertLink(args, eventResultResponse.data.type))
                 .build();
         UrlClient.Response<String> post = SimpleUrlClient.newBuilder().build().post(microsoftTeamsChannelRequest);
         System.out.println("Post Microsoft Teams Webhook Channel request");
 
-        if (post.isBadResponse())
+        if (post.isBadResponse()){
             throw new IllegalStateException("Can't send card to " + input.url);
+        }
     }
 
     private static String getDoNotAlertLink(ContextArgs args, String exceptionType) {
@@ -115,27 +117,29 @@ public class MicrosoftTeamsChannelFunction {
 
         UrlClient.Response<EventResult> eventResultResponse = apiClient.get(eventRequest);
 
-        if (!eventResultResponse.isOK() || eventResultResponse.data == null)
+        if ((!eventResultResponse.isOK()) || (eventResultResponse.data == null)) {
             throw new IllegalStateException("Event is not present or api issue. eventId = " + args.eventId
                     + " , serviceId = " + args.serviceId);
+        }
 
         return eventResultResponse;
     }
 
-    public static String getEnvironmentName(List<SummarizedService> environments, String serviceId) {
-        return environments.stream()
-                .filter(v -> v.id.equals(serviceId))
-                .findFirst()
-                .map(v -> v.name).orElse("");
+    public static String getEnvironmentName(ApiClient apiClient, String serviceId) {
+        SummarizedService environment = ClientUtil.getEnvironment(apiClient, serviceId);
+        return environment != null ? environment.name : "";
     }
 
     // A sample program on how to programmatically activate
     public static void main(String[] args) {
-        ContextArgs contextArgs = getContextArgs(args);
+        ContextArgs contextArgs = getDefaultContextArgsBuilder()
+                .setApiKey("api_token")
+                .setServiceId("SXXXXX")
+                .build();
 
         // get "All Events" view
         SummarizedView view = ViewUtil.getServiceViewByName(contextArgs.apiClient(), contextArgs.serviceId,
-                "view2");
+                "View 1");
         contextArgs.viewId = view.id;
         MicrosoftTeamsUtil.TimeSlot timeSlot = getTimeSlot(MINUTES_TIME_SPAN);
         // date parameter must be properly formatted
@@ -165,31 +169,11 @@ public class MicrosoftTeamsChannelFunction {
 
         // set url similar to "url=https://outlook.office.com/webhook/..."
         String rawInput = "url=https://outlook.office.com/webhook/...";
+
         // convert context args to a JSON string
         String rawContextArgs = new Gson().toJson(contextArgs);
 
         // execute the UDF
         MicrosoftTeamsChannelFunction.execute(rawContextArgs, rawInput);
-    }
-
-    public static ContextArgs getContextArgs(String[] args) {
-        ContextArgs contextArgs = new ContextArgs();
-
-        if (args.length == 0) {
-            contextArgs.apiHost = "https://api.overops.com";
-            contextArgs.apiKey = "api_token";
-            contextArgs.serviceId = "SXXXXX";
-        } else {
-            // pass API Host, Key, and Service ID as command line arguments
-            if ((args == null) || (args.length < 4))
-                throw new IllegalArgumentException("java MicrosoftTeamsFunction");
-
-            contextArgs.apiHost = args[0];
-            contextArgs.apiKey = args[1];
-            contextArgs.serviceId = args[2];
-            contextArgs.appHost = args[3];
-        }
-
-        return contextArgs;
     }
 }

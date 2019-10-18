@@ -29,8 +29,8 @@ dependencies {
 		println "Compiling overops functions with maven api-client"
 
 		compile (
-			"com.takipi:api-client:2.25.0",
-			"com.takipi:api-client-util:2.25.0",
+			"com.takipi:api-client:2.27.0",
+			"com.takipi:api-client-util:2.27.0",
 		)
 	}
 }

@@ -8,9 +8,9 @@ import java.util.List;
 
 public class MicrosoftPotentialAction {
     @SerializedName("@type")
-    public String type;
-    public String name;
-    public List<MicrosoftTarget> targets;
+    public final String type;
+    public final String name;
+    public final List<MicrosoftTarget> targets;
 
     public MicrosoftPotentialAction(String type, String name, List<MicrosoftTarget> targets) {
         this.type = type;
@@ -43,7 +43,9 @@ public class MicrosoftPotentialAction {
         }
 
         public Builder addTargets(MicrosoftTarget... targets) {
-            if (this.targets == null) this.targets = new ArrayList<>();
+            if (this.targets == null) {
+                this.targets = new ArrayList<>();
+            }
             this.targets.addAll(Arrays.asList(targets));
 
             return this;

@@ -55,16 +55,15 @@ public class MicrosoftTextBuilder {
         return this;
     }
 
-    public String build() {
-        return stringBuilder.toString();
-    }
-
-
-    public MicrosoftTextBuilder addArray(List<Location> stack_frames, String prefix) {
-        for (Location stack_frame : stack_frames) {
+    public MicrosoftTextBuilder addArray(List<Location> stackFrames, String prefix) {
+        for (Location stack_frame : stackFrames) {
             stringBuilder.append(prefix).append(stack_frame.prettified_name).append("\n");
         }
 
         return this;
+    }
+
+    public String build() {
+        return stringBuilder.toString();
     }
 }
