@@ -14,7 +14,8 @@ buildscript {
 
 dependencies {
 	compile (
-		"org.apache.commons:commons-lang3:3.7"
+		"org.apache.commons:commons-lang3:3.7",
+		"com.atlassian.jira:jira-rest-java-client:2.0.0-m2"
 	)
 	
 	if (gradle.hasProperty("localApiClient") &&
