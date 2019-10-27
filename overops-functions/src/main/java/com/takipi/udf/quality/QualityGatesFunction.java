@@ -20,6 +20,7 @@ import com.takipi.api.client.data.service.SummarizedService;
 import com.takipi.api.client.functions.input.ReliabilityReportInput;
 import com.takipi.api.client.functions.output.QueryResult;
 import com.takipi.api.client.functions.output.Series;
+import com.takipi.api.client.functions.output.SeriesRow;
 import com.takipi.api.client.request.alert.CustomAlertRequest;
 import com.takipi.api.client.request.alert.CustomAlertRequest.AlertLink;
 import com.takipi.api.client.request.functions.settings.GetFunctionSettingRequest;
@@ -187,7 +188,7 @@ public class QualityGatesFunction {
 			throw new IllegalStateException("Missing data");
 		}
 
-		Collection<Series> allSeries = reportResponse.data.getSeries();
+		Collection<Series<SeriesRow>> allSeries = reportResponse.data.getSeries();
 
 		if (allSeries.isEmpty()) {
 			return;

@@ -39,7 +39,7 @@ public class NewEventsGate extends QualityGate {
 	}
 
 	@Override
-	protected String isBreached(Series series) {
+	protected String isBreached(Series<SeriesRow> series) {
 		int newEventsCount = 0;
 		int newCriticalEventsCount = 0;
 

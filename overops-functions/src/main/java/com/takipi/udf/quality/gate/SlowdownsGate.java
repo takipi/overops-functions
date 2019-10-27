@@ -39,7 +39,7 @@ public class SlowdownsGate extends QualityGate {
 	}
 
 	@Override
-	protected String isBreached(Series series) {
+	protected String isBreached(Series<SeriesRow> series) {
 		int slowdownsCount = 0;
 		int criticalSlowdownsCount = 0;
 

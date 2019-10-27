@@ -3,6 +3,7 @@ package com.takipi.udf.quality.gate;
 import com.takipi.api.client.functions.input.ReliabilityReportInput;
 import com.takipi.api.client.functions.output.ReliabilityReportRow;
 import com.takipi.api.client.functions.output.Series;
+import com.takipi.api.client.functions.output.SeriesRow;
 import com.takipi.api.client.util.grafana.GrafanaDashboard;
 import com.takipi.udf.quality.QualityGateType;
 
@@ -36,7 +37,7 @@ public class CriticalVolumeGate extends QualityGate {
 	}
 
 	@Override
-	protected String isBreached(Series series) {
+	protected String isBreached(Series<SeriesRow> series) {
 		if (series.size() == 0) {
 			return null;
 		}
