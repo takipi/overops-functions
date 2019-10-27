@@ -1,23 +1,29 @@
 package com.takipi.udf.deployment;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.category.Category;
+import com.takipi.api.client.data.deployment.SummarizedDeployment;
 import com.takipi.api.client.data.view.SummarizedView;
 import com.takipi.api.client.data.view.ViewFilters;
 import com.takipi.api.client.data.view.ViewInfo;
 import com.takipi.api.client.util.category.CategoryUtil;
 import com.takipi.api.client.util.client.ClientUtil;
 import com.takipi.api.client.util.view.ViewUtil;
+import com.takipi.common.util.CollectionUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.input.Input;
 import com.takipi.udf.util.TestUtil;
+import org.joda.time.format.ISODateTimeFormat;
 
 public class DeploymentRoutingFunction {
 	private static final boolean SHARED = true;
@@ -73,95 +79,87 @@ public class DeploymentRoutingFunction {
 
 	private static void buildDeploymentRoutingViews(ContextArgs args, DeploymentRoutingInput input) {
 		ApiClient apiClient = args.apiClient();
-
 		String serviceId = args.serviceId;
+		int maxViews = input.max_views;
 
-		String categoryId = createDepCategory(apiClient, serviceId, input);
+		Collection<SummarizedDeployment> deployments = ClientUtil.getSummarizedDeployments(apiClient, serviceId, false);
 
-		List<String> activeDeps = ClientUtil.getDeployments(apiClient, serviceId, true);
-		List<String> allDeps = ClientUtil.getDeployments(apiClient, serviceId, false);
-
-		if (activeDeps == null) {
-			System.err.println("Could not acquire active deps for service " + serviceId);
-			return;
-		}
-
-		if (allDeps == null) {
-			System.err.println("Could not acquire all deps for service " + serviceId);
+		if (deployments == null) {
+			System.err.println("Could not acquire all deployments of service " + serviceId);
 			return;
 		}
 
 		Map<String, SummarizedView> views = ViewUtil.getServiceViewsByName(apiClient, serviceId);
 
 		if (views == null) {
-			System.err.println("Could not acquire view for service " + serviceId);
+			System.err.println("Could not acquire views of service " + serviceId);
 			return;
 		}
 
-		List<SummarizedView> activeDepViews = Lists.newArrayList();
-		List<SummarizedView> allDepViews = Lists.newArrayList();
+		// sort deployments by descending last_seen
+		List<SummarizedDeployment> sortedDeployments = deployments.parallelStream()
+				.sorted((dep1, dep2) ->
+						Long.compare(
+								ISODateTimeFormat.dateTimeParser().parseDateTime(dep2.last_seen).getMillis(),
+								ISODateTimeFormat.dateTimeParser().parseDateTime(dep1.last_seen).getMillis()))
+				.collect(Collectors.toList());
+
+		// map deployments to viewIds of their corresponding views
+		Map<String, String> deploymentViewIdMap = Maps.newHashMapWithExpectedSize(maxViews);
 
 		for (SummarizedView view : views.values()) {
-			String viewDepName;
+			String deploymentNameFromView = (input.prefix != null) ?
+											(view.name.replace(cleanPrefix(input), "")) :
+											(view.name);
 
-			if (input.prefix != null) {
-				viewDepName = view.name.replace(cleanPrefix(input), "");
-			} else {
-				viewDepName = view.name;
-			}
-
-			if (activeDeps.contains(viewDepName)) {
-				activeDepViews.add(view);
-			} else if (allDeps.contains(viewDepName)) {
-				allDepViews.add(view);
+			for (SummarizedDeployment deployment : deployments) {
+				if (deployment.name.equals(deploymentNameFromView)) {
+					deploymentViewIdMap.put(deployment.name, view.id);
+					break;
+				}
 			}
 		}
 
-		if (activeDepViews.size() >= input.max_views) {
-			System.out.println("Found " + activeDepViews.size() + " active dep views, exceeding max for " + serviceId);
-			return;
-		}
+		// remove existing views that exceed maxViews
+		for (int i = maxViews; i < sortedDeployments.size(); i++) {
+			SummarizedDeployment currentDeployment = sortedDeployments.get(i);
+			String currentDeploymentViewId = deploymentViewIdMap.get(currentDeployment.name);
 
-		int itemsToDeleteSize = 1;// activeDepViews.size() + allDepViews.size() - input.max_views;
-
-		if (itemsToDeleteSize > 0) {
-			for (int i = 0; i < Math.min(itemsToDeleteSize, allDepViews.size()); i++) {
-				SummarizedView view = allDepViews.get(i);
-
-				System.out.println("Deleting view " + view.name + " Id: " + view.id);
-
-				ViewUtil.removeView(apiClient, serviceId, view.id);
+			if (currentDeploymentViewId != null) {
+				ViewUtil.removeView(apiClient, serviceId, currentDeploymentViewId);
 			}
 		}
 
-		List<String> activeViewsToCreate = Lists.newArrayList();
+		// create missing views up to maxViews
+		List<ViewInfo> newDeploymentViewsInfo = Lists.newArrayList();
 
-		for (String activeDep : activeDeps) {
-			String depViewName = toViewName(input, activeDep);
+		for (int i = 0; i < Math.min(sortedDeployments.size(), maxViews); i++) {
+			String currentDeploymentName = sortedDeployments.get(i).name;
+			String currentDeploymentViewId = deploymentViewIdMap.get(currentDeploymentName);
 
-			if (!views.containsKey(depViewName)) {
-				activeViewsToCreate.add(activeDep);
+			if (currentDeploymentViewId != null) {
+				System.out.println("View for deployment " + currentDeploymentName + " already exists with ID " + currentDeploymentViewId);
+				continue;
 			}
-		}
 
-		int activeDepViewsToCreateSize = Math.min(activeViewsToCreate.size() + activeDepViews.size(), input.max_views);
-
-		List<ViewInfo> viewInfos = Lists.newArrayList();
-
-		for (int i = 0; i < activeDepViewsToCreateSize; i++) {
-			String dep = activeViewsToCreate.get(i);
 			ViewInfo viewInfo = new ViewInfo();
 
-			viewInfo.name = toViewName(input, dep);
+			viewInfo.name = toViewName(input, currentDeploymentName);
 			viewInfo.filters = new ViewFilters();
-			viewInfo.filters.introduced_by = Collections.singletonList(dep);
+			viewInfo.filters.introduced_by = Collections.singletonList(currentDeploymentName);
 			viewInfo.shared = SHARED;
 			viewInfo.immutable = IMMUTABLE_VIEWS;
 
-			viewInfos.add(viewInfo);
+			newDeploymentViewsInfo.add(viewInfo);
 		}
 
-		ViewUtil.createFilteredViews(apiClient, serviceId, viewInfos, views, categoryId);
+		if (CollectionUtil.safeIsEmpty(newDeploymentViewsInfo)) {
+			return;
+		}
+
+		String categoryId = createDepCategory(apiClient, serviceId, input);
+
+		ViewUtil.createFilteredViews(apiClient, serviceId, newDeploymentViewsInfo, views, categoryId);
 	}
 
 	private static String toViewName(DeploymentRoutingInput input, String dep) {
