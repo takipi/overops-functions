@@ -3,7 +3,6 @@ package com.takipi.udf.microsoftteams;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.takipi.api.client.ApiClient;
-import com.takipi.api.client.data.metrics.Graph;
 import com.takipi.api.client.data.service.SummarizedService;
 import com.takipi.api.client.data.view.SummarizedView;
 import com.takipi.api.client.request.event.EventRequest;
@@ -12,7 +11,6 @@ import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.client.result.event.EventsResult;
 import com.takipi.api.client.util.client.ClientUtil;
 import com.takipi.api.client.util.event.EventUtil;
-import com.takipi.api.client.util.validation.ValidationUtil;
 import com.takipi.api.client.util.view.ViewUtil;
 import com.takipi.api.core.url.UrlClient;
 import com.takipi.common.util.CollectionUtil;
@@ -23,7 +21,8 @@ import org.joda.time.format.ISODateTimeFormat;
 import java.util.Base64;
 import java.util.List;
 
-import static com.takipi.udf.microsoftteams.MicrosoftTeamsUtil.*;
+import static com.takipi.udf.microsoftteams.MicrosoftTeamsUtil.getTimeSlot;
+import static com.takipi.udf.microsoftteams.MicrosoftTeamsUtil.logUDFInput;
 import static com.takipi.udf.util.TestUtil.getDefaultContextArgsBuilder;
 
 public class MicrosoftTeamsChannelFunction {
@@ -76,24 +75,19 @@ public class MicrosoftTeamsChannelFunction {
         System.out.println("Got exceptionClassName, exception type, exceptionLocationPath, stack_frames, deployment");
         MicrosoftTeamsUtil.TimeSlot timeSlot = getTimeSlot(MINUTES_TIME_SPAN);
 
-        SummarizedView view = getSummarizedView(rawContextArgs, args, apiClient);
-        System.out.println("Got viewId");
-
-        Graph eventsGraph = ViewUtil.getEventsGraph(apiClient, args.serviceId, view.id,
-                1, ValidationUtil.VolumeType.all, timeSlot.from, timeSlot.to);
-        System.out.println("Got machine_name, application_name, deployment_name");
         String exceptionLinkToOverOps = EventUtil.getEventRecentLink(apiClient, args.serviceId, args.eventId,
                 timeSlot.from, timeSlot.to, null, null, null);
         System.out.println("Got ARC link");
+        EventResult eventResult = eventResultResponse.data;
         MicrosoftTeamsChannelRequest microsoftTeamsChannelRequest = MicrosoftTeamsChannelRequest.newBuilder()
                 .setUrl(input.url)
-                .setEventResult(eventResultResponse.data)
+                .setEventResult(eventResult)
                 .setExceptionLink(exceptionLinkToOverOps)
-                .setServer(eventsGraph.machine_name)
-                .setApplication(eventsGraph.application_name)
+                .setServer(eventResult.introduced_by_server)
+                .setApplication(eventResult.introduced_by_application)
                 .setEnvironmentName(getEnvironmentName(apiClient, args.serviceId))
-                .setDeployment(eventsGraph.deployment_name)
-                .setDoNotAlertLink(getDoNotAlertLink(args, eventResultResponse.data.type))
+                .setDeployment(eventResult.introduced_by)
+                .setDoNotAlertLink(getDoNotAlertLink(args, eventResult.type))
                 .build();
         UrlClient.Response<String> post = SimpleUrlClient.newBuilder().build().post(microsoftTeamsChannelRequest);
         System.out.println("Post Microsoft Teams Webhook Channel request");
