@@ -111,12 +111,7 @@ public class DeploymentRoutingFunction {
 											(view.name.replace(cleanPrefix(input), "")) :
 											(view.name);
 
-			for (SummarizedDeployment deployment : deployments) {
-				if (deployment.name.equals(deploymentNameFromView)) {
-					deploymentViewIdMap.put(deployment.name, view.id);
-					break;
-				}
-			}
+			deploymentViewIdMap.put(deploymentNameFromView, view.id);
 		}
 
 		// remove existing views that exceed maxViews
