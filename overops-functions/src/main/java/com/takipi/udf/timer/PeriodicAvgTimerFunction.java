@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
@@ -48,6 +49,7 @@ import com.takipi.udf.util.JavaUtil;
 
 public class PeriodicAvgTimerFunction {
 	private static final String TIMERS_VIEW_NAME = "My Timers";
+	private static final long DRFAULT_MAX_AVGTIME_THRESHOLD = TimeUnit.MINUTES.toMillis(15);
 
 	public static String validateInput(String rawInput) {
 		return getPeriodicAvgTimerInput(rawInput).toString();
@@ -184,7 +186,8 @@ public class PeriodicAvgTimerFunction {
 
 		GraphPerformanceCalculator calculator = GraphPerformanceCalculator.of(input.active_invocations_threshold,
 				input.baseline_invocations_threshold, input.min_delta_threshold, input.min_delta_threshold_percentage,
-				input.over_avg_slowing_percentage, input.over_avg_critical_percentage, input.std_dev_factor);
+				input.over_avg_slowing_percentage, input.over_avg_critical_percentage, input.std_dev_factor,
+				DRFAULT_MAX_AVGTIME_THRESHOLD);
 
 		Map<TransactionGraph, PerformanceScore> performance = PerformanceUtil.getPerformanceStates(activeTransactions,
 				baselineTransactions, calculator);
