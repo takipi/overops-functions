@@ -44,7 +44,7 @@
 				# Max interval to retain anomaly label
 				max_interval = 3d
 			</default_params>
-			<alerting>true</alerting>
+			<silent>false</silent>
 		</function>
 		<function>
 			<function_type>ANOMALY</function_type>
@@ -80,7 +80,7 @@
 				max_interval = 3d
 			</default_params>
 			<admin_function>false</admin_function>
-			<alerting>true</alerting>
+			<silent>false</silent>
 		</function>
 		<function>
 			<function_type>CHANNEL</function_type>
@@ -188,7 +188,7 @@
 				min_timer_threshold = 30
 			</default_params>
 			<admin_function>true</admin_function>
-			<alerting>false</alerting>
+			<silent>true</silent>
 		</function>
 		<function>
 			<function_type>ANOMALY</function_type>
@@ -206,7 +206,7 @@
 				max_views = 50
 			</default_params>
 			<admin_function>true</admin_function>
-			<alerting>false</alerting>
+			<silent>true</silent>
 		</function>
 		<function>
 			<function_type>ANOMALY</function_type>
@@ -227,7 +227,7 @@
 				prefix = 'New in '
 			</default_params>
 			<admin_function>true</admin_function>
-			<alerting>false</alerting>
+			<silent>true</silent>
 		</function>
 		<function>
 			<function_type>ANOMALY</function_type>
@@ -281,7 +281,7 @@
 				labelRetention = 1440
 			</default_params>
 			<admin_function>true</admin_function>
-			<alerting>false</alerting>
+			<silent>true</silent>
 		</function>
 		<function>
 			<function_type>ANOMALY</function_type>
@@ -310,7 +310,7 @@
 				hiddenStatus=Won't Fix
 			</default_params>
 			<admin_function>true</admin_function>
-			<alerting>false</alerting>
+			<silent>true</silent>
 		</function>
 	</functions>
 </udf_manifest>
