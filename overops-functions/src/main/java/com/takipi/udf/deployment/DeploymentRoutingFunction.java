@@ -99,9 +99,8 @@ public class DeploymentRoutingFunction {
 		// sort deployments by descending last_seen
 		List<SummarizedDeployment> sortedDeployments = deployments.parallelStream()
 				.sorted((dep1, dep2) ->
-						Long.compare(
-								ISODateTimeFormat.dateTimeParser().parseDateTime(dep2.last_seen).getMillis(),
-								ISODateTimeFormat.dateTimeParser().parseDateTime(dep1.last_seen).getMillis()))
+						ISODateTimeFormat.dateTimeParser().parseDateTime(dep2.last_seen).compareTo(
+								ISODateTimeFormat.dateTimeParser().parseDateTime(dep1.last_seen)))
 				.collect(Collectors.toList());
 
 		// map deployments to viewIds of their corresponding views
