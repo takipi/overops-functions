@@ -1,9 +1,6 @@
 package com.takipi.udf.quality.gate;
 
-import com.takipi.api.client.functions.input.ReliabilityReportInput;
-import com.takipi.api.client.functions.output.ReliabilityReportRow;
-import com.takipi.api.client.functions.output.Series;
-import com.takipi.api.client.functions.output.SeriesRow;
+import com.takipi.api.client.functions.output.ReliabilityReport.ReliabilityReportItem;
 import com.takipi.api.client.util.grafana.GrafanaDashboard;
 import com.takipi.udf.quality.QualityGateType;
 
@@ -32,22 +29,11 @@ public class VolumeGate extends QualityGate {
 	}
 
 	@Override
-	protected String getRelevantSeriesType() {
-		return ReliabilityReportInput.RELIABITY_REPORT_SERIES;
-	}
-
-	@Override
-	protected String isBreached(Series<SeriesRow> series) {
-		if (series.size() == 0) {
+	public String isBreached(ReliabilityReportItem report) {
+		if (report.row.errorVolume < volume) {
 			return null;
 		}
 
-		ReliabilityReportRow report = (ReliabilityReportRow) series.iterator().next();
-
-		if (report.errorVolume < volume) {
-			return null;
-		}
-
-		return String.format(FORMAT, report.errorVolume, volume);
+		return String.format(FORMAT, report.row.errorVolume, volume);
 	}
 }

@@ -1,10 +1,6 @@
 package com.takipi.udf.quality.gate;
 
-import com.takipi.api.client.functions.input.RegressionsInput;
-import com.takipi.api.client.functions.input.ReliabilityReportInput;
-import com.takipi.api.client.functions.output.RegressionRow;
-import com.takipi.api.client.functions.output.Series;
-import com.takipi.api.client.functions.output.SeriesRow;
+import com.takipi.api.client.functions.output.ReliabilityReport.ReliabilityReportItem;
 import com.takipi.api.client.util.grafana.GrafanaDashboard;
 import com.takipi.udf.quality.QualityGateType;
 
@@ -34,25 +30,8 @@ public class NewEventsGate extends QualityGate {
 	}
 
 	@Override
-	protected String getRelevantSeriesType() {
-		return ReliabilityReportInput.REGRESSION_SERIES;
-	}
-
-	@Override
-	protected String isBreached(Series<SeriesRow> series) {
-		int newEventsCount = 0;
-		int newCriticalEventsCount = 0;
-
-		for (SeriesRow row : series) {
-			RegressionRow regressionRow = (RegressionRow) row;
-
-			if (RegressionsInput.SEVERE_NEW_ISSUE_REGRESSIONS.equals(regressionRow.regression_type)) {
-				newEventsCount++;
-				newCriticalEventsCount++;
-			} else if (RegressionsInput.NEW_ISSUE_REGRESSIONS.equals(regressionRow.regression_type)) {
-				newEventsCount++;
-			}
-		}
+	public String isBreached(ReliabilityReportItem report) {
+		int newCriticalEventsCount = report.getNewErrors(false, true).size();
 
 		if (criticalOnly) {
 			if (newCriticalEventsCount == 0) {
@@ -61,6 +40,8 @@ public class NewEventsGate extends QualityGate {
 
 			return String.format(CRITICAL_FORMAT, newCriticalEventsCount);
 		} else {
+			int newEventsCount = report.getNewErrors(true, true).size();
+
 			if (newEventsCount == 0) {
 				return null;
 			}

@@ -18,9 +18,8 @@ import com.google.gson.GsonBuilder;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.service.SummarizedService;
 import com.takipi.api.client.functions.input.ReliabilityReportInput;
-import com.takipi.api.client.functions.output.QueryResult;
-import com.takipi.api.client.functions.output.Series;
-import com.takipi.api.client.functions.output.SeriesRow;
+import com.takipi.api.client.functions.output.ReliabilityReport;
+import com.takipi.api.client.functions.output.ReliabilityReport.ReliabilityReportItem;
 import com.takipi.api.client.request.alert.CustomAlertRequest;
 import com.takipi.api.client.request.alert.CustomAlertRequest.AlertLink;
 import com.takipi.api.client.request.functions.settings.GetFunctionSettingRequest;
@@ -32,6 +31,7 @@ import com.takipi.api.client.util.client.ClientUtil;
 import com.takipi.api.client.util.grafana.GrafanaUrlBuilder;
 import com.takipi.api.client.util.view.ViewUtil;
 import com.takipi.api.core.url.UrlClient.Response;
+import com.takipi.common.util.CollectionUtil;
 import com.takipi.common.util.TimeUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.input.Input;
@@ -177,22 +177,20 @@ public class QualityGatesFunction {
 		reportInput.outputDrillDownSeries = true;
 		reportInput.mode = ReliabilityReportInput.DEFAULT_REPORT;
 
-		Response<QueryResult> reportResponse = apiClient.get(reportInput);
+		ReliabilityReport reliabilityReport = ReliabilityReport.execute(apiClient, reportInput);
 
-		if (reportResponse.isBadResponse()) {
-			throw new IllegalStateException(
-					"Failed getting report response - " + String.valueOf(reportResponse.responseCode));
+		if (reliabilityReport == null) {
+			throw new IllegalStateException("Failed getting report");
 		}
 
-		if (reportResponse.data == null) {
+		if (CollectionUtil.safeIsEmpty(reliabilityReport.items)) {
 			throw new IllegalStateException("Missing data");
 		}
 
-		Collection<Series<SeriesRow>> allSeries = reportResponse.data.getSeries();
-
-		if (allSeries.isEmpty()) {
-			return;
-		}
+		// Because we're in ReliabilityReportInput.DEFAULT_REPORT mode, we have just a
+		// single report.
+		//
+		ReliabilityReportItem report = reliabilityReport.items.values().iterator().next();
 
 		DateTime from = now.minusMinutes(input.period.asMinutes());
 		SummarizedService env = ClientUtil.getEnvironment(apiClient, args.serviceId);
@@ -201,7 +199,7 @@ public class QualityGatesFunction {
 		Collection<AlertLink> links = Lists.newArrayList();
 
 		for (QualityGate gate : activeGates) {
-			String breachText = gate.isBreached(allSeries);
+			String breachText = gate.isBreached(report);
 
 			if (Strings.isNullOrEmpty(breachText)) {
 				continue;
