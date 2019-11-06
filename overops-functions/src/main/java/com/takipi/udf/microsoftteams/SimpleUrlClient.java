@@ -21,7 +21,7 @@ public class SimpleUrlClient extends UrlClient {
             String postData = request.postData();
             byte[] data = (Strings.isNullOrEmpty(postData) ? null : postData.getBytes(ApiConstants.UTF8_ENCODING));
 
-            return post(request.urlPath(), null, data, request.contentType(),
+            return post(request.urlPath(), data, request.contentType(),
                     request.queryParams());
         } catch (Exception e) {
             logger.error("Api url client POST {} failed.", request.getClass().getName(), e);
