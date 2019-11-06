@@ -1,11 +1,11 @@
 package com.takipi.udf;
 
+import java.net.HttpURLConnection;
+
 import com.google.common.base.Strings;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.RemoteApiClient;
 import com.takipi.api.core.url.UrlClient.LogLevel;
-
-import java.net.HttpURLConnection;
 
 public class ContextArgs {
 	public String appHost;
@@ -19,12 +19,22 @@ public class ContextArgs {
 	public String apiKey;
 	public String resurface;
 
-	public ContextArgs() {}
+	// This is used for Gson parsing.
+	//
+	public ContextArgs() {
 
-	public ContextArgs(String appHost, String apiHost, String serviceId, String eventId, String viewId, String apiKey, String resurface) {
+	}
+
+	// Should only be called from the builder.
+	//
+	ContextArgs(String appHost, String apiHost, String grafanaHost, String serviceId, String libraryId,
+			String functionId, String eventId, String viewId, String apiKey, String resurface) {
 		this.appHost = appHost;
 		this.apiHost = apiHost;
+		this.grafanaHost = grafanaHost;
 		this.serviceId = serviceId;
+		this.libraryId = libraryId;
+		this.functionId = functionId;
 		this.eventId = eventId;
 		this.viewId = viewId;
 		this.apiKey = apiKey;
@@ -48,56 +58,81 @@ public class ContextArgs {
 				.setResponseLogLevel(HttpURLConnection.HTTP_CONFLICT, LogLevel.INFO).build();
 	}
 
-	public static ContextArgsBuilder newBuilder() {
-		return new ContextArgsBuilder();
+	// This is used for testing purposes and easier context args building.
+	//
+	public static Builder newBuilder() {
+		return new Builder();
 	}
 
-	public static class ContextArgsBuilder {
+	public static class Builder {
 		private String appHost;
 		private String apiHost;
+		private String grafanaHost;
 		private String serviceId;
+		private String libraryId;
+		private String functionId;
 		private String eventId;
 		private String viewId;
 		private String apiKey;
 		private String resurface;
 
-		public ContextArgsBuilder setAppHost(String appHost) {
+		Builder() {
+
+		}
+
+		public Builder setAppHost(String appHost) {
 			this.appHost = appHost;
 			return this;
 		}
 
-		public ContextArgsBuilder setApiHost(String apiHost) {
+		public Builder setApiHost(String apiHost) {
 			this.apiHost = apiHost;
 			return this;
 		}
 
-		public ContextArgsBuilder setServiceId(String serviceId) {
+		public Builder setGrafanaHost(String grafanaHost) {
+			this.grafanaHost = grafanaHost;
+			return this;
+		}
+
+		public Builder setServiceId(String serviceId) {
 			this.serviceId = serviceId;
 			return this;
 		}
 
-		public ContextArgsBuilder setEventId(String eventId) {
+		public Builder setLibraryId(String libraryId) {
+			this.libraryId = libraryId;
+			return this;
+		}
+
+		public Builder setFunctionId(String functionId) {
+			this.functionId = functionId;
+			return this;
+		}
+
+		public Builder setEventId(String eventId) {
 			this.eventId = eventId;
 			return this;
 		}
 
-		public ContextArgsBuilder setViewId(String viewId) {
+		public Builder setViewId(String viewId) {
 			this.viewId = viewId;
 			return this;
 		}
 
-		public ContextArgsBuilder setApiKey(String apiKey) {
+		public Builder setApiKey(String apiKey) {
 			this.apiKey = apiKey;
 			return this;
 		}
 
-		public ContextArgsBuilder setResurface(String resurface) {
+		public Builder setResurface(String resurface) {
 			this.resurface = resurface;
 			return this;
 		}
 
 		public ContextArgs build() {
-			return new ContextArgs(appHost, apiHost, serviceId, eventId, viewId, apiKey, resurface);
+			return new ContextArgs(appHost, apiHost, grafanaHost, serviceId, libraryId, functionId, eventId, viewId,
+					apiKey, resurface);
 		}
 	}
 }

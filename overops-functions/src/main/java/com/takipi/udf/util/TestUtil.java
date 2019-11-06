@@ -11,11 +11,8 @@ public class TestUtil {
 			throw new IllegalArgumentException("args");
 		}
 
-		ContextArgs contextArgs = new ContextArgs();
-
-		contextArgs.apiHost = args[0];
-		contextArgs.apiKey = args[1];
-		contextArgs.serviceId = args[2];
+		ContextArgs contextArgs = ContextArgs.newBuilder().setApiHost(args[0]).setApiKey(args[1]).setServiceId(args[2])
+				.build();
 
 		SummarizedView view = ViewUtil.getServiceViewByName(contextArgs.apiClient(), contextArgs.serviceId, viewName);
 
@@ -29,19 +26,14 @@ public class TestUtil {
 			throw new IllegalArgumentException("args");
 		}
 
-		ContextArgs contextArgs = new ContextArgs();
-
-		contextArgs.apiHost = args[0];
-		contextArgs.apiKey = args[1];
-		contextArgs.serviceId = args[2];
-		contextArgs.eventId = args[3];
+		ContextArgs contextArgs = ContextArgs.newBuilder().setApiHost(args[0]).setApiKey(args[1]).setServiceId(args[2])
+				.setEventId(args[3]).build();
 
 		return new Gson().toJson(contextArgs);
 	}
 
-	public static ContextArgs.ContextArgsBuilder getDefaultContextArgsBuilder() {
-		return ContextArgs.newBuilder()
-				.setAppHost("https://app.overops.com")
-				.setApiHost("https://api.overops.com");
+	public static ContextArgs.Builder getDefaultContextArgsBuilder() {
+		return ContextArgs.newBuilder().setAppHost("https://app.overops.com").setApiHost("https://api.overops.com")
+				.setGrafanaHost("https://app.overops.com/grafana");
 	}
 }
