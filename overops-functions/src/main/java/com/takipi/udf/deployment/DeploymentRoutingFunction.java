@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.category.Category;
@@ -103,44 +102,37 @@ public class DeploymentRoutingFunction {
 								ISODateTimeFormat.dateTimeParser().parseDateTime(dep1.last_seen)))
 				.collect(Collectors.toList());
 
-		// map deployments to viewIds of their corresponding views
-		Map<String, String> deploymentViewIdMap = Maps.newHashMapWithExpectedSize(maxViews);
-
-		for (SummarizedView view : views.values()) {
-			String deploymentNameFromView = (input.prefix != null) ?
-											(view.name.replace(cleanPrefix(input), "")) :
-											(view.name);
-
-			deploymentViewIdMap.put(deploymentNameFromView, view.id);
-		}
+		maxViews = Math.min(maxViews, sortedDeployments.size());
 
 		// remove existing views that exceed maxViews
-		for (int i = maxViews; i < sortedDeployments.size(); i++) {
-			SummarizedDeployment currentDeployment = sortedDeployments.get(i);
-			String currentDeploymentViewId = deploymentViewIdMap.get(currentDeployment.name);
+		for (SummarizedDeployment deployment : sortedDeployments.subList(maxViews, sortedDeployments.size())) {
+			SummarizedView deploymentView = views.get(toViewName(input, deployment.name));
 
-			if (currentDeploymentViewId != null) {
-				ViewUtil.removeView(apiClient, serviceId, currentDeploymentViewId);
+			if (deploymentView != null) {
+				System.out.println("Removing view " + deploymentView.id + " for deployment " + deployment.name);
+				ViewUtil.removeView(apiClient, serviceId, deploymentView.id);
 			}
 		}
 
 		// create missing views up to maxViews
 		List<ViewInfo> newDeploymentViewsInfo = Lists.newArrayList();
 
-		for (int i = 0; i < Math.min(sortedDeployments.size(), maxViews); i++) {
-			String currentDeploymentName = sortedDeployments.get(i).name;
-			String currentDeploymentViewId = deploymentViewIdMap.get(currentDeploymentName);
+		for (SummarizedDeployment deployment : sortedDeployments.subList(0, maxViews)) {
+			String deploymentName = deployment.name;
+			SummarizedView deploymentView = views.get(toViewName(input, deployment.name));
 
-			if (currentDeploymentViewId != null) {
-				System.out.println("View for deployment " + currentDeploymentName + " already exists with ID " + currentDeploymentViewId);
+			if (deploymentView != null) {
+				System.out.println("View " + deploymentView.id + " already exists for deployment " + deploymentName);
 				continue;
 			}
 
+			System.out.println("Queueing view creation for deployment " + deploymentName);
+
 			ViewInfo viewInfo = new ViewInfo();
 
-			viewInfo.name = toViewName(input, currentDeploymentName);
+			viewInfo.name = toViewName(input, deploymentName);
 			viewInfo.filters = new ViewFilters();
-			viewInfo.filters.introduced_by = Collections.singletonList(currentDeploymentName);
+			viewInfo.filters.introduced_by = Collections.singletonList(deploymentName);
 			viewInfo.shared = SHARED;
 			viewInfo.immutable = IMMUTABLE_VIEWS;
 
@@ -209,7 +201,7 @@ public class DeploymentRoutingFunction {
 		String rawContextArgs = TestUtil.getViewContextArgs(args, "All Events");
 
 		// some test values
-		String[] sampleValues = new String[] { "category_name=CI / CD", "prefix='New in '", "max_views=5" };
+		String[] sampleValues = new String[] { "category_name=CI / CD", "prefix='New'' in '", "max_views=4" };
 
 		DeploymentRoutingFunction.execute(rawContextArgs, String.join("\n", sampleValues));
 	}
