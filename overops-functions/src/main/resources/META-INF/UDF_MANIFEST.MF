@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <udf_manifest>
-	<version>2.13</version>
+	<version>2.14</version>
 	<library_name>overops-public-lib</library_name>
 	<backwards_compatible>true</backwards_compatible>
 	<!-- The value must be a multiple of 64 MB -->
@@ -311,6 +311,41 @@
 			</default_params>
 			<admin_function>true</admin_function>
 			<silent>true</silent>
+		</function>
+		<function>
+			<function_type>CHANNEL</function_type>
+			<function_name>Microsoft Teams Alert</function_name>
+			<description>
+				Alerts are pushed to Microsoft Teams channel
+			</description>
+			<param_type>TEXT</param_type>
+			<class_file>com.takipi.udf.microsoftteams.MicrosoftTeamsChannelFunction</class_file>
+			<default_params>
+				# Incoming Webhook URL to specific Microsoft Teams channel
+				url = URL_provided_by_Webhook
+			</default_params>
+			<admin_function>true</admin_function>
+			<work_on_every_entrypoint>true</work_on_every_entrypoint>
+		</function>
+		<function>
+			<function_type>ANOMALY</function_type>
+			<function_name>Microsoft Teams Digest</function_name>
+			<description>
+				Digest of alerts that occurred in the last {timespan} minutes.
+			</description>
+			<param_type>TEXT</param_type>
+			<class_file>com.takipi.udf.microsoftteams.MicrosoftTeamsAnomalyFunction</class_file>
+			<default_params>
+				# Incoming Webhook URL to specific Microsoft Teams channel
+				url = URL_provided_by_Webhook
+
+				# Get events from the last {timespan} minutes
+				timespan = 5
+
+				# Optional (0 to ignore) fixed min volume threshold
+				threshold = 1000
+			</default_params>
+			<admin_function>true</admin_function>
 		</function>
 	</functions>
 </udf_manifest>
