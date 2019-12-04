@@ -29,6 +29,16 @@ public class JiraIntegrationFunction {
 	public static String validateInput(String rawInput) {
 		JiraIntegrationInput input = getJiraIntegrationInput(rawInput);
 
+		// INTG-203: sync either 'resolution' or 'status' field
+		if (!input.resolutionOrStatus.equals("resolution") && !input.resolutionOrStatus.equals("status")) {
+			throw new IllegalArgumentException("'resolutionOrStatus' must be 'resolution' or 'status'");
+		}
+
+		// INTG-200: at least one (resolved, hidden) is required.
+		if (StringUtils.isEmpty(input.resolvedStatus) && StringUtils.isEmpty(input.hiddenStatus)) {
+			throw new IllegalArgumentException("'resolvedStatus' or 'hiddenStatus' is required");
+		}
+
 		// validate credentials by logging in
 		JiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
 
@@ -41,13 +51,38 @@ public class JiraIntegrationFunction {
 			JiraRestClient client = factory.createWithBasicHttpAuthentication(uri, input.jiraUsername, input.jiraToken);
 
 			// Make the client log in by performing a search
-			client.getSearchClient().searchJql("").claim();
+
+			// INTG-200: resolved status must exist in Jira.
+			if (!StringUtils.isEmpty(input.resolvedStatus)) {
+				client.getSearchClient().searchJql(input.resolutionOrStatus + " = \""+ input.resolvedStatus +"\"", 1, 0).claim();
+				System.out.println(">> verified input.resolveStatus");
+			}
+
+			// INTG-200: hidden status must exist in Jira.
+			if (!StringUtils.isEmpty(input.hiddenStatus)) {
+				client.getSearchClient().searchJql(input.resolutionOrStatus + " = \""+ input.hiddenStatus +"\"", 1, 0).claim();
+				System.out.println(">> verified input.hiddenStatus");
+			}
+
 		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException("Invalid URL. Check jiraURL and try again");
 		} catch (Exception e) {
-			// invalid credentials results in org.codehaus.jettison.json.JSONException in
-			// JiraClient
-			throw new IllegalArgumentException("Invalid credentials. Unable to authenticate with Jira.");
+			// invalid credentials results in org.codehaus.jettison.json.JSONException in JiraClient
+			// exception message is HTML
+			if (e.getMessage().contains("AUTHENTICATED_FAILED")) {
+				// failed = invalid username / password
+				throw new IllegalArgumentException("Authentication failed.");
+			} else if (e.getMessage().contains("AUTHENTICATION_DENIED")) {
+				// denied = failed CAPTHCA challenge
+				throw new IllegalArgumentException("Authentication denied. Please disable Jira CAPTCHA challenge.");
+			} else {
+				// log other errors
+				System.out.println("---- JIRA UDF VALIDATION EXCEPTION: ----");
+				System.out.println(e.getMessage());
+				System.out.println("----------------------------------------");
+
+				throw new IllegalArgumentException(e.getMessage());
+			}
 		}
 
 		return input.toString();
@@ -83,14 +118,6 @@ public class JiraIntegrationFunction {
 
 		if (StringUtils.isEmpty(input.jiraToken)) {
 			throw new IllegalArgumentException("'jiraToken' is required");
-		}
-
-		if (StringUtils.isEmpty(input.resolvedStatus)) {
-			throw new IllegalArgumentException("'resolvedStatus' is required");
-		}
-
-		if (StringUtils.isEmpty(input.hiddenStatus)) {
-			throw new IllegalArgumentException("'hiddenStatus' is required");
 		}
 
 		return input;
@@ -201,6 +228,7 @@ public class JiraIntegrationFunction {
 		public String jiraUsername;
 		public String jiraToken;
 
+		public String resolutionOrStatus; // INTG-203
 		public String resolvedStatus;
 		public String hiddenStatus;
 
@@ -228,22 +256,21 @@ public class JiraIntegrationFunction {
 	public static void main(String[] args) {
 		Instant start = Instant.now(); // timer
 
-		if ((args == null) || (args.length < 9))
+		if ((args == null) || (args.length < 10))
 			throw new IllegalArgumentException(
 					"java JiraIntegrationFunction API_URL API_KEY SERVICE_ID JIRA_URL JIRA_USER JIRA_PASS "
-							+ "DAYS RESOLVED_STATUS HIDDEN_STATUS");
+							+ "DAYS RESOLVED_STATUS HIDDEN_STATUS VIEW_NAME");
 
-		// Use "Jira UDF" view for testing
-		String rawContextArgs = TestUtil.getViewContextArgs(args, "Jira UDF");
+		String rawContextArgs = TestUtil.getViewContextArgs(args, args[9]);
 
 		// some test values
 		String[] sampleValues = new String[] {
 				"jiraURL=" + args[3],
 				"jiraUsername=" + args[4],
 				"jiraToken=" + args[5],
-				"days=" + args[6],				// 14
+				"days=" + args[6],	// 14
 				"resolvedStatus=" + args[7],	// Resolved
-				"hiddenStatus=" + args[8]		// Won't Fix, Closed
+				"hiddenStatus=" + args[8]	// Won't Fix, Closed
 		};
 
 		try {
