@@ -1,0 +1,63 @@
+apply plugin: 'eu.appsatori.fatjar'
+
+archivesBaseName = 'overops-alerts'
+
+buildscript {
+	repositories {
+		jcenter()
+	}
+
+	dependencies {
+		classpath 'eu.appsatori:gradle-fatjar-plugin:0.3'
+	}
+}
+
+dependencies {
+	compile (
+		project(":overops-functions-shared"),
+		"org.glassfish.jersey.core:jersey-client:2.27",
+		"org.glassfish.jersey.connectors:jersey-apache-connector:2.27",
+	)
+}
+
+fatJar {
+	exclude 'META-INF/maven'
+	exclude 'META-INF/*.example'
+	manifest {
+		attributes 'Main-Class': 'OveropsAlerts'
+	}
+}
+
+uploadArchives {
+	repositories {
+		mavenDeployer {
+			pom.project {
+				name 'overops-alerts'
+				description 'OverOps Alerts - Extending OverOps Reliability Platform'
+				
+				licenses {
+					license {
+						name 'MIT License'
+						url 'http://www.opensource.org/licenses/mit-license.php'
+					}
+				}
+
+				scm {
+					connection 'scm:git:https://github.com/takipi/overops-functions/tree/master/overops-alerts'
+					developerConnection 'scm:git:https://github.com/takipi/overops-functions/tree/master/overops-alerts'
+					url 'https://github.com/takipi/overops-functions/tree/master/overops-alerts'
+				}
+			}
+		}
+	}
+}
+
+task copyJar(dependsOn: fatJar) {
+	doLast {
+		if (rootProject.hasProperty("jarTargetFile")) {
+			println "Copying $jar.archivePath to $jarTargetFile"
+
+			ant.copy(file:jar.archivePath, tofile:jarTargetFile)
+		}
+	}
+}
