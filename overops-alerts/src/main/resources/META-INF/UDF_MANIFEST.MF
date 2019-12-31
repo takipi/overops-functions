@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<udf_manifest>
+	<version>1.0</version>
+	<library_name>overops-alerts-lib</library_name>
+	<backwards_compatible>true</backwards_compatible>
+	<functions>
+		<function>
+			<function_type>CHANNEL</function_type>
+			<function_name>Slack Channel Alert</function_name>
+			<description>
+				Alerts to slack when a new event occurs
+				See code at: TODO
+			</description>
+			<param_type>TEXT</param_type>
+			<class_file>com.takipi.udf.alerts.slack.SlackFunction</class_file>
+			<default_params>
+				# Slack inhook URL for sending alerts
+				# inhook_url=
+
+				# Slack channel
+				# inhook_channel=
+			</default_params>
+		</function>
+	</functions>
+</udf_manifest>
