@@ -1,23 +1,42 @@
 package com.takipi.udf;
 
 import java.net.HttpURLConnection;
+import java.util.List;
+import java.util.Map;
 
 import com.google.common.base.Strings;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.RemoteApiClient;
 import com.takipi.api.core.url.UrlClient.LogLevel;
+import com.takipi.common.util.CollectionUtil;
 
 public class ContextArgs {
+	public static class Contributor {
+		public String id;
+		public int lastSnapshotId;
+		public long hits;
+	}
+
+	public static enum ExecutionContext {
+		NEW_EVENT, RESURFACED_EVENT, THRESHOLD, ANOMALY, CUSTOM_ALERT, PERIODIC
+	}
+
 	public String appHost;
 	public String apiHost;
 	public String grafanaHost;
 	public String serviceId;
+	public String serviceName;
 	public String libraryId;
 	public String functionId;
 	public String eventId;
 	public String viewId;
 	public String apiKey;
 	public String resurface;
+	public String callerLibraryId;
+	public String callerFunctionId;
+	public List<Contributor> contributors;
+	public ExecutionContext executionContext;
+	public Map<String, String> contextData;
 
 	// This is used for Gson parsing.
 	//
@@ -56,6 +75,68 @@ public class ContextArgs {
 	public ApiClient apiClient() {
 		return RemoteApiClient.newBuilder().setHostname(apiHost).setApiKey(apiKey).setDefaultLogLevel(LogLevel.WARN)
 				.setResponseLogLevel(HttpURLConnection.HTTP_CONFLICT, LogLevel.INFO).build();
+	}
+
+	public long longData(String name) {
+		return longData(name, -1);
+	}
+
+	public long longData(String name, long defaultValue) {
+		if (CollectionUtil.safeIsEmpty(contextData)) {
+			return defaultValue;
+		}
+
+		String value = contextData.get(name);
+
+		if (Strings.isNullOrEmpty(value)) {
+			return defaultValue;
+		}
+
+		try {
+			return Long.valueOf(value);
+		} catch (Exception e) {
+			return defaultValue;
+		}
+	}
+
+	public int intData(String name) {
+		return intData(name, -1);
+	}
+
+	public int intData(String name, int defaultValue) {
+		if (CollectionUtil.safeIsEmpty(contextData)) {
+			return defaultValue;
+		}
+
+		String value = contextData.get(name);
+
+		if (Strings.isNullOrEmpty(value)) {
+			return defaultValue;
+		}
+
+		try {
+			return Integer.valueOf(value);
+		} catch (Exception e) {
+			return defaultValue;
+		}
+	}
+
+	public String data(String name) {
+		return data(name, "");
+	}
+
+	public String data(String name, String defaultValue) {
+		if (CollectionUtil.safeIsEmpty(contextData)) {
+			return defaultValue;
+		}
+
+		String value = contextData.get(name);
+
+		if (Strings.isNullOrEmpty(value)) {
+			return defaultValue;
+		}
+
+		return value;
 	}
 
 	// This is used for testing purposes and easier context args building.
