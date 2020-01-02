@@ -12,8 +12,8 @@ import com.takipi.udf.alerts.slack.message.AttachmentField;
 import com.takipi.udf.alerts.util.AlertUtil;
 import com.takipi.udf.alerts.util.SourceConstants;
 
-public class ThresholdSender extends TimeframeSender {
-	private static final Logger logger = LoggerFactory.getLogger(ThresholdSender.class);
+public class SlackThresholdSender extends SlackTimeframeSender {
+	private static final Logger logger = LoggerFactory.getLogger(SlackThresholdSender.class);
 
 	private static final String MESSAGE_TEXT_PLAIN_FORMAT = "UDF: Events in view %s have occurred more than %s %s in the past %d minutes in %s (alert added by %s)";
 	private static final String MESSAGE_TEXT_RICH_FORMAT = "UDF: Events in view *%s* have occurred more than *%s* %s in the past %d minutes in *%s* (alert added by %s)";
@@ -22,7 +22,7 @@ public class ThresholdSender extends TimeframeSender {
 	private final int thresholdTimeframe;
 	private final long hitCount;
 
-	private ThresholdSender(SlackInput input, ContextArgs contextArgs, String addedByUser, String viewName,
+	private SlackThresholdSender(SlackInput input, ContextArgs contextArgs, String addedByUser, String viewName,
 			long fromTimestamp, long toTimestamp, long threshold, int thresholdTimeframe, long hitCount) {
 		super(input, contextArgs, addedByUser, viewName, fromTimestamp, toTimestamp);
 
@@ -68,7 +68,7 @@ public class ThresholdSender extends TimeframeSender {
 		return "View passing threshold: " + viewName;
 	}
 
-	public static Sender create(SlackInput input, ContextArgs contextArgs) {
+	public static SlackSender create(SlackInput input, ContextArgs contextArgs) {
 		if (!contextArgs.viewValidate()) {
 			return null;
 		}
@@ -87,7 +87,7 @@ public class ThresholdSender extends TimeframeSender {
 		long fromTimestamp = contextArgs.longData("from_timestamp");
 		long toTimestamp = contextArgs.longData("to_timestamp");
 
-		return new ThresholdSender(input, contextArgs, addedByUser, viewName, fromTimestamp, toTimestamp, threshold,
-				thresholdTimeframe, hitCount);
+		return new SlackThresholdSender(input, contextArgs, addedByUser, viewName, fromTimestamp, toTimestamp,
+				threshold, thresholdTimeframe, hitCount);
 	}
 }

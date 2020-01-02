@@ -24,8 +24,8 @@ import com.takipi.udf.alerts.util.AlertUtil;
 import com.takipi.udf.util.DateUtil;
 import com.takipi.udf.util.url.UrlUtil;
 
-public abstract class TimeframeSender extends Sender {
-	private static final Logger logger = LoggerFactory.getLogger(TimeframeSender.class);
+public abstract class SlackTimeframeSender extends SlackSender {
+	private static final Logger logger = LoggerFactory.getLogger(SlackTimeframeSender.class);
 
 	private static final String VIEW_ERRORS_LINK = "View errors";
 
@@ -42,7 +42,7 @@ public abstract class TimeframeSender extends Sender {
 	protected final long fromTimestamp;
 	protected final long toTimestamp;
 
-	protected TimeframeSender(SlackInput input, ContextArgs contextArgs, String addedByUser, String viewName,
+	protected SlackTimeframeSender(SlackInput input, ContextArgs contextArgs, String addedByUser, String viewName,
 			long fromTimestamp, long toTimestamp) {
 		super(input);
 

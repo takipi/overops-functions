@@ -6,11 +6,11 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.slack.client.SlackClient;
-import com.takipi.udf.alerts.slack.sender.AnomalySender;
-import com.takipi.udf.alerts.slack.sender.NewEventSender;
-import com.takipi.udf.alerts.slack.sender.ResurfacedEventSender;
-import com.takipi.udf.alerts.slack.sender.Sender;
-import com.takipi.udf.alerts.slack.sender.ThresholdSender;
+import com.takipi.udf.alerts.slack.sender.SlackAnomalySender;
+import com.takipi.udf.alerts.slack.sender.SlackNewEventSender;
+import com.takipi.udf.alerts.slack.sender.SlackResurfacedEventSender;
+import com.takipi.udf.alerts.slack.sender.SlackSender;
+import com.takipi.udf.alerts.slack.sender.SlackThresholdSender;
 import com.takipi.udf.input.Input;
 
 public class SlackFunction {
@@ -58,20 +58,20 @@ public class SlackFunction {
 
 		SlackInput input = getSlackInput(rawInput);
 
-		Sender sender = null;
+		SlackSender sender = null;
 
 		switch (args.executionContext) {
 		case NEW_EVENT:
-			sender = NewEventSender.create(input, args);
+			sender = SlackNewEventSender.create(input, args);
 			break;
 		case RESURFACED_EVENT:
-			sender = ResurfacedEventSender.create(input, args);
+			sender = SlackResurfacedEventSender.create(input, args);
 			break;
 		case THRESHOLD:
-			sender = ThresholdSender.create(input, args);
+			sender = SlackThresholdSender.create(input, args);
 			break;
 		case ANOMALY:
-			sender = AnomalySender.create(input, args);
+			sender = SlackAnomalySender.create(input, args);
 			break;
 
 		case CUSTOM_ALERT:

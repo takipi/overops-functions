@@ -20,7 +20,7 @@ import com.takipi.udf.alerts.util.SourceConstants;
 import com.takipi.udf.util.StringUtil;
 import com.takipi.udf.util.url.UrlUtil;
 
-public abstract class EventSender extends Sender {
+public abstract class SlackEventSender extends SlackSender {
 	private static final String CODE_BLOCK_MARKER = "```";
 
 	private static final String STACK_FRAME_FORMAT = " at %s";
@@ -42,7 +42,7 @@ public abstract class EventSender extends Sender {
 	protected final EventResult event;
 	protected final ContextArgs contextArgs;
 
-	protected EventSender(SlackInput input, EventResult event, ContextArgs contextArgs) {
+	protected SlackEventSender(SlackInput input, EventResult event, ContextArgs contextArgs) {
 		super(input);
 
 		this.event = event;

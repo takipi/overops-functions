@@ -8,8 +8,8 @@ import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.slack.SlackFunction.SlackInput;
 import com.takipi.udf.alerts.util.SourceConstants;
 
-public class AnomalySender extends TimeframeSender {
-	private static final Logger logger = LoggerFactory.getLogger(AnomalySender.class);
+public class SlackAnomalySender extends SlackTimeframeSender {
+	private static final Logger logger = LoggerFactory.getLogger(SlackAnomalySender.class);
 
 	private static final String MESSAGE_TEXT_PLAIN_FORMAT = "UDF: Anomaly detected in view %s by %s in %s in %s (alert added by %s)";
 	private static final String MESSAGE_TEXT_RICH_FORMAT = "UDF: Anomaly detected in view *%s* by *%s* in %s in *%s* (alert added by %s)";
@@ -17,7 +17,7 @@ public class AnomalySender extends TimeframeSender {
 	private final String anomalyReason;
 	private final String anomalyTimeframe;
 
-	private AnomalySender(SlackInput input, ContextArgs contextArgs, String addedByUser, String viewName,
+	private SlackAnomalySender(SlackInput input, ContextArgs contextArgs, String addedByUser, String viewName,
 			long fromTimestamp, long toTimestamp, String anomalyReason, String anomalyTimeframe) {
 		super(input, contextArgs, addedByUser, viewName, fromTimestamp, toTimestamp);
 
@@ -51,11 +51,11 @@ public class AnomalySender extends TimeframeSender {
 		return "View havnig anomaly: " + viewName;
 	}
 
-	public static Sender create(SlackInput input, ContextArgs contextArgs) {
+	public static SlackSender create(SlackInput input, ContextArgs contextArgs) {
 		if (!contextArgs.viewValidate()) {
 			return null;
 		}
-		
+
 		String anomalyReason = contextArgs.data("anomaly_reason");
 		String anomalyTimeframe = contextArgs.data("anomaly_timeframe");
 		String viewName = contextArgs.data("view_name");
@@ -70,7 +70,7 @@ public class AnomalySender extends TimeframeSender {
 		long fromTimestamp = contextArgs.longData("from_timestamp");
 		long toTimestamp = contextArgs.longData("to_timestamp");
 
-		return new AnomalySender(input, contextArgs, addedByUser, viewName, fromTimestamp, toTimestamp, anomalyReason,
-				anomalyTimeframe);
+		return new SlackAnomalySender(input, contextArgs, addedByUser, viewName, fromTimestamp, toTimestamp,
+				anomalyReason, anomalyTimeframe);
 	}
 }

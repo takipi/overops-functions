@@ -4,11 +4,11 @@ import com.takipi.api.client.result.event.EventResult;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.slack.SlackFunction.SlackInput;
 
-public class NewEventSender extends EventSender {
+public class SlackNewEventSender extends SlackEventSender {
 	private static final String SUBHEADING_PLAIN_FORMAT = "UDF: A new %s has been detected in %s (alert added by %s)";
 	private static final String SUBHEADING_RICH_FORMAT = "UDF: A new *%s* has been detected in *%s* (alert added by *%s*)";
 
-	private NewEventSender(SlackInput input, EventResult event, ContextArgs contextArgs) {
+	private SlackNewEventSender(SlackInput input, EventResult event, ContextArgs contextArgs) {
 		super(input, event, contextArgs);
 	}
 
@@ -32,7 +32,7 @@ public class NewEventSender extends EventSender {
 		return String.format(format, event.summary, serviceName, contextArgs.data("added_by_user", "Unknown"));
 	}
 
-	public static Sender create(SlackInput input, ContextArgs contextArgs) {
+	public static SlackSender create(SlackInput input, ContextArgs contextArgs) {
 		EventResult event = getEvent(contextArgs);
 
 		if (event == null) {
@@ -41,6 +41,6 @@ public class NewEventSender extends EventSender {
 			return null;
 		}
 
-		return new NewEventSender(input, event, contextArgs);
+		return new SlackNewEventSender(input, event, contextArgs);
 	}
 }

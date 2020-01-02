@@ -4,11 +4,11 @@ import com.takipi.api.client.result.event.EventResult;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.slack.SlackFunction.SlackInput;
 
-public class ResurfacedEventSender extends EventSender {
+public class SlackResurfacedEventSender extends SlackEventSender {
 	private static final String SUBHEADING_PLAIN_FORMAT = "A resolved error just reappeared in %s: %s";
 	private static final String SUBHEADING_RICH_FORMAT = "A resolved error just reappeared in *%s*: *%s*";
 
-	private ResurfacedEventSender(SlackInput input, EventResult event, ContextArgs contextArgs) {
+	private SlackResurfacedEventSender(SlackInput input, EventResult event, ContextArgs contextArgs) {
 		super(input, event, contextArgs);
 	}
 
@@ -32,7 +32,7 @@ public class ResurfacedEventSender extends EventSender {
 		return String.format(format, serviceName, event.summary);
 	}
 
-	public static Sender create(SlackInput input, ContextArgs contextArgs) {
+	public static SlackSender create(SlackInput input, ContextArgs contextArgs) {
 		EventResult event = getEvent(contextArgs);
 
 		if (event == null) {
@@ -41,6 +41,6 @@ public class ResurfacedEventSender extends EventSender {
 			return null;
 		}
 
-		return new ResurfacedEventSender(input, event, contextArgs);
+		return new SlackResurfacedEventSender(input, event, contextArgs);
 	}
 }

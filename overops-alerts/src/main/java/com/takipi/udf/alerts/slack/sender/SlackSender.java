@@ -16,8 +16,8 @@ import com.takipi.udf.alerts.slack.message.Attachment;
 import com.takipi.udf.alerts.slack.message.AttachmentField;
 import com.takipi.udf.alerts.slack.message.Message;
 
-public abstract class Sender {
-	protected static final Logger logger = LoggerFactory.getLogger(Sender.class);
+public abstract class SlackSender {
+	protected static final Logger logger = LoggerFactory.getLogger(SlackSender.class);
 
 	protected static final String MARKDOWN_IN_PRETEXT = "pretext";
 	protected static final String MARKDOWN_IN_TEXT = "text";
@@ -25,7 +25,7 @@ public abstract class Sender {
 
 	protected final SlackInput input;
 
-	protected Sender(SlackInput input) {
+	protected SlackSender(SlackInput input) {
 		this.input = input;
 	}
 
