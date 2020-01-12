@@ -56,6 +56,8 @@ public class AlertUtil {
 			fullTitle = event.name;
 		}
 
+		fullTitle = fullTitle.replace("\r", "").replace("\n", "").replace("\t", "");
+
 		if (maxLength <= 0) {
 			return fullTitle;
 		}
