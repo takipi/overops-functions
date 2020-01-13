@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.joda.time.format.ISODateTimeFormat;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
@@ -22,7 +24,6 @@ import com.takipi.common.util.CollectionUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.input.Input;
 import com.takipi.udf.util.TestUtil;
-import org.joda.time.format.ISODateTimeFormat;
 
 public class DeploymentRoutingFunction {
 	private static final boolean SHARED = true;
@@ -83,23 +84,22 @@ public class DeploymentRoutingFunction {
 
 		Collection<SummarizedDeployment> deployments = ClientUtil.getSummarizedDeployments(apiClient, serviceId, false);
 
-		if (deployments == null) {
+		if (CollectionUtil.safeIsEmpty(deployments)) {
 			System.err.println("Could not acquire all deployments of service " + serviceId);
 			return;
 		}
 
 		Map<String, SummarizedView> views = ViewUtil.getServiceViewsByName(apiClient, serviceId);
 
-		if (views == null) {
+		if (CollectionUtil.safeIsEmpty(views)) {
 			System.err.println("Could not acquire views of service " + serviceId);
 			return;
 		}
 
 		// sort deployments by descending last_seen
 		List<SummarizedDeployment> sortedDeployments = deployments.parallelStream()
-				.sorted((dep1, dep2) ->
-						ISODateTimeFormat.dateTimeParser().parseDateTime(dep2.last_seen).compareTo(
-								ISODateTimeFormat.dateTimeParser().parseDateTime(dep1.last_seen)))
+				.sorted((dep1, dep2) -> ISODateTimeFormat.dateTimeParser().parseDateTime(dep2.last_seen)
+						.compareTo(ISODateTimeFormat.dateTimeParser().parseDateTime(dep1.last_seen)))
 				.collect(Collectors.toList());
 
 		maxViews = Math.min(maxViews, sortedDeployments.size());

@@ -17,6 +17,7 @@ import com.takipi.api.client.data.view.ViewInfo;
 import com.takipi.api.client.util.category.CategoryUtil;
 import com.takipi.api.client.util.client.ClientUtil;
 import com.takipi.api.client.util.view.ViewUtil;
+import com.takipi.common.util.CollectionUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.input.Input;
 import com.takipi.udf.util.TestUtil;
@@ -74,21 +75,21 @@ public class AppRoutingFunction {
 
 		String serviceId = args.serviceId;
 
-		String categoryId = createAppCategory(apiClient, serviceId, input);
-
 		List<String> apps = ClientUtil.getApplications(apiClient, serviceId, true);
 
-		if (apps == null) {
+		if (CollectionUtil.safeIsEmpty(apps)) {
 			System.out.println("Could not acquire apps for service " + serviceId);
 			return;
 		}
 
 		Map<String, SummarizedView> views = ViewUtil.getServiceViewsByName(apiClient, serviceId);
 
-		if (views == null) {
+		if (CollectionUtil.safeIsEmpty(views)) {
 			System.out.println("Could not acquire view for service " + serviceId);
 			return;
 		}
+
+		String categoryId = createAppCategory(apiClient, serviceId, input);
 
 		int appsWithViewsSize = 0;
 		Set<String> appsWithoutViews = Sets.newHashSet();
