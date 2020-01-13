@@ -60,4 +60,12 @@ public class StringUtil {
 
 		return sb.toString();
 	}
+
+	public static String removeIfTrailing(String str, String suffix) {
+		if (!str.endsWith(suffix)) {
+			return str;
+		}
+
+		return str.substring(0, str.length() - suffix.length());
+	}
 }

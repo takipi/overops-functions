@@ -17,6 +17,7 @@ dependencies {
 		project(":overops-functions-shared"),
 		"org.glassfish.jersey.core:jersey-client:2.27",
 		"org.glassfish.jersey.connectors:jersey-apache-connector:2.27",
+		"com.googlecode.htmlcompressor:htmlcompressor:1.5.2",
 	)
 }
 
