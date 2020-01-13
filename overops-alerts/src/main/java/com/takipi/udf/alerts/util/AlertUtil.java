@@ -4,8 +4,15 @@ import java.io.UnsupportedEncodingException;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Strings;
+import com.takipi.api.client.ApiClient;
+import com.takipi.api.client.request.event.EventRequest;
 import com.takipi.api.client.result.event.EventResult;
+import com.takipi.api.core.url.UrlClient.Response;
+import com.takipi.udf.ContextArgs;
 import com.takipi.udf.util.StringUtil;
 import com.takipi.udf.util.url.DashboardUrlBuilder;
 import com.takipi.udf.util.url.DashboardUrlBuilder.TimeframeType;
@@ -13,6 +20,8 @@ import com.takipi.udf.util.url.UrlBuilder;
 import com.takipi.udf.util.url.UrlUtil;
 
 public class AlertUtil {
+	protected static final Logger logger = LoggerFactory.getLogger(AlertUtil.class);
+
 	public static boolean isException(EventResult event) {
 		return isException(event.type);
 	}
@@ -28,6 +37,10 @@ public class AlertUtil {
 
 	public static boolean isLogEvent(String type) {
 		return (("Logged Error".equals(type)) || ("Logged Warning".equals(type)));
+	}
+
+	public static String createEventTitle(EventResult event) {
+		return createEventTitle(event, 0);
 	}
 
 	public static String createEventTitle(EventResult event, int maxLength) {
@@ -122,5 +135,25 @@ public class AlertUtil {
 		String s = text.replace('*', '-');
 
 		return s.replaceAll("`|_|~|\n", "-");
+	}
+
+	public static EventResult getEvent(ContextArgs args) {
+		if (!args.eventValidate()) {
+			return null;
+		}
+
+		ApiClient apiClient = args.apiClient();
+
+		EventRequest eventRequest = EventRequest.newBuilder().setServiceId(args.serviceId).setEventId(args.eventId)
+				.setIncludeStacktrace(true).build();
+
+		Response<EventResult> eventResult = apiClient.get(eventRequest);
+
+		if ((eventResult.isBadResponse()) || (eventResult.data == null)) {
+			logger.error("Can't get event {}/{}", args.serviceId, args.eventId);
+			return null;
+		}
+
+		return eventResult.data;
 	}
 }

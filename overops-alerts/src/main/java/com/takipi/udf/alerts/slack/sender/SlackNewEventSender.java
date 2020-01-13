@@ -3,6 +3,7 @@ package com.takipi.udf.alerts.slack.sender;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.slack.SlackFunction.SlackInput;
+import com.takipi.udf.alerts.util.AlertUtil;
 
 public class SlackNewEventSender extends SlackEventSender {
 	private static final String SUBHEADING_PLAIN_FORMAT = "UDF: A new %s has been detected in %s (alert added by %s)";
@@ -33,7 +34,7 @@ public class SlackNewEventSender extends SlackEventSender {
 	}
 
 	public static SlackSender create(SlackInput input, ContextArgs contextArgs) {
-		EventResult event = getEvent(contextArgs);
+		EventResult event = AlertUtil.getEvent(contextArgs);
 
 		if (event == null) {
 			// Logging happens inside getEvent if needed.

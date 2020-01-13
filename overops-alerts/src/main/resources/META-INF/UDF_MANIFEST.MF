@@ -21,5 +21,26 @@
 				# inhook_channel=
 			</default_params>
 		</function>
+		<function>
+			<function_type>CHANNEL</function_type>
+			<function_name>ServiceNow Channel Alert</function_name>
+			<description>
+				Alerts to service now when a new event occurs
+				See code at: TODO
+			</description>
+			<param_type>TEXT</param_type>
+			<class_file>com.takipi.udf.alerts.servicenow.ServiceNowFunction</class_file>
+			<default_params>
+				# ServiceNow inhook URL for sending alerts
+				# url=
+
+				# credentials
+				# user_id=
+				# password=
+
+				# Destination table
+				# table=
+			</default_params>
+		</function>
 	</functions>
 </udf_manifest>

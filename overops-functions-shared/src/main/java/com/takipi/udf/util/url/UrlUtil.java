@@ -6,6 +6,7 @@ import org.apache.commons.codec.binary.Base64;
 
 import com.google.common.base.Strings;
 import com.takipi.api.core.consts.ApiConstants;
+import com.takipi.udf.util.StringUtil;
 
 public class UrlUtil {
 	public static final String INDEX = "index.html";
@@ -94,6 +95,22 @@ public class UrlUtil {
 					.withParam("source", String.valueOf(source));
 
 			return builder.buildUrl();
+		}
+	}
+
+	public static String getCanonicalHostname(String hostname, boolean forceHttps) {
+		String result = StringUtil.removeIfTrailing(hostname, "/");
+
+		if (result.startsWith("https://")) {
+			return result;
+		} else if (result.startsWith("http://")) {
+			if (forceHttps) {
+				return result.replace("http://", "https://");
+			} else {
+				return result;
+			}
+		} else {
+			return "https://" + result;
 		}
 	}
 }

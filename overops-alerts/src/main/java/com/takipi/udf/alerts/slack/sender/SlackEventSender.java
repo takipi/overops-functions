@@ -4,11 +4,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.common.base.Strings;
-import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.data.event.Location;
-import com.takipi.api.client.request.event.EventRequest;
 import com.takipi.api.client.result.event.EventResult;
-import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.slack.SlackFunction.SlackInput;
@@ -209,25 +206,5 @@ public abstract class SlackEventSender extends SlackSender {
 		String requestHeader = StringUtil.ellipsize(title, 40);
 
 		return String.format(ARCHIVE_FUTURE_ALERTS_FORMAT, requestHeader);
-	}
-
-	protected static EventResult getEvent(ContextArgs args) {
-		if (!args.eventValidate()) {
-			return null;
-		}
-
-		ApiClient apiClient = args.apiClient();
-
-		EventRequest eventRequest = EventRequest.newBuilder().setServiceId(args.serviceId).setEventId(args.eventId)
-				.setIncludeStacktrace(true).build();
-
-		Response<EventResult> eventResult = apiClient.get(eventRequest);
-
-		if ((eventResult.isBadResponse()) || (eventResult.data == null)) {
-			logger.error("Can't get event {}/{}", args.serviceId, args.eventId);
-			return null;
-		}
-
-		return eventResult.data;
 	}
 }
