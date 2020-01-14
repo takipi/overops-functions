@@ -23,6 +23,20 @@
 		</function>
 		<function>
 			<function_type>CHANNEL</function_type>
+			<function_name>PagerDuty Channel Alert</function_name>
+			<description>
+				Alerts to pager duty when a new event occurs
+				See code at: TODO
+			</description>
+			<param_type>TEXT</param_type>
+			<class_file>com.takipi.udf.alerts.pagerduty.PagerDutyFunction</class_file>
+			<default_params>
+				# PagerDuty integration key
+				# service_integration_key=
+			</default_params>
+		</function>
+		<function>
+			<function_type>CHANNEL</function_type>
 			<function_name>ServiceNow Channel Alert</function_name>
 			<description>
 				Alerts to service now when a new event occurs
