@@ -44,7 +44,7 @@ public abstract class PagerDutyEventSender extends PagerDutySender {
 
 	private String createTaleLink() {
 		return UrlUtil.buildTaleUrl(contextArgs.appHost, contextArgs.serviceId, contextArgs.eventId, 1,
-				SourceConstants.SOURCE_SLACK_FIRST_HIT_MESSAGE, true, null, 0);
+				SourceConstants.SOURCE_PAGERDUTY_FIRST_HIT_MESSAGE, true, null, 0);
 	}
 
 	private Details createDetails() {
