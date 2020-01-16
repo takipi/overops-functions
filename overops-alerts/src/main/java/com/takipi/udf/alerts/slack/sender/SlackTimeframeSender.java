@@ -20,6 +20,8 @@ import com.takipi.udf.alerts.slack.SlackFunction.SlackInput;
 import com.takipi.udf.alerts.slack.SlackUtil;
 import com.takipi.udf.alerts.slack.message.Attachment;
 import com.takipi.udf.alerts.slack.message.AttachmentField;
+import com.takipi.udf.alerts.template.model.Model;
+import com.takipi.udf.alerts.template.token.Tokenizer;
 import com.takipi.udf.alerts.util.AlertUtil;
 import com.takipi.udf.util.DateUtil;
 import com.takipi.udf.util.url.UrlUtil;
@@ -34,7 +36,6 @@ public abstract class SlackTimeframeSender extends SlackSender {
 
 	private static final int MAX_CONTRIBUTER_LENGTH = 40;
 
-	protected final ContextArgs contextArgs;
 	private final ApiClient apiClient;
 
 	protected final String addedByUser;
@@ -42,11 +43,10 @@ public abstract class SlackTimeframeSender extends SlackSender {
 	protected final long fromTimestamp;
 	protected final long toTimestamp;
 
-	protected SlackTimeframeSender(SlackInput input, ContextArgs contextArgs, String addedByUser, String viewName,
-			long fromTimestamp, long toTimestamp) {
-		super(input);
+	protected SlackTimeframeSender(SlackInput input, ContextArgs contextArgs, Model model, Tokenizer tokenizer,
+			String addedByUser, String viewName, long fromTimestamp, long toTimestamp) {
+		super(input, contextArgs, model, tokenizer);
 
-		this.contextArgs = contextArgs;
 		this.apiClient = contextArgs.apiClient();
 
 		this.addedByUser = addedByUser;

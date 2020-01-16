@@ -6,6 +6,9 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Strings;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.slack.SlackFunction.SlackInput;
+import com.takipi.udf.alerts.template.model.Model;
+import com.takipi.udf.alerts.template.model.Models;
+import com.takipi.udf.alerts.template.token.Tokenizer;
 import com.takipi.udf.alerts.util.SourceConstants;
 
 public class SlackAnomalySender extends SlackTimeframeSender {
@@ -17,9 +20,10 @@ public class SlackAnomalySender extends SlackTimeframeSender {
 	private final String anomalyReason;
 	private final String anomalyTimeframe;
 
-	private SlackAnomalySender(SlackInput input, ContextArgs contextArgs, String addedByUser, String viewName,
-			long fromTimestamp, long toTimestamp, String anomalyReason, String anomalyTimeframe) {
-		super(input, contextArgs, addedByUser, viewName, fromTimestamp, toTimestamp);
+	private SlackAnomalySender(SlackInput input, ContextArgs contextArgs, Model model, Tokenizer tokenizer,
+			String addedByUser, String viewName, long fromTimestamp, long toTimestamp, String anomalyReason,
+			String anomalyTimeframe) {
+		super(input, contextArgs, model, tokenizer, addedByUser, viewName, fromTimestamp, toTimestamp);
 
 		this.anomalyReason = anomalyReason;
 		this.anomalyTimeframe = anomalyTimeframe;
@@ -52,6 +56,14 @@ public class SlackAnomalySender extends SlackTimeframeSender {
 	}
 
 	public static SlackSender create(SlackInput input, ContextArgs contextArgs) {
+		Model model = Models.anomaly();
+
+		if (model == null) {
+			// Logging happens inside anomaly.
+			//
+			return null;
+		}
+
 		if (!contextArgs.viewValidate()) {
 			return null;
 		}
@@ -70,7 +82,7 @@ public class SlackAnomalySender extends SlackTimeframeSender {
 		long fromTimestamp = contextArgs.longData("from_timestamp");
 		long toTimestamp = contextArgs.longData("to_timestamp");
 
-		return new SlackAnomalySender(input, contextArgs, addedByUser, viewName, fromTimestamp, toTimestamp,
-				anomalyReason, anomalyTimeframe);
+		return new SlackAnomalySender(input, contextArgs, model, Tokenizer.from(contextArgs), addedByUser, viewName,
+				fromTimestamp, toTimestamp, anomalyReason, anomalyTimeframe);
 	}
 }

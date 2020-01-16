@@ -9,6 +9,9 @@ import com.google.common.base.Strings;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.slack.SlackFunction.SlackInput;
 import com.takipi.udf.alerts.slack.message.AttachmentField;
+import com.takipi.udf.alerts.template.model.Model;
+import com.takipi.udf.alerts.template.model.Models;
+import com.takipi.udf.alerts.template.token.Tokenizer;
 import com.takipi.udf.alerts.util.AlertUtil;
 import com.takipi.udf.alerts.util.SourceConstants;
 
@@ -22,9 +25,10 @@ public class SlackThresholdSender extends SlackTimeframeSender {
 	private final int thresholdTimeframe;
 	private final long hitCount;
 
-	private SlackThresholdSender(SlackInput input, ContextArgs contextArgs, String addedByUser, String viewName,
-			long fromTimestamp, long toTimestamp, long threshold, int thresholdTimeframe, long hitCount) {
-		super(input, contextArgs, addedByUser, viewName, fromTimestamp, toTimestamp);
+	private SlackThresholdSender(SlackInput input, ContextArgs contextArgs, Model model, Tokenizer tokenizer,
+			String addedByUser, String viewName, long fromTimestamp, long toTimestamp, long threshold,
+			int thresholdTimeframe, long hitCount) {
+		super(input, contextArgs, model, tokenizer, addedByUser, viewName, fromTimestamp, toTimestamp);
 
 		this.threshold = threshold;
 		this.thresholdTimeframe = thresholdTimeframe;
@@ -69,6 +73,14 @@ public class SlackThresholdSender extends SlackTimeframeSender {
 	}
 
 	public static SlackSender create(SlackInput input, ContextArgs contextArgs) {
+		Model model = Models.threshold();
+
+		if (model == null) {
+			// Logging happens inside threshold.
+			//
+			return null;
+		}
+
 		if (!contextArgs.viewValidate()) {
 			return null;
 		}
@@ -87,7 +99,7 @@ public class SlackThresholdSender extends SlackTimeframeSender {
 		long fromTimestamp = contextArgs.longData("from_timestamp");
 		long toTimestamp = contextArgs.longData("to_timestamp");
 
-		return new SlackThresholdSender(input, contextArgs, addedByUser, viewName, fromTimestamp, toTimestamp,
-				threshold, thresholdTimeframe, hitCount);
+		return new SlackThresholdSender(input, contextArgs, model, Tokenizer.from(contextArgs), addedByUser, viewName,
+				fromTimestamp, toTimestamp, threshold, thresholdTimeframe, hitCount);
 	}
 }

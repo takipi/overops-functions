@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.slack.SlackConsts;
 import com.takipi.udf.alerts.slack.SlackFunction.SlackInput;
 import com.takipi.udf.alerts.slack.SlackUtil;
@@ -15,6 +16,8 @@ import com.takipi.udf.alerts.slack.client.SlackResponse;
 import com.takipi.udf.alerts.slack.message.Attachment;
 import com.takipi.udf.alerts.slack.message.AttachmentField;
 import com.takipi.udf.alerts.slack.message.Message;
+import com.takipi.udf.alerts.template.model.Model;
+import com.takipi.udf.alerts.template.token.Tokenizer;
 
 public abstract class SlackSender {
 	protected static final Logger logger = LoggerFactory.getLogger(SlackSender.class);
@@ -24,20 +27,28 @@ public abstract class SlackSender {
 	protected static final String MARKDOWN_IN_FIELDS = "fields";
 
 	protected final SlackInput input;
+	protected final ContextArgs contextArgs;
+	protected final Model model;
+	protected final Tokenizer tokenizer;
 
-	protected SlackSender(SlackInput input) {
+	protected SlackSender(SlackInput input, ContextArgs contextArgs, Model model, Tokenizer tokenizer) {
 		this.input = input;
+		this.contextArgs = contextArgs;
+		this.model = model;
+		this.tokenizer = tokenizer;
 	}
 
 	public boolean sendMessage() {
 		String internalDescription = getInternalDescription();
 
-		logger.info("About to send a Slack message ({}) to {}.", internalDescription, input.inhook_url);
+		logger.info("About to send a Slack message for {} ({}) to {}.", contextArgs.serviceId, internalDescription,
+				input.inhook_url);
 
 		try {
 			return doSendMessage(internalDescription);
 		} catch (Exception e) {
-			logger.error("Unable to send Slack message ({}) to {}.", internalDescription, input.inhook_url, e);
+			logger.error("Unable to send Slack message for {} ({}) to {}.", contextArgs.serviceId, internalDescription,
+					input.inhook_url, e);
 
 			return false;
 		}
