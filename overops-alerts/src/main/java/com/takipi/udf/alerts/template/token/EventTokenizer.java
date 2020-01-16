@@ -8,7 +8,7 @@ import com.takipi.udf.alerts.util.AlertUtil;
 public class EventTokenizer extends Tokenizer {
 
 	public static enum EventTokenType {
-		EventType, EventFullMessage, Application, Deployment, Server, Location, FirstSeen
+		EventType, EventFullMessage, Application, Deployment, Server, Location, FirstSeen, ResolvedTime,
 	}
 
 	private final EventResult event;
@@ -48,6 +48,8 @@ public class EventTokenizer extends Tokenizer {
 			return event.summary.replaceFirst(event.name + " in ", ""); // TODO - return location in api directly.
 		case Server:
 			return event.introduced_by_server;
+		case ResolvedTime:
+			return "RESOLVED_TIME";	// TODO - have this available
 		}
 
 		return null;
