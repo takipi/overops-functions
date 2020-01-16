@@ -2,7 +2,7 @@
 	"subject":{
 			"text":"OverOps has identified that a resolved error of ${EventType} just reappeared in ${Application}"
 	},
-	"headline":{
+	"title":{
 			"text":"A Resolved ${EventType} identified"
 	},
 	"body":{

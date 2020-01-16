@@ -161,7 +161,7 @@ public abstract class SlackEventSender extends SlackSender {
 	}
 
 	private String getTitle() {
-		return TokenizerUtil.work(tokenizer, model.headline.text);
+		return TokenizerUtil.work(tokenizer, model.title.text);
 	}
 
 	private String createColor() {

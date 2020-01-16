@@ -2,7 +2,7 @@
 	"subject":{
 			"text":"OverOps has identified a new ${EventType} in ${Application}"
 	},
-	"headline":{
+	"title":{
 			"text":"New ${EventType} identified"
 	},
 	"body":{

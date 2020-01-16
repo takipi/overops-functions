@@ -10,7 +10,7 @@ public class Model {
 			.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
 
 	public Subject subject;
-	public Headline headline;
+	public Headline title;
 	public Body body;
 
 	public static Model from(String resource) {
