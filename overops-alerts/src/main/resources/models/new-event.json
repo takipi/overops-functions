@@ -1,0 +1,71 @@
+{
+	"subject":{
+			"text":"OverOps has identified a new ${EventType} in ${Application}"
+	},
+	"headline":{
+			"text":"New ${EventType} identified"
+	},
+	"body":{
+		"headline":{
+			"text":"OverOps has identified ${EventFullMessage} in ${ServiceName} on ${ViewName} View (alert added by ${AlertOwner})",
+			"options":{
+				"bold_fields":true
+			}
+		},
+		"parts":[
+			{
+				"type":"TABLE",
+				"rows": [
+					{
+						"type":"KV",
+						"items":[
+							"Application",
+							"${Application}"
+						]
+					},
+					{
+						"type":"KV",
+						"items":[
+							"Deployment",
+							"${Deployment}"
+						]
+					},
+					{
+						"type":"KV",
+						"items":[
+							"Server",
+							"${Server}"
+						]
+					},
+					{
+						"type":"KV",
+						"items":[
+							"Error",
+							"${EventType}"
+						]
+					},
+					{
+						"type":"KV",
+						"items":[
+							"Location",
+							"${Location}"
+						]
+					}
+				]
+			},
+			{
+				"type":"STRING",
+				"text":"First seen on: ${FirstSeen}"
+			},
+			{
+				"type":"STACKTRACE"
+			},
+			{
+				"type":"VIEW_EVENT"
+			},
+			{
+				"type":"DONT_ALERT_ON_EVENT"
+			}
+		]
+	}
+}
