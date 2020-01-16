@@ -13,6 +13,7 @@ import com.takipi.udf.alerts.slack.SlackUtil;
 import com.takipi.udf.alerts.slack.format.SlackFormatter;
 import com.takipi.udf.alerts.slack.message.Attachment;
 import com.takipi.udf.alerts.slack.message.AttachmentField;
+import com.takipi.udf.alerts.template.model.Body.ActionType;
 import com.takipi.udf.alerts.template.model.Body.Part;
 import com.takipi.udf.alerts.template.model.Model;
 import com.takipi.udf.alerts.template.model.Row;
@@ -59,7 +60,7 @@ public abstract class SlackEventSender extends SlackSender {
 
 		builder.setFallback(TokenizerUtil.work(tokenizer, model.body.headline.text));
 
-		String title = TokenizerUtil.work(tokenizer, model.headline.text);
+		String title = getTitle();
 		builder.setTitle(title);
 
 		String titleLink = createTaleLink();
@@ -71,20 +72,6 @@ public abstract class SlackEventSender extends SlackSender {
 
 			for (Part part : model.body.parts) {
 				switch (part.type) {
-				case DONT_ALERT_ON_EVENT:
-					if (AlertUtil.isException(event)) {
-						String archiveTitle = getArchiveFutureTitle(title);
-						String url = AlertUtil.generateMailAutoArchiveActionLink(contextArgs.appHost,
-								contextArgs.serviceId, event.name);
-
-						if (!Strings.isNullOrEmpty(url)) {
-							AttachmentField archiveField = createAttachmentField("",
-									SlackUtil.formatLink(archiveTitle, url), false);
-
-							builder.addField(archiveField);
-						}
-					}
-					break;
 				case STACKTRACE:
 					fillTextBuilder(textBuilder, createStackTrace());
 					break;
@@ -112,10 +99,13 @@ public abstract class SlackEventSender extends SlackSender {
 						}
 					}
 					break;
-				case VIEW_EVENT:
-					AttachmentField viewEventField = createAttachmentField("",
-							SlackUtil.formatLink(VIEW_EVENT, titleLink), false);
-					builder.addField(viewEventField);
+				case ACTION:
+					AttachmentField attachmentField = getActionField(part.actionType);
+
+					if (attachmentField != null) {
+						builder.addField(attachmentField);
+					}
+
 					break;
 				}
 			}
@@ -140,6 +130,38 @@ public abstract class SlackEventSender extends SlackSender {
 		}
 
 		builder.append(text);
+	}
+
+	private AttachmentField getActionField(ActionType actionType) {
+		switch (actionType) {
+		case DONT_ALERT_ON_EVENT:
+			return getDontAlertActionField();
+		case VIEW_EVENT:
+			return createAttachmentField("", SlackUtil.formatLink(VIEW_EVENT, createTaleLink()), false);
+		}
+
+		return null;
+	}
+
+	private AttachmentField getDontAlertActionField() {
+		if (!AlertUtil.isException(event)) {
+			return null;
+		}
+
+		String title = getTitle();
+		String archiveTitle = getArchiveFutureTitle(title);
+		String url = AlertUtil.generateMailAutoArchiveActionLink(contextArgs.appHost, contextArgs.serviceId,
+				event.name);
+
+		if (Strings.isNullOrEmpty(url)) {
+			return null;
+		}
+
+		return createAttachmentField("", SlackUtil.formatLink(archiveTitle, url), false);
+	}
+
+	private String getTitle() {
+		return TokenizerUtil.work(tokenizer, model.headline.text);
 	}
 
 	private String createColor() {

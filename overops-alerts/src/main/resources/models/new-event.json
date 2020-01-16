@@ -61,10 +61,12 @@
 				"type":"STACKTRACE"
 			},
 			{
-				"type":"VIEW_EVENT"
+				"type":"ACTION",
+				"action_type":"VIEW_EVENT"
 			},
 			{
-				"type":"DONT_ALERT_ON_EVENT"
+				"type":"ACTION",
+				"action_type":"DONT_ALERT_ON_EVENT"
 			}
 		]
 	}

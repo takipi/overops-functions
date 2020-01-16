@@ -4,9 +4,13 @@ import java.util.List;
 
 public class Body {
 	public static enum PartType {
-		STRING, TABLE, STACKTRACE, VIEW_EVENT, DONT_ALERT_ON_EVENT
+		STRING, TABLE, STACKTRACE, ACTION
 	}
 
+	public static enum ActionType {
+		VIEW_EVENT, DONT_ALERT_ON_EVENT
+	}
+	
 	public static class Part {
 		public PartType type;
 		public Options options;
@@ -16,6 +20,9 @@ public class Body {
 
 		// TABLE
 		public List<Row> rows;
+		
+		// ACTION
+		public ActionType actionType;
 	}
 
 	public Headline headline;
