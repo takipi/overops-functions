@@ -295,7 +295,7 @@
 				# Sync events from the last {timespan} days
 				days=30
 
-				# Jira endpoint and credentials
+				# Jira address and credentials
 				jiraURL=
 				jiraUsername=
 
@@ -303,11 +303,17 @@
 				# For self-hosted Jira, use password.
 				jiraToken=
 
-				# Jira status for "Resolved" in OverOps
+				# Jira field to sync, either 'resolution' or 'status'
+				resolutionOrStatus=status
+
+				# Jira status for "Resolved" in OverOps. Leave blank to disable.
 				resolvedStatus=Resolved
 
-				# Jira status for "Hidden" in OverOps
+				# Jira status for "Hidden" in OverOps. Leave blank to disable.
 				hiddenStatus=Won't Fix
+
+				# Debug mode
+				debug=false
 			</default_params>
 			<admin_function>true</admin_function>
 			<silent>true</silent>
