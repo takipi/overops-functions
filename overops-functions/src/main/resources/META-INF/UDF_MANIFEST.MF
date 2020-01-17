@@ -305,6 +305,9 @@
 
 				# Jira status for "Hidden" in OverOps. Leave blank to disable.
 				hiddenStatus=Won't Fix
+
+				# Debug mode
+				debug=false
 			</default_params>
 			<admin_function>true</admin_function>
 		</function>

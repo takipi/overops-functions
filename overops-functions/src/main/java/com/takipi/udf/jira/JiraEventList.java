@@ -33,7 +33,9 @@ public class JiraEventList {
 	public void addEvent(String issueId, EventResult event) {
 		// JQL limit is 1000 issues per query
 		if (eventList.size() >= 1000) {
-			System.out.println("reached max Jira issues (1000)");
+			if (input.debug) {
+				System.out.println("reached max Jira issues (1000)");
+			}
 			return;
 		}
 
@@ -58,7 +60,9 @@ public class JiraEventList {
 	// populate Jira data
 	private void populate(JiraRestClient client) {
 		if (eventList.size() < 1) {
-			System.out.println("Event list is empty.");
+			if (input.debug) {
+				System.out.println("Event list is empty.");
+			}
 			return;
 		}
 
@@ -86,9 +90,6 @@ public class JiraEventList {
 			keys.remove(key);
 		});
 
-		// System.out.println("keys to be updated:");
-		// System.out.println(keys);
-
 		// the remaining keys have changed - query each to update
 		if (!keys.isEmpty()) {
 			HashMap<String, JiraEvent> tempList = new HashMap<String, JiraEvent>(keys.size());
@@ -106,8 +107,10 @@ public class JiraEventList {
 			eventList.putAll(tempList);
 		}
 
-		System.out.println(">>> eventList: ");
-		System.out.println(eventList);
+		if (input.debug) {
+			System.out.println(">>> eventList: ");
+			System.out.println(eventList);
+		}
 
 		// create a copy of the key set (for resolved)
 		Set<String> unknownKeys = new HashSet<String>();
@@ -116,7 +119,9 @@ public class JiraEventList {
 		// INTG-200: syncing hidden is optional
 		if (!StringUtils.isEmpty(input.hiddenStatus)) {
 
-			System.out.println(">>> Syncing Hidden / Jira " + input.resolutionOrStatus + " = " + input.hiddenStatus);
+			if (input.debug) {
+				System.out.println(">>> Syncing Hidden / Jira " + input.resolutionOrStatus + " = " + input.hiddenStatus);
+			}
 
 			// search for hidden issues
 			StringBuilder jqlHidden = new StringBuilder(input.resolutionOrStatus);
@@ -133,8 +138,10 @@ public class JiraEventList {
 			String jqlHiddenStr = jqlHidden.toString();
 			jqlHiddenStr = jqlHiddenStr.substring(0, jqlHiddenStr.length() - 2) + ")";
 
-			System.out.println(">>> jql hidden: ");
-			System.out.println(jqlHiddenStr);
+			if (input.debug) {
+				System.out.println(">>> jql hidden: ");
+				System.out.println(jqlHiddenStr);
+			}
 
 			// get hidden Jira issues
 			SearchResult hidden = client.getSearchClient().searchJql(jqlHiddenStr, 1000, 0).claim();
@@ -145,20 +152,24 @@ public class JiraEventList {
 				eventList.get(key).issueStatus = Status.HIDDEN;
 				unknownKeys.remove(key);
 			});
-		} else {
+		} else if (input.debug) {
 			System.out.println(">>> Skipping Hidden");
 		}
 
 		// stop here if there are no remaining issues
 		if (unknownKeys.size() < 1) {
-			System.out.println(">>> No issues remain");
+			if (input.debug) {
+				System.out.println(">>> No issues remain");
+			}
 			return;
 		}
 
 		// INTG-200: syncing resolved is optional
 		if (!StringUtils.isEmpty(input.resolvedStatus)) {
 
-			System.out.println(">>> Syncing Resolved / Jira " + input.resolutionOrStatus + " = " + input.resolvedStatus);
+			if (input.debug) {
+				System.out.println(">>> Syncing Resolved / Jira " + input.resolutionOrStatus + " = " + input.resolvedStatus);
+			}
 
 			// search for resolved issues
 			StringBuilder jqlResolved = new StringBuilder(input.resolutionOrStatus);
@@ -175,8 +186,10 @@ public class JiraEventList {
 			String jqlResolvedStr = jqlResolved.toString();
 			jqlResolvedStr = jqlResolvedStr.substring(0, jqlResolvedStr.length() - 2) + ")";
 
-			System.out.println(">>> jql resolved: ");
-			System.out.println(jqlResolvedStr);
+			if (input.debug) {
+				System.out.println(">>> jql resolved: ");
+				System.out.println(jqlResolvedStr);
+			}
 
 			SearchResult resolved = client.getSearchClient().searchJql(jqlResolvedStr, 1000, 0).claim();
 			resolved.getIssues().forEach((basicIssue) -> {
@@ -184,7 +197,7 @@ public class JiraEventList {
 				eventList.get(key).issueStatus = Status.RESOLVED;
 			});
 
-		}else {
+		} else if (input.debug) {
 			System.out.println(">>> Skipping Resolved");
 		}
 
@@ -194,15 +207,19 @@ public class JiraEventList {
 		Builder batchBuilder = BatchModifyLabelsRequest.newBuilder().setServiceId(args.serviceId);
 
 		// for each JiraEvent:
-		System.out.println("syncing " + eventList.size() + " issues");
+		if (input.debug) {
+			System.out.println("syncing " + eventList.size() + " issues");
+		}
 
 		eventList.forEach((issueId, jiraEvent) -> {
 			jiraEvent.events.forEach(eventResult -> {
 				Status eventStatus = JiraEvent.status(eventResult);
 
 				if (jiraEvent.issueStatus != eventStatus) {
-					System.out.println(">>> update event! (" + eventResult.id + ") issueStatus: " + jiraEvent.issueStatus
-							+ " eventStatus: " + eventStatus);
+					if (input.debug) {
+						System.out.println(">>> update event! (" + eventResult.id + ") issueStatus: " +
+							jiraEvent.issueStatus + " eventStatus: " + eventStatus);
+					}
 
 					List<String> addLabels = new LinkedList<String>();
 					addLabels.add(jiraEvent.issueStatus.getLabel());
@@ -220,7 +237,9 @@ public class JiraEventList {
 			args.apiClient().post(batchBuilder.setHandleSimilarEvents(false).build());
 		} catch (IllegalArgumentException ex) {
 			// this is normal - it happens when there are no modifications to be made
-			System.out.println(ex.getMessage());
+			if (input.debug) {
+				System.out.println(ex.getMessage());
+			}
 		}
 	}
 

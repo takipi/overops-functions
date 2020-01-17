@@ -55,13 +55,18 @@ public class JiraIntegrationFunction {
 			// INTG-200: resolved status must exist in Jira.
 			if (!StringUtils.isEmpty(input.resolvedStatus)) {
 				client.getSearchClient().searchJql(input.resolutionOrStatus + " = \""+ input.resolvedStatus +"\"", 1, 0).claim();
-				System.out.println(">> verified input.resolveStatus");
+				if (input.debug) {
+					System.out.println(">> verified input.resolveStatus");
+				}
 			}
 
 			// INTG-200: hidden status must exist in Jira.
 			if (!StringUtils.isEmpty(input.hiddenStatus)) {
 				client.getSearchClient().searchJql(input.resolutionOrStatus + " = \""+ input.hiddenStatus +"\"", 1, 0).claim();
-				System.out.println(">> verified input.hiddenStatus");
+
+				if (input.debug) {
+					System.out.println(">> verified input.hiddenStatus");
+				}
 			}
 
 		} catch (URISyntaxException e) {
@@ -76,10 +81,12 @@ public class JiraIntegrationFunction {
 				// denied = failed CAPTHCA challenge
 				throw new IllegalArgumentException("Authentication denied. Please disable Jira CAPTCHA challenge.");
 			} else {
-				// log other errors
-				System.out.println("---- JIRA UDF VALIDATION EXCEPTION: ----");
-				System.out.println(e.getMessage());
-				System.out.println("----------------------------------------");
+				if (input.debug) {
+					// log other errors
+					System.out.println("---- JIRA UDF VALIDATION EXCEPTION: ----");
+					System.out.println(e.getMessage());
+					System.out.println("----------------------------------------");
+				}
 
 				throw new IllegalArgumentException(e.getMessage());
 			}
@@ -132,7 +139,9 @@ public class JiraIntegrationFunction {
 			throw new IllegalArgumentException("Bad context args: " + rawContextArgs);
 		}
 
-		System.out.println(String.format("Logging in to %s with username '%s'", input.jiraURL, input.jiraUsername));
+		if (input.debug) {
+			System.out.println(String.format("Logging in to %s with username '%s'", input.jiraURL, input.jiraUsername));
+		}
 
 		JiraRestClientFactory factory = new AsynchronousJiraRestClientFactory();
 
@@ -151,14 +160,16 @@ public class JiraIntegrationFunction {
 			jiraEvents.sync(client);
 
 		} catch (URISyntaxException e) {
-			System.out.println("Caught URISyntaxException. Check jiraURL and try again.");
-			System.out.println(e.getMessage());
+			if (input.debug) {
+				System.out.println("Caught URISyntaxException. Check jiraURL and try again.");
+				System.out.println(e.getMessage());
+			}
 			System.exit(1);
 		} catch (Exception e) {
-			// invalid credentials results in org.codehaus.jettison.json.JSONException in
-			// JiraClient
-			System.out.println("Caught Exception from Jira Client.");
-			System.out.println(e.getMessage());
+			if (input.debug) {
+				System.out.println("Caught Exception from Jira Client.");
+				System.out.println(e.getMessage());
+			}
 			System.exit(1);
 		}
 
@@ -172,9 +183,11 @@ public class JiraIntegrationFunction {
 		Instant to = Instant.now();
 		Instant from = to.minus(input.days, ChronoUnit.DAYS);
 
-		System.out.println("to: " + to);
-		System.out.println("from: " + from);
-		System.out.println("view id: " + args.viewId);
+		if (input.debug) {
+			System.out.println("to: " + to);
+			System.out.println("from: " + from);
+			System.out.println("view id: " + args.viewId);
+		}
 
 		// get new events within the date range
 		EventsRequest eventsRequest = EventsRequest.newBuilder().setServiceId(args.serviceId).setViewId(args.viewId)
@@ -185,7 +198,9 @@ public class JiraIntegrationFunction {
 
 		// validate API response
 		if (eventsResponse.isBadResponse()) {
-			System.out.println("Failed getting events");
+			if (input.debug) {
+				System.out.println("Failed getting events");
+			}
 			throw new IllegalStateException("Failed getting events.");
 		}
 
@@ -197,7 +212,9 @@ public class JiraIntegrationFunction {
 
 		// check for events
 		if (CollectionUtil.safeIsEmpty(eventsResult.events)) {
-			System.out.println("Found no events from the last " + input.days + " days.");
+			if (input.debug) {
+				System.out.println("Found no events from the last " + input.days + " days.");
+			}
 			return eventList;
 		}
 
@@ -232,6 +249,8 @@ public class JiraIntegrationFunction {
 		public String resolvedStatus;
 		public String hiddenStatus;
 
+		public boolean debug;
+
 		private JiraIntegrationInput(String raw) {
 			super(raw);
 		}
@@ -243,6 +262,9 @@ public class JiraIntegrationFunction {
 			builder.append("Sync Jira (");
 			builder.append(days);
 			builder.append("d)");
+			if (debug) {
+				builder.append(" [debug]");
+			}
 
 			return builder.toString();
 		}
