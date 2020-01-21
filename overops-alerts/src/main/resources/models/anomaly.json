@@ -1,0 +1,40 @@
+{
+	"subject":{
+			"text":"OverOps has identified an anomaly: ${ServiceName}/{ViewName}"
+	},
+	"title":{
+			"text":"Anomaly Alert"
+	},
+	"body":{
+		"headline":{
+			"text":"OverOps has identified an anomaly in view ${ViewName} by ${AnomalyReason} in ${AnomalyTimeframe} in ${ServiceName} (alert added by ${AlertOwner})",
+			"options":{
+				"bold_fields":true
+			}
+		},
+		"parts":[
+			{
+				"type":"TABLE",
+				"rows": [
+					{
+						"type":"KV",
+						"items":[
+							"View",
+							"${ViewName}"
+						]
+					},
+					{
+						"type":"KV",
+						"items":[
+							"Between",
+							"${Timeframe}"
+						]
+					}
+				]
+			},
+			{
+				"type":"TOP_CONTRIBUTORS"
+			}
+		]
+	}
+}

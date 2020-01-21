@@ -1,0 +1,73 @@
+{
+	"subject":{
+			"text":"OverOps has identified that a resolved error of ${EventType} just reappeared in ${Application}"
+	},
+	"title":{
+			"text":"A Resolved ${EventType} identified"
+	},
+	"body":{
+		"headline":{
+			"text":"OverOps has identified that an event, ${EventType}, which was previously marked as \"Resolved\" just resurfaced in ${ServiceName}",
+			"options":{
+				"bold_fields":true
+			}
+		},
+		"parts":[
+			{
+				"type":"TABLE",
+				"rows": [
+					{
+						"type":"KV",
+						"items":[
+							"Application",
+							"${Application}"
+						]
+					},
+					{
+						"type":"KV",
+						"items":[
+							"Deployment",
+							"${Deployment}"
+						]
+					},
+					{
+						"type":"KV",
+						"items":[
+							"Server",
+							"${Server}"
+						]
+					},
+					{
+						"type":"KV",
+						"items":[
+							"Error",
+							"${EventType}"
+						]
+					},
+					{
+						"type":"KV",
+						"items":[
+							"Location",
+							"${Location}"
+						]
+					}
+				]
+			},
+			{
+				"type":"STRING",
+				"text":"Marked as resolved on ${ResolvedTime}"
+			},
+			{
+				"type":"STACKTRACE"
+			},
+			{
+				"type":"ACTION",
+				"action_type":"VIEW_EVENT"
+			},
+			{
+				"type":"ACTION",
+				"action_type":"DONT_ALERT_ON_EVENT"
+			}
+		]
+	}
+}

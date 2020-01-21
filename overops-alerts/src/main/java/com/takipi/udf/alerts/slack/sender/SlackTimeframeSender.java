@@ -1,11 +1,8 @@
 package com.takipi.udf.alerts.slack.sender;
 
 import java.util.Collection;
-import java.util.Date;
+import java.util.Collections;
 import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -19,14 +16,13 @@ import com.takipi.udf.ContextArgs.Contributor;
 import com.takipi.udf.alerts.slack.SlackFunction.SlackInput;
 import com.takipi.udf.alerts.slack.SlackUtil;
 import com.takipi.udf.alerts.slack.message.Attachment;
-import com.takipi.udf.alerts.slack.message.AttachmentField;
+import com.takipi.udf.alerts.template.model.Body.Part;
+import com.takipi.udf.alerts.template.model.Model;
+import com.takipi.udf.alerts.template.token.Tokenizer;
 import com.takipi.udf.alerts.util.AlertUtil;
-import com.takipi.udf.util.DateUtil;
 import com.takipi.udf.util.url.UrlUtil;
 
 public abstract class SlackTimeframeSender extends SlackSender {
-	private static final Logger logger = LoggerFactory.getLogger(SlackTimeframeSender.class);
-
 	private static final String VIEW_ERRORS_LINK = "View errors";
 
 	private static final String MESSAGE_COLOR = "#303940";
@@ -34,40 +30,20 @@ public abstract class SlackTimeframeSender extends SlackSender {
 
 	private static final int MAX_CONTRIBUTER_LENGTH = 40;
 
-	protected final ContextArgs contextArgs;
 	private final ApiClient apiClient;
-
-	protected final String addedByUser;
 	protected final String viewName;
 	protected final long fromTimestamp;
 	protected final long toTimestamp;
 
-	protected SlackTimeframeSender(SlackInput input, ContextArgs contextArgs, String addedByUser, String viewName,
-			long fromTimestamp, long toTimestamp) {
-		super(input);
+	protected SlackTimeframeSender(SlackInput input, ContextArgs contextArgs, Model model, Tokenizer tokenizer,
+			String viewName, long fromTimestamp, long toTimestamp) {
+		super(input, contextArgs, model, tokenizer);
 
-		this.contextArgs = contextArgs;
 		this.apiClient = contextArgs.apiClient();
 
-		this.addedByUser = addedByUser;
 		this.viewName = viewName;
 		this.fromTimestamp = fromTimestamp;
 		this.toTimestamp = toTimestamp;
-	}
-
-	protected Collection<AttachmentField> createAttachmentFields() {
-		Collection<AttachmentField> result = Lists.newArrayList();
-
-		Date fromDate = DateUtil.fromMillis(fromTimestamp);
-		Date toDate = DateUtil.fromMillis(toTimestamp);
-
-		String timeframe = DateUtil.toTimeStringAmPmNoSeconds(fromDate) + " - "
-				+ DateUtil.toTimeStringAmPmNoSeconds(toDate) + " (GMT)";
-
-		result.add(createAttachmentField("View", viewName));
-		result.add(createAttachmentField("Between", timeframe));
-
-		return result;
 	}
 
 	@Override
@@ -79,36 +55,61 @@ public abstract class SlackTimeframeSender extends SlackSender {
 
 		String settingsLink = AlertUtil.buildLinkForSettings(contextArgs.appHost, contextArgs.serviceId);
 
-		Attachment.Builder builder = Attachment.newBuilder().addMrkdwn(MARKDOWN_IN_PRETEXT).addMrkdwn(MARKDOWN_IN_TEXT)
-				.setColor(MESSAGE_COLOR).setFallback(createPlainMessageText()).setTitle(VIEW_ERRORS_LINK)
-				.setTitleLink(viewLink).setText(SlackUtil.formatLink("Manage settings", settingsLink))
-				.setThumbUrl(thumbUrl()).addAllFields(createAttachmentFields());
+		Attachment.Builder mainAttachmentBuilder = Attachment.newBuilder().addMrkdwn(MARKDOWN_IN_PRETEXT)
+				.addMrkdwn(MARKDOWN_IN_TEXT).setColor(MESSAGE_COLOR).setFallback(createFallback())
+				.setTitle(VIEW_ERRORS_LINK).setTitleLink(viewLink)
+				.setText(SlackUtil.formatLink("Manage settings", settingsLink)).setThumbUrl(thumbUrl());
 
-		attachments.add(builder.build());
-
-		if (!CollectionUtil.safeIsEmpty(contextArgs.contributors)) {
-			int colorIndex = 0;
-
-			for (Contributor contributor : contextArgs.contributors) {
-				String desc = buildContributorDescription(contributor);
-
-				if (Strings.isNullOrEmpty(desc)) {
-					continue;
-				}
-
-				Attachment.Builder contributorBuilder = Attachment.newBuilder();
-
-				contributorBuilder.setColor(REQUEST_ROW_COLORS[colorIndex]).addMrkdwn(MARKDOWN_IN_TEXT).setText(desc);
-
-				attachments.add(contributorBuilder.build());
-
-				if (colorIndex < REQUEST_ROW_COLORS.length - 1) {
-					colorIndex++;
+		if (!CollectionUtil.safeIsEmpty(model.body.parts)) {
+			for (Part part : model.body.parts) {
+				switch (part.type) {
+				case TABLE:
+					mainAttachmentBuilder.addAllFields(createTableFields(part));
+					break;
+				case TOP_CONTRIBUTORS:
+					attachments.addAll(createContributorAttachments());
+					break;
+				case ACTION:
+				case STACKTRACE:
+				case STRING:
+					break;
 				}
 			}
 		}
 
+		attachments.add(0, mainAttachmentBuilder.build());
+
 		return attachments;
+	}
+
+	private Collection<Attachment> createContributorAttachments() {
+		if (CollectionUtil.safeIsEmpty(contextArgs.contributors)) {
+			return Collections.emptyList();
+		}
+
+		Collection<Attachment> result = Lists.newArrayList();
+
+		int colorIndex = 0;
+
+		for (Contributor contributor : contextArgs.contributors) {
+			String desc = buildContributorDescription(contributor);
+
+			if (Strings.isNullOrEmpty(desc)) {
+				continue;
+			}
+
+			Attachment.Builder contributorBuilder = Attachment.newBuilder();
+
+			contributorBuilder.setColor(REQUEST_ROW_COLORS[colorIndex]).addMrkdwn(MARKDOWN_IN_TEXT).setText(desc);
+
+			result.add(contributorBuilder.build());
+
+			if (colorIndex < REQUEST_ROW_COLORS.length - 1) {
+				colorIndex++;
+			}
+		}
+
+		return result;
 	}
 
 	private String buildContributorDescription(Contributor contributor) {
@@ -148,8 +149,6 @@ public abstract class SlackTimeframeSender extends SlackSender {
 	protected String thumbUrl() {
 		return "https://s3.amazonaws.com/www.takipi.com/email/v5/threshold-thumb.png";
 	}
-
-	protected abstract String createPlainMessageText();
 
 	protected abstract int getTaleSource();
 }
