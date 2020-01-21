@@ -1,0 +1,54 @@
+{
+	"subject":{
+			"text":"OverOps has identified that a threshold limit was exceeded in: ${ServiceName}/{ViewName}"
+	},
+	"title":{
+			"text":"Threshold Alert"
+	},
+	"body":{
+		"headline":{
+			"text":"OverOps has identified that events in view ${ViewName} have occurred more than ${Threshold} times in the past ${ThresholdTime} minutes in ${ServiceName} (alert added by ${AlertOwner})",
+			"options":{
+				"bold_fields":true
+			}
+		},
+		"parts":[
+			{
+				"type":"TABLE",
+				"rows": [
+					{
+						"type":"KV",
+						"items":[
+							"View",
+							"${ViewName}"
+						]
+					},
+					{
+						"type":"KV",
+						"items":[
+							"Between",
+							"${Timeframe}"
+						]
+					},
+					{
+						"type":"KV",
+						"items":[
+							"Threshold",
+							"${Threshold}"
+						]
+					},
+					{
+						"type":"KV",
+						"items":[
+							"Times",
+							"${HitCount}"
+						]
+					}
+				]
+			},
+			{
+				"type":"TOP_CONTRIBUTORS"
+			}
+		]
+	}
+}

@@ -8,12 +8,12 @@ import com.takipi.udf.ContextArgs;
 
 public class Tokenizer {
 	public static enum TokenType {
-		ServiceName, ViewName, AlertOwner, AnomalyReason, AnomalyTimeframe
+		ServiceName, ViewName, AlertOwner
 	}
 
 	protected static final Logger logger = LoggerFactory.getLogger(Tokenizer.class);
 
-	private final ContextArgs contextArgs;
+	protected final ContextArgs contextArgs;
 
 	Tokenizer(ContextArgs contextArgs) {
 		this.contextArgs = contextArgs;
@@ -43,12 +43,6 @@ public class Tokenizer {
 			return contextArgs.data("view_name");
 		case AlertOwner:
 			return contextArgs.data("added_by_user", "Unknown");
-		case AnomalyReason:
-			return contextArgs.data("anomaly_reason");
-		case AnomalyTimeframe:
-			return contextArgs.data("anomaly_timeframe");
-		default:
-			break;
 		}
 
 		return null;

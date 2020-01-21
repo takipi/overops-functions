@@ -4,7 +4,7 @@ import java.util.List;
 
 public class Body {
 	public static enum PartType {
-		STRING, TABLE, STACKTRACE, ACTION
+		STRING, TABLE, STACKTRACE, ACTION, TOP_CONTRIBUTORS
 	}
 
 	public static enum ActionType {

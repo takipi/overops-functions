@@ -1,5 +1,7 @@
 package com.takipi.udf.alerts.slack.sender;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -7,17 +9,23 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.takipi.common.util.CollectionUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.slack.SlackConsts;
 import com.takipi.udf.alerts.slack.SlackFunction.SlackInput;
 import com.takipi.udf.alerts.slack.SlackUtil;
 import com.takipi.udf.alerts.slack.client.SlackClient;
 import com.takipi.udf.alerts.slack.client.SlackResponse;
+import com.takipi.udf.alerts.slack.format.SlackFormatter;
 import com.takipi.udf.alerts.slack.message.Attachment;
 import com.takipi.udf.alerts.slack.message.AttachmentField;
 import com.takipi.udf.alerts.slack.message.Message;
+import com.takipi.udf.alerts.template.model.Body;
 import com.takipi.udf.alerts.template.model.Model;
+import com.takipi.udf.alerts.template.model.Row;
+import com.takipi.udf.alerts.template.model.Row.RowType;
 import com.takipi.udf.alerts.template.token.Tokenizer;
+import com.takipi.udf.alerts.template.token.TokenizerUtil;
 
 public abstract class SlackSender {
 	protected static final Logger logger = LoggerFactory.getLogger(SlackSender.class);
@@ -107,6 +115,41 @@ public abstract class SlackSender {
 		return messageBuilder.build();
 	}
 
+	private String createText() {
+		return TokenizerUtil.work(tokenizer, model.body.headline.text, SlackFormatter.of(model.body.headline.options));
+	}
+
+	protected String createFallback() {
+		return TokenizerUtil.work(tokenizer, model.body.headline.text);
+	}
+
+	protected Collection<AttachmentField> createTableFields(Body.Part table) {
+		if (CollectionUtil.safeIsEmpty(table.rows)) {
+			return Collections.emptyList();
+		}
+
+		Collection<AttachmentField> result = Lists.newArrayList();
+
+		for (Row row : table.rows) {
+			if (row.type != RowType.KV) {
+				continue;
+			}
+
+			if (CollectionUtil.safeSize(row.items) != 2) {
+				continue;
+			}
+
+			String key = TokenizerUtil.work(tokenizer, row.items.get(0));
+			String value = TokenizerUtil.work(tokenizer, row.items.get(1));
+
+			if ((!Strings.isNullOrEmpty(key)) && (!Strings.isNullOrEmpty(value))) {
+				result.add(createAttachmentField(key, value));
+			}
+		}
+
+		return result;
+	}
+
 	protected AttachmentField createAttachmentField(String title, String value, String link) {
 		return createAttachmentField(title, value, link, true);
 	}
@@ -132,8 +175,6 @@ public abstract class SlackSender {
 	}
 
 	protected abstract String getInternalDescription();
-
-	protected abstract String createText();
 
 	protected abstract List<Attachment> createAttachments();
 }

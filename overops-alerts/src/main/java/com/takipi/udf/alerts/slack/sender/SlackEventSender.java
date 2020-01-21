@@ -16,8 +16,6 @@ import com.takipi.udf.alerts.slack.message.AttachmentField;
 import com.takipi.udf.alerts.template.model.Body.ActionType;
 import com.takipi.udf.alerts.template.model.Body.Part;
 import com.takipi.udf.alerts.template.model.Model;
-import com.takipi.udf.alerts.template.model.Row;
-import com.takipi.udf.alerts.template.model.Row.RowType;
 import com.takipi.udf.alerts.template.token.EventTokenizer;
 import com.takipi.udf.alerts.template.token.TokenizerUtil;
 import com.takipi.udf.alerts.util.AlertUtil;
@@ -49,16 +47,11 @@ public abstract class SlackEventSender extends SlackSender {
 	}
 
 	@Override
-	protected String createText() {
-		return TokenizerUtil.work(tokenizer, model.body.headline.text, SlackFormatter.of(model.body.headline.options));
-	}
-
-	@Override
 	protected List<Attachment> createAttachments() {
 		Attachment.Builder builder = Attachment.newBuilder().addMrkdwn(MARKDOWN_IN_PRETEXT).addMrkdwn(MARKDOWN_IN_TEXT)
 				.addMrkdwn(MARKDOWN_IN_FIELDS);
 
-		builder.setFallback(TokenizerUtil.work(tokenizer, model.body.headline.text));
+		builder.setFallback(createFallback());
 
 		String title = getTitle();
 		builder.setTitle(title);
@@ -80,24 +73,7 @@ public abstract class SlackEventSender extends SlackSender {
 					fillTextBuilder(textBuilder, partText);
 					break;
 				case TABLE:
-					if (!CollectionUtil.safeIsEmpty(part.rows)) {
-						for (Row row : part.rows) {
-							if (row.type != RowType.KV) {
-								continue;
-							}
-
-							if (CollectionUtil.safeSize(row.items) != 2) {
-								continue;
-							}
-
-							String key = TokenizerUtil.work(tokenizer, row.items.get(0));
-							String value = TokenizerUtil.work(tokenizer, row.items.get(1));
-
-							if ((!Strings.isNullOrEmpty(key)) && (!Strings.isNullOrEmpty(value))) {
-								builder.addField(createAttachmentField(key, value));
-							}
-						}
-					}
+					builder.addAllFields(createTableFields(part));
 					break;
 				case ACTION:
 					AttachmentField attachmentField = getActionField(part.actionType);
@@ -106,6 +82,8 @@ public abstract class SlackEventSender extends SlackSender {
 						builder.addField(attachmentField);
 					}
 
+					break;
+				case TOP_CONTRIBUTORS:
 					break;
 				}
 			}

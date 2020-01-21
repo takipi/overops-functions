@@ -9,6 +9,8 @@ public class Models {
 	private static final String BASE_PATH = "/models/";
 	private static final String NEW_EVENT = "new-event.json";
 	private static final String RESURFACED_EVENT = "resurfaced-event.json";
+	private static final String THRESHOLD = "threshold.json";
+	private static final String ANOMALY = "anomaly.json";
 
 	public static Model newEvent() {
 		return load(NEW_EVENT);
@@ -18,16 +20,12 @@ public class Models {
 		return load(RESURFACED_EVENT);
 	}
 
-	// TODO - actual model load when used.
-	//
 	public static Model threshold() {
-		return new Model();
+		return load(THRESHOLD);
 	}
 
-	// TODO - actual model load when used.
-	//
 	public static Model anomaly() {
-		return new Model();
+		return load(ANOMALY);
 	}
 
 	private static Model load(String path) {
