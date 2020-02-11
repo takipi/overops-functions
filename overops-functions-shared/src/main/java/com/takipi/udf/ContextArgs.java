@@ -4,7 +4,6 @@ import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.base.Strings;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.RemoteApiClient;
 import com.takipi.api.core.url.UrlClient.LogLevel;
@@ -60,16 +59,20 @@ public class ContextArgs {
 		this.resurface = resurface;
 	}
 
+	private static boolean isNullOrEmpty(String s) {
+		return ((s == null) || (s.isEmpty()));
+	}
+	
 	public boolean validate() {
-		return ((!Strings.isNullOrEmpty(serviceId)) && (!Strings.isNullOrEmpty(apiKey)));
+		return ((!isNullOrEmpty(serviceId)) && (!isNullOrEmpty(apiKey)));
 	}
 
 	public boolean eventValidate() {
-		return ((validate()) && (!Strings.isNullOrEmpty(eventId)));
+		return ((validate()) && (!isNullOrEmpty(eventId)));
 	}
 
 	public boolean viewValidate() {
-		return ((validate()) && (!Strings.isNullOrEmpty(viewId)));
+		return ((validate()) && (!isNullOrEmpty(viewId)));
 	}
 
 	public ApiClient apiClient() {

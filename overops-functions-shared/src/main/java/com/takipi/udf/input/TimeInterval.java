@@ -1,7 +1,5 @@
 package com.takipi.udf.input;
 
-import com.google.common.base.Strings;
-
 public class TimeInterval {
 	private static final int M_TO_H = 60;
 	private static final int M_TO_D = 60 * 24;
@@ -51,13 +49,13 @@ public class TimeInterval {
 	private static TimeInterval of(String raw, int minutes) {
 		return new TimeInterval(raw, minutes);
 	}
-	
+
 	public static TimeInterval of(int minutes) {
 		return new TimeInterval(minutes + "m", minutes);
 	}
 
 	public static TimeInterval parse(String s) {
-		if (Strings.isNullOrEmpty(s)) {
+		if ((s == null) || (s.isEmpty())) {
 			return of(0);
 		}
 
