@@ -3,14 +3,13 @@ package com.takipi.udf.input;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 public class Input {
 	private static final String COMMENT_LINE = "#";
@@ -130,7 +129,7 @@ public class Input {
 
 		String[] split = value.split(";");
 
-		List<String> result = Lists.newArrayListWithCapacity(split.length);
+		List<String> result = new ArrayList<>(split.length);
 
 		Collections.addAll(result, split);
 
@@ -160,7 +159,7 @@ public class Input {
 	}
 
 	private static Map<String, String> getPropertyMap(String rawInput) {
-		Map<String, String> result = Maps.newHashMap();
+		Map<String, String> result = new HashMap<>();
 
 		String lines[] = rawInput.split("\\r?\\n");
 
