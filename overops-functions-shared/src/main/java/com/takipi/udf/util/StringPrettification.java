@@ -1,6 +1,6 @@
 package com.takipi.udf.util;
 
-public class StringUtil {
+public class StringPrettification {
 	public static String ellipsize(String str, int targetLength) {
 		return ellipsize(str, targetLength, 1.0);
 	}

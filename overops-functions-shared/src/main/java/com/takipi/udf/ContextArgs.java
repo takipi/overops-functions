@@ -8,6 +8,7 @@ import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.RemoteApiClient;
 import com.takipi.api.core.url.UrlClient.LogLevel;
 import com.takipi.common.util.CollectionUtil;
+import com.takipi.common.util.StringUtil;
 
 public class ContextArgs {
 	public static class Contributor {
@@ -59,20 +60,16 @@ public class ContextArgs {
 		this.resurface = resurface;
 	}
 
-	private static boolean isNullOrEmpty(String s) {
-		return ((s == null) || (s.isEmpty()));
-	}
-	
 	public boolean validate() {
-		return ((!isNullOrEmpty(serviceId)) && (!isNullOrEmpty(apiKey)));
+		return ((!StringUtil.isNullOrEmpty(serviceId)) && (!StringUtil.isNullOrEmpty(apiKey)));
 	}
 
 	public boolean eventValidate() {
-		return ((validate()) && (!isNullOrEmpty(eventId)));
+		return ((validate()) && (!StringUtil.isNullOrEmpty(eventId)));
 	}
 
 	public boolean viewValidate() {
-		return ((validate()) && (!isNullOrEmpty(viewId)));
+		return ((validate()) && (!StringUtil.isNullOrEmpty(viewId)));
 	}
 
 	public ApiClient apiClient() {
@@ -91,7 +88,7 @@ public class ContextArgs {
 
 		String value = contextData.get(name);
 
-		if (Strings.isNullOrEmpty(value)) {
+		if (StringUtil.isNullOrEmpty(value)) {
 			return defaultValue;
 		}
 
@@ -113,7 +110,7 @@ public class ContextArgs {
 
 		String value = contextData.get(name);
 
-		if (Strings.isNullOrEmpty(value)) {
+		if (StringUtil.isNullOrEmpty(value)) {
 			return defaultValue;
 		}
 
@@ -135,7 +132,7 @@ public class ContextArgs {
 
 		String value = contextData.get(name);
 
-		if (Strings.isNullOrEmpty(value)) {
+		if (StringUtil.isNullOrEmpty(value)) {
 			return defaultValue;
 		}
 

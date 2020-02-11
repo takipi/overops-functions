@@ -2,7 +2,7 @@ package com.takipi.udf.alerts.template.token;
 
 import java.util.Date;
 
-import com.google.common.base.Strings;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.util.DateUtil;
 
@@ -26,7 +26,7 @@ public abstract class TimeframeTokenizer extends Tokenizer {
 
 		String value = getTimeframeToken(type);
 
-		return (Strings.isNullOrEmpty(value) ? defaultValue : value);
+		return (StringUtil.isNullOrEmpty(value) ? defaultValue : value);
 	}
 
 	public String getTimeframeToken(TimeframeTokenType token) {

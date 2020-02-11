@@ -1,9 +1,8 @@
 package com.takipi.udf.alerts.pagerduty.sender;
 
-import com.google.common.base.Objects;
-import com.google.common.base.Strings;
 import com.takipi.api.client.data.event.Location;
 import com.takipi.api.client.result.event.EventResult;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.pagerduty.PagerDutyFunction.PagerDutyInput;
 import com.takipi.udf.alerts.pagerduty.message.Details;
@@ -37,9 +36,7 @@ public abstract class PagerDutyEventSender extends PagerDutySender {
 	}
 
 	private String createIncidentKey() {
-		int hashValue = Objects.hashCode(contextArgs.serviceId, event.class_group);
-
-		return String.valueOf(hashValue);
+		return incidentKey(contextArgs.serviceId, event.class_group);
 	}
 
 	private String createTaleLink() {
@@ -55,19 +52,19 @@ public abstract class PagerDutyEventSender extends PagerDutySender {
 		String deploymentName = createDeploymentName();
 		String errorText = createErrorText();
 
-		if (!Strings.isNullOrEmpty(serverName)) {
+		if (!StringUtil.isNullOrEmpty(serverName)) {
 			builder.setServer(serverName);
 		}
 
-		if (!Strings.isNullOrEmpty(jvmName)) {
+		if (!StringUtil.isNullOrEmpty(jvmName)) {
 			builder.setJvm(jvmName);
 		}
 
-		if (!Strings.isNullOrEmpty(deploymentName)) {
+		if (!StringUtil.isNullOrEmpty(deploymentName)) {
 			builder.setDeployment(deploymentName);
 		}
 
-		if (!Strings.isNullOrEmpty(errorText)) {
+		if (!StringUtil.isNullOrEmpty(errorText)) {
 			builder.setError(errorText);
 		}
 
@@ -94,7 +91,7 @@ public abstract class PagerDutyEventSender extends PagerDutySender {
 
 		builder.append(errorTitle);
 
-		if (!Strings.isNullOrEmpty(stackText)) {
+		if (!StringUtil.isNullOrEmpty(stackText)) {
 			builder.append("\n");
 			builder.append(stackText);
 		}
@@ -106,7 +103,7 @@ public abstract class PagerDutyEventSender extends PagerDutySender {
 		StringBuilder builder = new StringBuilder();
 
 		for (Location frame : event.stack_frames) {
-			if ((!frame.in_filter) || (Strings.isNullOrEmpty(frame.prettified_name))) {
+			if ((!frame.in_filter) || (StringUtil.isNullOrEmpty(frame.prettified_name))) {
 				continue;
 			}
 

@@ -1,8 +1,7 @@
 package com.takipi.udf.alerts.slack.message;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 public class Message {
 	public final String text;
@@ -35,7 +34,7 @@ public class Message {
 		private List<Attachment> attachments;
 
 		Builder() {
-			this.attachments = Lists.newArrayList();
+			this.attachments = new ArrayList<>();
 		}
 
 		public Builder setText(String val) {

@@ -1,6 +1,6 @@
 package com.takipi.udf.alerts.servicenow.sender;
 
-import com.google.common.base.Strings;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.servicenow.ServiceNowFunction.ServiceNowInput;
 import com.takipi.udf.alerts.util.AlertUtil;
@@ -61,7 +61,7 @@ public class ServiceNowThresholdSender extends ServiceNowTimeframeSender {
 		long hitCount = contextArgs.longData("hit_count");
 		String viewName = contextArgs.data("view_name");
 
-		if ((threshold < 0) || (thresholdTimeframe < 0) || (hitCount < 0) || (Strings.isNullOrEmpty(viewName))) {
+		if ((threshold < 0) || (thresholdTimeframe < 0) || (hitCount < 0) || (StringUtil.isNullOrEmpty(viewName))) {
 			logger.error("Can't build sender with incomplete data");
 			return null;
 		}

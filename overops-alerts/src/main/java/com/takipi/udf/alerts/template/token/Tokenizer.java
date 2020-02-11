@@ -3,7 +3,7 @@ package com.takipi.udf.alerts.template.token;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.ContextArgs;
 
 public class Tokenizer {
@@ -32,7 +32,7 @@ public class Tokenizer {
 
 		String value = getToken(type);
 
-		return (Strings.isNullOrEmpty(value) ? defaultValue : value);
+		return (StringUtil.isNullOrEmpty(value) ? defaultValue : value);
 	}
 
 	public String getToken(TokenType token) {

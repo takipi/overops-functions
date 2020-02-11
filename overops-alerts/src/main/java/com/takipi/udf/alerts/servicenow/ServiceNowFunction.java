@@ -2,8 +2,8 @@ package com.takipi.udf.alerts.servicenow;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.servicenow.client.ServiceNowClient;
 import com.takipi.udf.alerts.servicenow.sender.ServiceNowAnomalySender;
@@ -27,7 +27,7 @@ public class ServiceNowFunction {
 	static ServiceNowInput getServiceNowInput(String rawInput) {
 		System.out.println("validateInput rawInput:" + rawInput);
 
-		if (Strings.isNullOrEmpty(rawInput)) {
+		if (StringUtil.isNullOrEmpty(rawInput)) {
 			throw new IllegalArgumentException("Input is empty");
 		}
 

@@ -1,7 +1,7 @@
 package com.takipi.udf.alerts.template.token;
 
-import com.google.common.base.Strings;
 import com.takipi.api.client.result.event.EventResult;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.util.AlertUtil;
 
@@ -29,7 +29,7 @@ public class EventTokenizer extends Tokenizer {
 
 		String value = getEventToken(type);
 
-		return (Strings.isNullOrEmpty(value) ? defaultValue : value);
+		return (StringUtil.isNullOrEmpty(value) ? defaultValue : value);
 	}
 
 	public String getEventToken(EventTokenType token) {

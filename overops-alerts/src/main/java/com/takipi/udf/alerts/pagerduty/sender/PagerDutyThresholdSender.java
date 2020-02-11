@@ -1,6 +1,6 @@
 package com.takipi.udf.alerts.pagerduty.sender;
 
-import com.google.common.base.Strings;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.pagerduty.PagerDutyFunction.PagerDutyInput;
 import com.takipi.udf.alerts.pagerduty.message.Details;
@@ -56,7 +56,7 @@ public class PagerDutyThresholdSender extends PagerDutyTimeframeSender {
 		long hitCount = contextArgs.longData("hit_count");
 		String viewName = contextArgs.data("view_name");
 
-		if ((threshold < 0) || (thresholdTimeframe < 0) || (hitCount < 0) || (Strings.isNullOrEmpty(viewName))) {
+		if ((threshold < 0) || (thresholdTimeframe < 0) || (hitCount < 0) || (StringUtil.isNullOrEmpty(viewName))) {
 			logger.error("Can't build sender with incomplete data");
 			return null;
 		}

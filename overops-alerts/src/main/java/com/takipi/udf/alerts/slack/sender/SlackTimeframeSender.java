@@ -1,16 +1,16 @@
 package com.takipi.udf.alerts.slack.sender;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.request.event.EventRequest;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.ContextArgs.Contributor;
 import com.takipi.udf.alerts.slack.SlackFunction.SlackInput;
@@ -48,7 +48,7 @@ public abstract class SlackTimeframeSender extends SlackSender {
 
 	@Override
 	protected List<Attachment> createAttachments() {
-		List<Attachment> attachments = Lists.newArrayList();
+		List<Attachment> attachments = new ArrayList<>();
 
 		String viewLink = AlertUtil.buildLinkForView(contextArgs.appHost, contextArgs.serviceId, viewName,
 				fromTimestamp, toTimestamp);
@@ -87,14 +87,14 @@ public abstract class SlackTimeframeSender extends SlackSender {
 			return Collections.emptyList();
 		}
 
-		Collection<Attachment> result = Lists.newArrayList();
+		Collection<Attachment> result = new ArrayList<>();
 
 		int colorIndex = 0;
 
 		for (Contributor contributor : contextArgs.contributors) {
 			String desc = buildContributorDescription(contributor);
 
-			if (Strings.isNullOrEmpty(desc)) {
+			if (StringUtil.isNullOrEmpty(desc)) {
 				continue;
 			}
 
@@ -136,7 +136,7 @@ public abstract class SlackTimeframeSender extends SlackSender {
 
 		String eventLocation = ((event.error_location != null) ? event.error_location.prettified_name : null);
 
-		if (!Strings.isNullOrEmpty(eventLocation)) {
+		if (!StringUtil.isNullOrEmpty(eventLocation)) {
 			sb.append(" at " + AlertUtil.formatEventData(eventLocation, MAX_CONTRIBUTER_LENGTH));
 		}
 

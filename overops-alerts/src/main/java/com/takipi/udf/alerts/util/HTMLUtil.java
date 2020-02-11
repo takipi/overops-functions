@@ -1,15 +1,15 @@
 package com.takipi.udf.alerts.util;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
 import com.takipi.common.util.Pair;
+import com.takipi.common.util.StringUtil;
 
 public class HTMLUtil {
 	private static final Logger logger = LoggerFactory.getLogger(HTMLUtil.class);
@@ -47,9 +47,9 @@ public class HTMLUtil {
 	}
 
 	public static String htmlTableRowCell(String content, String width) {
-		List<Pair<String, String>> attributes = Lists.newArrayList();
+		List<Pair<String, String>> attributes = new ArrayList<>();
 
-		if (!Strings.isNullOrEmpty(width)) {
+		if (!StringUtil.isNullOrEmpty(width)) {
 			attributes.add(Pair.of("width", width));
 		}
 
@@ -57,9 +57,9 @@ public class HTMLUtil {
 	}
 
 	public static String htmlLink(String content, String url, boolean openInNew) {
-		List<Pair<String, String>> attributes = Lists.newArrayList();
+		List<Pair<String, String>> attributes = new ArrayList<>();
 
-		if (!Strings.isNullOrEmpty(url)) {
+		if (!StringUtil.isNullOrEmpty(url)) {
 			attributes.add(Pair.of("href", url));
 		}
 
@@ -71,9 +71,9 @@ public class HTMLUtil {
 	}
 
 	public static String htmlImage(String imageAddress) {
-		List<Pair<String, String>> attributes = Lists.newArrayList();
+		List<Pair<String, String>> attributes = new ArrayList<>();
 
-		if (!Strings.isNullOrEmpty(imageAddress)) {
+		if (!StringUtil.isNullOrEmpty(imageAddress)) {
 			attributes.add(Pair.of("src", imageAddress));
 		}
 

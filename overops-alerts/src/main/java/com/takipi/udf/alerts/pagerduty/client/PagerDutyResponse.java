@@ -1,9 +1,9 @@
 package com.takipi.udf.alerts.pagerduty.client;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.google.common.collect.Lists;
 import com.takipi.common.util.CollectionUtil;
 
 public class PagerDutyResponse {
@@ -50,7 +50,7 @@ public class PagerDutyResponse {
 		private final List<String> errors;
 
 		Builder() {
-			this.errors = Lists.newArrayList();
+			this.errors = new ArrayList<>();
 		}
 
 		public Builder setSuccess(boolean val) {

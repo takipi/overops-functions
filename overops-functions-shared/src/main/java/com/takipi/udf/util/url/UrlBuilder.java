@@ -3,16 +3,16 @@ package com.takipi.udf.util.url;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.joda.time.DateTime;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.takipi.api.core.consts.ApiConstants;
 import com.takipi.common.util.CollectionUtil;
+import com.takipi.common.util.StringUtil;
 
 public class UrlBuilder {
 	private final String baseUrl;
@@ -21,12 +21,12 @@ public class UrlBuilder {
 
 	private UrlBuilder(String baseUrl) {
 		this.baseUrl = baseUrl;
-		this.urlParams = Maps.newHashMap();
-		this.urlListParams = Maps.newHashMap();
+		this.urlParams = new HashMap<>();
+		this.urlListParams = new HashMap<>();
 	}
 
 	public UrlBuilder withParam(String param, String value) {
-		if (Strings.isNullOrEmpty(value)) {
+		if (StringUtil.isNullOrEmpty(value)) {
 			urlParams.remove(param);
 
 			return this;
@@ -50,14 +50,14 @@ public class UrlBuilder {
 	}
 
 	public UrlBuilder withListParam(String param, String value) {
-		if (Strings.isNullOrEmpty(value)) {
+		if (StringUtil.isNullOrEmpty(value)) {
 			return this;
 		}
 
 		Collection<String> listParams = urlListParams.get(param);
 
 		if (listParams == null) {
-			listParams = Sets.newHashSet();
+			listParams = new HashSet<>();
 			urlListParams.put(param, listParams);
 		}
 
@@ -79,7 +79,7 @@ public class UrlBuilder {
 	}
 
 	public UrlBuilder withoutListParam(String param, String value) {
-		if (Strings.isNullOrEmpty(value)) {
+		if (StringUtil.isNullOrEmpty(value)) {
 			return this;
 		}
 
@@ -114,7 +114,7 @@ public class UrlBuilder {
 
 			builder.append(param);
 
-			if (!Strings.isNullOrEmpty(value)) {
+			if (!StringUtil.isNullOrEmpty(value)) {
 				builder.append('=');
 				builder.append(value);
 			}
@@ -127,7 +127,7 @@ public class UrlBuilder {
 			for (String rawValue : values) {
 				String value = safeUrlEncode(rawValue);
 
-				if (!Strings.isNullOrEmpty(value)) {
+				if (!StringUtil.isNullOrEmpty(value)) {
 					if (!addedQ) {
 						builder.append('?');
 						addedQ = true;
@@ -146,7 +146,7 @@ public class UrlBuilder {
 	}
 
 	private static String safeUrlEncode(String value) {
-		if (Strings.isNullOrEmpty(value)) {
+		if (StringUtil.isNullOrEmpty(value)) {
 			return value;
 		}
 

@@ -2,13 +2,12 @@ package com.takipi.udf.alerts.pagerduty.sender;
 
 import java.util.Date;
 
-import com.google.common.base.Objects;
-import com.google.common.base.Strings;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.request.event.EventRequest;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.ContextArgs.Contributor;
 import com.takipi.udf.alerts.pagerduty.PagerDutyFunction.PagerDutyInput;
@@ -56,9 +55,7 @@ public abstract class PagerDutyTimeframeSender extends PagerDutySender {
 	}
 
 	private String createIncidentKey() {
-		int hashValue = Objects.hashCode(contextArgs.serviceId, viewName, fromTimestamp, toTimestamp);
-
-		return String.valueOf(hashValue);
+		return incidentKey(contextArgs.serviceId, viewName, fromTimestamp, toTimestamp);
 	}
 
 	protected Details.Builder getDetailsBuilder() {
@@ -84,7 +81,7 @@ public abstract class PagerDutyTimeframeSender extends PagerDutySender {
 		for (Contributor contributor : contextArgs.contributors) {
 			String desc = buildContributor(contributor);
 
-			if (Strings.isNullOrEmpty(desc)) {
+			if (StringUtil.isNullOrEmpty(desc)) {
 				continue;
 			}
 

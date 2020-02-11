@@ -1,5 +1,7 @@
 package com.takipi.udf.alerts.pagerduty.sender;
 
+import java.util.Arrays;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +68,12 @@ public abstract class PagerDutySender {
 				.setEventType(PagerDutyConsts.TRIGGER_EVENT_TYPE).setClient(PagerDutyConsts.EVENT_CLIENT);
 
 		return builder;
+	}
+
+	protected String incidentKey(Object... objects) {
+		int hashValue = Arrays.hashCode(objects);
+
+		return String.valueOf(hashValue);
 	}
 
 	protected abstract String getInternalDescription();

@@ -1,9 +1,8 @@
 package com.takipi.udf.alerts.slack.message;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import com.google.common.collect.Lists;
 
 public class Attachment {
 	public final String fallback;
@@ -61,8 +60,8 @@ public class Attachment {
 		private String footer;
 
 		Builder() {
-			this.fields = Lists.newArrayList();
-			this.mrkdwnIn = Lists.newArrayList();
+			this.fields = new ArrayList<>();
+			this.mrkdwnIn = new ArrayList<>();
 		}
 
 		public Builder setFallback(String val) {

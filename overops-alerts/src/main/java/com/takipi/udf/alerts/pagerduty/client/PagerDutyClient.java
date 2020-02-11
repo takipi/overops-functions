@@ -15,9 +15,9 @@ import org.glassfish.jersey.client.ClientProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.alerts.pagerduty.PagerDutyConsts;
 import com.takipi.udf.alerts.pagerduty.message.PagerDutyMessage;
 
@@ -134,14 +134,14 @@ public class PagerDutyClient {
 			ClientConfig config = new ClientConfig();
 			config.connectorProvider(new ApacheConnectorProvider());
 
-			if (!Strings.isNullOrEmpty(proxyUri)) {
+			if (!StringUtil.isNullOrEmpty(proxyUri)) {
 				config.property(ClientProperties.PROXY_URI, proxyUri);
 
-				if (!Strings.isNullOrEmpty(proxyUsername)) {
+				if (!StringUtil.isNullOrEmpty(proxyUsername)) {
 					config.property(ClientProperties.PROXY_USERNAME, proxyUsername);
 				}
 
-				if (!Strings.isNullOrEmpty(proxyPassword)) {
+				if (!StringUtil.isNullOrEmpty(proxyPassword)) {
 					config.property(ClientProperties.PROXY_PASSWORD, proxyPassword);
 				}
 			}

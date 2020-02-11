@@ -2,8 +2,8 @@ package com.takipi.udf.alerts.slack;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.slack.client.SlackClient;
 import com.takipi.udf.alerts.slack.sender.SlackAnomalySender;
@@ -28,7 +28,7 @@ public class SlackFunction {
 	static SlackInput getSlackInput(String rawInput) {
 		System.out.println("validateInput rawInput:" + rawInput);
 
-		if (Strings.isNullOrEmpty(rawInput)) {
+		if (StringUtil.isNullOrEmpty(rawInput)) {
 			throw new IllegalArgumentException("Input is empty");
 		}
 

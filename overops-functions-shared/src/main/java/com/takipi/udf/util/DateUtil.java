@@ -13,7 +13,7 @@ import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
-import com.google.common.base.Strings;
+import com.takipi.common.util.StringUtil;
 
 public class DateUtil {
 	private static final String STR_SEPARATOR = " ";
@@ -291,12 +291,12 @@ public class DateUtil {
 	}
 
 	public static boolean isBeforeOrEqual(String date1, String date2) {
-		if (Strings.isNullOrEmpty(date1) && Strings.isNullOrEmpty(date2))
+		if (StringUtil.isNullOrEmpty(date1) && StringUtil.isNullOrEmpty(date2))
 			return true;
 
-		if (Strings.isNullOrEmpty(date1))
+		if (StringUtil.isNullOrEmpty(date1))
 			return true;
-		if (Strings.isNullOrEmpty(date2))
+		if (StringUtil.isNullOrEmpty(date2))
 			return false;
 
 		long l1 = Long.parseLong(date1);

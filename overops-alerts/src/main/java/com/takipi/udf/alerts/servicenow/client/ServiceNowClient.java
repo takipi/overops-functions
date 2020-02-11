@@ -1,6 +1,7 @@
 package com.takipi.udf.alerts.servicenow.client;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.client.Client;
@@ -16,9 +17,8 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.takipi.common.util.Pair;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.alerts.servicenow.ServiceNowConsts;
 import com.takipi.udf.alerts.servicenow.message.Message;
 import com.takipi.udf.util.url.UrlUtil;
@@ -92,7 +92,7 @@ public class ServiceNowClient {
 		private String password;
 
 		public Builder() {
-			queryFieldValuePairs = Lists.newArrayList();
+			queryFieldValuePairs = new ArrayList<>();
 		}
 
 		public Builder setBaseAddress(String baseAddress) {
@@ -114,7 +114,7 @@ public class ServiceNowClient {
 		}
 
 		public Builder addQueryField(String field, String value) {
-			if ((!Strings.isNullOrEmpty(field)) && (!Strings.isNullOrEmpty(value))) {
+			if ((!StringUtil.isNullOrEmpty(field)) && (!StringUtil.isNullOrEmpty(value))) {
 				queryFieldValuePairs.add(Pair.of(field, value));
 			}
 
@@ -129,7 +129,7 @@ public class ServiceNowClient {
 		}
 
 		public ServiceNowClient build() {
-			if ((Strings.isNullOrEmpty(baseAddress)) || (Strings.isNullOrEmpty(table))) {
+			if ((StringUtil.isNullOrEmpty(baseAddress)) || (StringUtil.isNullOrEmpty(table))) {
 				logger.warn("Missing baseAddress or table name, can't build ServiceNowRestClient");
 
 				return null;
@@ -137,7 +137,7 @@ public class ServiceNowClient {
 
 			baseAddress = UrlUtil.getCanonicalHostname(baseAddress, false);
 
-			if (Strings.isNullOrEmpty(apiVersion)) {
+			if (StringUtil.isNullOrEmpty(apiVersion)) {
 				apiVersion = ServiceNowConsts.API_VERSION;
 			}
 
@@ -168,8 +168,8 @@ public class ServiceNowClient {
 			Client restClient = ClientBuilder.newClient();
 			WebTarget webTarget = restClient.target(hostUri);
 
-			if (!Strings.isNullOrEmpty(userId)) {
-				if (Strings.isNullOrEmpty(password)) {
+			if (!StringUtil.isNullOrEmpty(userId)) {
+				if (StringUtil.isNullOrEmpty(password)) {
 					webTarget.register(HttpAuthenticationFeature.basic(userId, ""));
 				} else {
 					webTarget.register(HttpAuthenticationFeature.basic(userId, password));

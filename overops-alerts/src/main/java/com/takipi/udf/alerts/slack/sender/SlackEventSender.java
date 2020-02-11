@@ -3,10 +3,10 @@ package com.takipi.udf.alerts.slack.sender;
 import java.util.Collections;
 import java.util.List;
 
-import com.google.common.base.Strings;
 import com.takipi.api.client.data.event.Location;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.common.util.CollectionUtil;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.slack.SlackFunction.SlackInput;
 import com.takipi.udf.alerts.slack.SlackUtil;
@@ -20,7 +20,7 @@ import com.takipi.udf.alerts.template.token.EventTokenizer;
 import com.takipi.udf.alerts.template.token.TokenizerUtil;
 import com.takipi.udf.alerts.util.AlertUtil;
 import com.takipi.udf.alerts.util.SourceConstants;
-import com.takipi.udf.util.StringUtil;
+import com.takipi.udf.util.StringPrettification;
 import com.takipi.udf.util.url.UrlUtil;
 
 public abstract class SlackEventSender extends SlackSender {
@@ -99,7 +99,7 @@ public abstract class SlackEventSender extends SlackSender {
 	}
 
 	private void fillTextBuilder(StringBuilder builder, String text) {
-		if (Strings.isNullOrEmpty(text)) {
+		if (StringUtil.isNullOrEmpty(text)) {
 			return;
 		}
 
@@ -131,7 +131,7 @@ public abstract class SlackEventSender extends SlackSender {
 		String url = AlertUtil.generateMailAutoArchiveActionLink(contextArgs.appHost, contextArgs.serviceId,
 				event.name);
 
-		if (Strings.isNullOrEmpty(url)) {
+		if (StringUtil.isNullOrEmpty(url)) {
 			return null;
 		}
 
@@ -174,7 +174,7 @@ public abstract class SlackEventSender extends SlackSender {
 		textBuilder.append(CODE_BLOCK_MARKER);
 
 		for (Location frame : event.stack_frames) {
-			if ((!frame.in_filter) || (Strings.isNullOrEmpty(frame.prettified_name))) {
+			if ((!frame.in_filter) || (StringUtil.isNullOrEmpty(frame.prettified_name))) {
 				continue;
 			}
 
@@ -192,7 +192,7 @@ public abstract class SlackEventSender extends SlackSender {
 	}
 
 	private String getArchiveFutureTitle(String title) {
-		String requestHeader = StringUtil.ellipsize(title, 40);
+		String requestHeader = StringPrettification.ellipsize(title, 40);
 
 		return String.format(ARCHIVE_FUTURE_ALERTS_FORMAT, requestHeader);
 	}

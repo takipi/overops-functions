@@ -3,7 +3,7 @@ package com.takipi.udf.alerts.servicenow.sender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.servicenow.ServiceNowConsts;
 import com.takipi.udf.alerts.servicenow.ServiceNowFunction.ServiceNowInput;
@@ -64,7 +64,7 @@ public abstract class ServiceNowSender {
 	protected abstract Message buildMessage();
 
 	protected String nonEmptyHtmlTableRow(String firstColumnContent, String secondColumnContent) {
-		if ((Strings.isNullOrEmpty(firstColumnContent)) || (Strings.isNullOrEmpty(secondColumnContent))) {
+		if ((StringUtil.isNullOrEmpty(firstColumnContent)) || (StringUtil.isNullOrEmpty(secondColumnContent))) {
 			return "";
 		}
 

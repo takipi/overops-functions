@@ -1,5 +1,6 @@
 package com.takipi.udf.alerts.slack.sender;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -7,9 +8,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.takipi.common.util.CollectionUtil;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.slack.SlackConsts;
 import com.takipi.udf.alerts.slack.SlackFunction.SlackInput;
@@ -65,7 +65,7 @@ public abstract class SlackSender {
 	private boolean doSendMessage(String internalDescription) {
 		String text = createText();
 
-		List<Attachment> attachments = Lists.newArrayList();
+		List<Attachment> attachments = new ArrayList<>();
 		attachments.addAll(createAttachments());
 
 		SlackResponse response = postMessage(text, attachments);
@@ -100,11 +100,11 @@ public abstract class SlackSender {
 		Message.Builder messageBuilder = Message.newBuilder().setUsername(SlackConsts.USERNAME)
 				.setIconUrl(SlackConsts.ICON_URL);
 
-		if (!Strings.isNullOrEmpty(input.inhook_channel)) {
+		if (!StringUtil.isNullOrEmpty(input.inhook_channel)) {
 			messageBuilder.setChannel(input.inhook_channel);
 		}
 
-		if (!Strings.isNullOrEmpty(text)) {
+		if (!StringUtil.isNullOrEmpty(text)) {
 			messageBuilder.setText(text);
 		}
 
@@ -128,7 +128,7 @@ public abstract class SlackSender {
 			return Collections.emptyList();
 		}
 
-		Collection<AttachmentField> result = Lists.newArrayList();
+		Collection<AttachmentField> result = new ArrayList<>();
 
 		for (Row row : table.rows) {
 			if (row.type != RowType.KV) {
@@ -142,7 +142,7 @@ public abstract class SlackSender {
 			String key = TokenizerUtil.work(tokenizer, row.items.get(0));
 			String value = TokenizerUtil.work(tokenizer, row.items.get(1));
 
-			if ((!Strings.isNullOrEmpty(key)) && (!Strings.isNullOrEmpty(value))) {
+			if ((!StringUtil.isNullOrEmpty(key)) && (!StringUtil.isNullOrEmpty(value))) {
 				result.add(createAttachmentField(key, value));
 			}
 		}
@@ -165,7 +165,7 @@ public abstract class SlackSender {
 	protected AttachmentField createAttachmentField(String title, String value, String link, boolean isShort) {
 		String finalValue;
 
-		if (!Strings.isNullOrEmpty(link)) {
+		if (!StringUtil.isNullOrEmpty(link)) {
 			finalValue = SlackUtil.formatLink(value, link);
 		} else {
 			finalValue = value;

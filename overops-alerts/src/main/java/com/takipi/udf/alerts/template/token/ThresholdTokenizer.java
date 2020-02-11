@@ -1,6 +1,6 @@
 package com.takipi.udf.alerts.template.token;
 
-import com.google.common.base.Strings;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.util.AlertUtil;
 
@@ -28,7 +28,7 @@ public class ThresholdTokenizer extends TimeframeTokenizer {
 
 		String value = getThresholdToken(type);
 
-		return (Strings.isNullOrEmpty(value) ? defaultValue : value);
+		return (StringUtil.isNullOrEmpty(value) ? defaultValue : value);
 	}
 
 	public String getThresholdToken(ThresholdTokenType token) {

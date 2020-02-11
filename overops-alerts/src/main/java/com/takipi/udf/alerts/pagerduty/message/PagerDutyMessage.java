@@ -1,9 +1,9 @@
 package com.takipi.udf.alerts.pagerduty.message;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.google.common.collect.Lists;
 import com.takipi.udf.alerts.pagerduty.PagerDutyConsts;
 
 public class PagerDutyMessage {
@@ -50,7 +50,7 @@ public class PagerDutyMessage {
 		private final List<Context> contexts;
 
 		Builder() {
-			this.contexts = Lists.newArrayList();
+			this.contexts = new ArrayList<>();
 		}
 
 		public Builder setServiceKey(String val) {

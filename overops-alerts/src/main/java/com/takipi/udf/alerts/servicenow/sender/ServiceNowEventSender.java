@@ -1,9 +1,9 @@
 package com.takipi.udf.alerts.servicenow.sender;
 
-import com.google.common.base.Strings;
 import com.takipi.api.client.data.event.Location;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.common.util.CollectionUtil;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.servicenow.ServiceNowConsts;
 import com.takipi.udf.alerts.servicenow.ServiceNowFunction.ServiceNowInput;
@@ -46,7 +46,7 @@ public abstract class ServiceNowEventSender extends ServiceNowSender {
 
 		String applicationName = event.introduced_by_application;
 
-		if (Strings.isNullOrEmpty(applicationName)) {
+		if (StringUtil.isNullOrEmpty(applicationName)) {
 			applicationName = HTMLUtil.htmlLink(UNNAMED_APPLICATION, APPLICATION_NAMING_LINK, true);
 		}
 
@@ -83,7 +83,7 @@ public abstract class ServiceNowEventSender extends ServiceNowSender {
 		StringBuilder stringBuilder = new StringBuilder();
 
 		for (Location frame : event.stack_frames) {
-			if ((!frame.in_filter) || (Strings.isNullOrEmpty(frame.prettified_name))) {
+			if ((!frame.in_filter) || (StringUtil.isNullOrEmpty(frame.prettified_name))) {
 				continue;
 			}
 

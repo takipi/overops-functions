@@ -3,7 +3,7 @@ package com.takipi.udf.util.url;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.google.common.base.Strings;
+import com.takipi.common.util.StringUtil;
 
 public class DashboardUrlBuilder {
 
@@ -103,11 +103,11 @@ public class DashboardUrlBuilder {
 	public UrlBuilder toUrlBuilder() {
 		UrlBuilder builder = UrlBuilder.create(UrlUtil.getDashboardUrl(appHost));
 
-		if (!Strings.isNullOrEmpty(serviceId)) {
+		if (!StringUtil.isNullOrEmpty(serviceId)) {
 			builder.withParam(KEY_PARAMETER, serviceId);
 		}
 
-		if (!Strings.isNullOrEmpty(viewName)) {
+		if (!StringUtil.isNullOrEmpty(viewName)) {
 			builder.withParam(VIEW_PARAMETER, viewName);
 		}
 
@@ -120,7 +120,7 @@ public class DashboardUrlBuilder {
 			}
 		}
 
-		if (!Strings.isNullOrEmpty(nav)) {
+		if (!StringUtil.isNullOrEmpty(nav)) {
 			builder.withParam(NAV_PARAMETER, nav);
 		}
 

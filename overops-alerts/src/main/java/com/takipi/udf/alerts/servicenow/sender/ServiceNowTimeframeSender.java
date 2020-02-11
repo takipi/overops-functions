@@ -2,12 +2,12 @@ package com.takipi.udf.alerts.servicenow.sender;
 
 import java.util.Date;
 
-import com.google.common.base.Strings;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.request.event.EventRequest;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.core.url.UrlClient.Response;
 import com.takipi.common.util.CollectionUtil;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.ContextArgs.Contributor;
 import com.takipi.udf.alerts.servicenow.ServiceNowConsts;
@@ -92,7 +92,7 @@ public abstract class ServiceNowTimeframeSender extends ServiceNowSender {
 			for (Contributor contributor : contextArgs.contributors) {
 				String desc = buildContributorDescription(contributor);
 
-				if (Strings.isNullOrEmpty(desc)) {
+				if (StringUtil.isNullOrEmpty(desc)) {
 					continue;
 				}
 
@@ -128,7 +128,7 @@ public abstract class ServiceNowTimeframeSender extends ServiceNowSender {
 
 		String eventLocation = ((event.error_location != null) ? event.error_location.prettified_name : null);
 
-		if (!Strings.isNullOrEmpty(eventLocation)) {
+		if (!StringUtil.isNullOrEmpty(eventLocation)) {
 			sb.append(" at " + eventLocation);
 		}
 

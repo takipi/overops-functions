@@ -1,6 +1,6 @@
 package com.takipi.udf.alerts.template.token;
 
-import com.google.common.base.Strings;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.ContextArgs;
 
 public class AnomalyTokenizer extends TimeframeTokenizer {
@@ -23,7 +23,7 @@ public class AnomalyTokenizer extends TimeframeTokenizer {
 
 		String value = getAnomalyToken(type);
 
-		return (Strings.isNullOrEmpty(value) ? defaultValue : value);
+		return (StringUtil.isNullOrEmpty(value) ? defaultValue : value);
 	}
 
 	public String getAnomalyToken(AnomalyTokenType token) {

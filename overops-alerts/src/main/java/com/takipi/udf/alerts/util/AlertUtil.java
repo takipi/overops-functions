@@ -7,13 +7,13 @@ import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
 import com.takipi.api.client.ApiClient;
 import com.takipi.api.client.request.event.EventRequest;
 import com.takipi.api.client.result.event.EventResult;
 import com.takipi.api.core.url.UrlClient.Response;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.ContextArgs;
-import com.takipi.udf.util.StringUtil;
+import com.takipi.udf.util.StringPrettification;
 import com.takipi.udf.util.url.DashboardUrlBuilder;
 import com.takipi.udf.util.url.DashboardUrlBuilder.TimeframeType;
 import com.takipi.udf.util.url.UrlBuilder;
@@ -49,7 +49,7 @@ public class AlertUtil {
 		if (AlertUtil.isLogEvent(event)) {
 			fullTitle = event.type;
 
-			if (!Strings.isNullOrEmpty(event.message)) {
+			if (!StringUtil.isNullOrEmpty(event.message)) {
 				fullTitle += ": \"" + event.message + "\"";
 			}
 		} else {
@@ -62,7 +62,7 @@ public class AlertUtil {
 			return fullTitle;
 		}
 
-		return StringUtil.ellipsize(fullTitle, maxLength);
+		return StringPrettification.ellipsize(fullTitle, maxLength);
 	}
 
 	public static String generateMailAutoArchiveActionLink(String appHost, String serviceId, String exceptionName) {
@@ -127,7 +127,7 @@ public class AlertUtil {
 
 	public static String formatEventData(String eventData, int maxChars) {
 		int charsFromEnd = ((eventData.endsWith("\"")) ? 1 : 0); // to account for the '"' at the end
-		String shortString = StringUtil.minimizeString(eventData, maxChars, charsFromEnd);
+		String shortString = StringPrettification.minimizeString(eventData, maxChars, charsFromEnd);
 		String result = formatText(shortString);
 
 		return result;

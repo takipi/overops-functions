@@ -1,6 +1,6 @@
 package com.takipi.udf.alerts.servicenow.sender;
 
-import com.google.common.base.Strings;
+import com.takipi.common.util.StringUtil;
 import com.takipi.udf.ContextArgs;
 import com.takipi.udf.alerts.servicenow.ServiceNowFunction.ServiceNowInput;
 import com.takipi.udf.alerts.util.SourceConstants;
@@ -47,8 +47,8 @@ public class ServiceNowAnomalySender extends ServiceNowTimeframeSender {
 		String anomalyTimeframe = contextArgs.data("anomaly_timeframe");
 		String viewName = contextArgs.data("view_name");
 
-		if ((Strings.isNullOrEmpty(anomalyReason)) || (Strings.isNullOrEmpty(anomalyTimeframe))
-				|| (Strings.isNullOrEmpty(viewName))) {
+		if ((StringUtil.isNullOrEmpty(anomalyReason)) || (StringUtil.isNullOrEmpty(anomalyTimeframe))
+				|| (StringUtil.isNullOrEmpty(viewName))) {
 			logger.error("Can't build sender with incomplete data");
 			return null;
 		}

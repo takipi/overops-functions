@@ -4,9 +4,9 @@ import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.codec.binary.Base64;
 
-import com.google.common.base.Strings;
 import com.takipi.api.core.consts.ApiConstants;
-import com.takipi.udf.util.StringUtil;
+import com.takipi.common.util.StringUtil;
+import com.takipi.udf.util.StringPrettification;
 
 public class UrlUtil {
 	public static final String INDEX = "index.html";
@@ -76,7 +76,7 @@ public class UrlUtil {
 					.withParam("event", encodeSnapshotParam(serviceId, eventId, snapshotId))
 					.withParam("source", String.valueOf(source));
 
-			if (!Strings.isNullOrEmpty(navigation)) {
+			if (!StringUtil.isNullOrEmpty(navigation)) {
 				builder.withParam("nav", navigation);
 			}
 
@@ -99,7 +99,7 @@ public class UrlUtil {
 	}
 
 	public static String getCanonicalHostname(String hostname, boolean forceHttps) {
-		String result = StringUtil.removeIfTrailing(hostname, "/");
+		String result = StringPrettification.removeIfTrailing(hostname, "/");
 
 		if (result.startsWith("https://")) {
 			return result;
