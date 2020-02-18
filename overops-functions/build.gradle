@@ -14,26 +14,9 @@ buildscript {
 
 dependencies {
 	compile (
-		"org.apache.commons:commons-lang3:3.7",
+		project(":overops-functions-shared"),
 		"com.atlassian.jira:jira-rest-java-client:2.0.0-m2"
 	)
-	
-	if (gradle.hasProperty("localApiClient") &&
-		"$gradle.localApiClient" == "true") {
-		println "Compiling overops functions with project api-client"
-
-		compile (
-			project(":api-client"),
-			project(":api-client-util"),
-		)
-	} else {
-		println "Compiling overops functions with maven api-client"
-
-		compile (
-			"com.takipi:api-client:2.30.0",
-			"com.takipi:api-client-util:2.30.0",
-		)
-	}
 }
 
 fatJar {

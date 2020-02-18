@@ -1,4 +1,5 @@
 rootProject.name = ''
+include "overops-functions-shared"
 include "overops-functions"
 
 def apiClientDirectory = new File("..", "api-client")
