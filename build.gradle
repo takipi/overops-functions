@@ -11,7 +11,10 @@ subprojects {
 		mavenCentral()
 		mavenLocal()
 		maven {
-			url 'https://packages.atlassian.com/maven/repository/public'
+			url 'https://packages.atlassian.com/content/repositories/atlassian-public/'
+		}
+		maven {
+			url 'https://repo.spring.io/plugins-release/'
 		}
 	}
 	task javadocJar(type: Jar) {

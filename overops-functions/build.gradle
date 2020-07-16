@@ -15,7 +15,9 @@ buildscript {
 dependencies {
 	compile (
 		project(":overops-functions-shared"),
-		"com.atlassian.jira:jira-rest-java-client:2.0.0-m2"
+		"com.atlassian.jira:jira-rest-java-client-api:5.2.0",
+		"com.atlassian.jira:jira-rest-java-client-core:5.2.0",
+		"io.atlassian.fugue:fugue:4.7.2"
 	)
 }
 
