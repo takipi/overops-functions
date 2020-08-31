@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.atlassian.jira.rest.client.JiraRestClient;
-import com.atlassian.jira.rest.client.JiraRestClientFactory;
+import com.atlassian.jira.rest.client.api.JiraRestClient;
+import com.atlassian.jira.rest.client.api.JiraRestClientFactory;
 import com.atlassian.jira.rest.client.internal.async.AsynchronousJiraRestClientFactory;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
@@ -54,7 +54,7 @@ public class JiraIntegrationFunction {
 
 			// INTG-200: resolved status must exist in Jira.
 			if (!StringUtils.isEmpty(input.resolvedStatus)) {
-				client.getSearchClient().searchJql(input.resolutionOrStatus + " = \""+ input.resolvedStatus +"\"", 1, 0).claim();
+				client.getSearchClient().searchJql(input.resolutionOrStatus + " = \""+ input.resolvedStatus +"\"", 1, 0, null).claim();
 				if (input.debug) {
 					System.out.println(">> verified input.resolveStatus");
 				}
@@ -62,7 +62,7 @@ public class JiraIntegrationFunction {
 
 			// INTG-200: hidden status must exist in Jira.
 			if (!StringUtils.isEmpty(input.hiddenStatus)) {
-				client.getSearchClient().searchJql(input.resolutionOrStatus + " = \""+ input.hiddenStatus +"\"", 1, 0).claim();
+				client.getSearchClient().searchJql(input.resolutionOrStatus + " = \""+ input.hiddenStatus +"\"", 1, 0, null).claim();
 
 				if (input.debug) {
 					System.out.println(">> verified input.hiddenStatus");
