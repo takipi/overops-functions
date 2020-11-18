@@ -10,9 +10,7 @@ subprojects {
 	repositories {
 		mavenCentral()
 		mavenLocal()
-		maven {
-			url 'https://packages.atlassian.com/content/repositories/atlassian-public/'
-		}
+    jcenter()
 		maven {
 			url 'https://repo.spring.io/plugins-release/'
 		}
