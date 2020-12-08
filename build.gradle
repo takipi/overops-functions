@@ -8,12 +8,8 @@ subprojects {
 	version = '2.0.0'
 	
 	repositories {
-		mavenCentral()
+		jcenter()
 		mavenLocal()
-    jcenter()
-		maven {
-			url 'https://repo.spring.io/plugins-release/'
-		}
 	}
 	task javadocJar(type: Jar) {
 			classifier = 'javadoc'
