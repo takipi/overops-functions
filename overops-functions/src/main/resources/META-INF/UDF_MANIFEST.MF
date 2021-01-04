@@ -353,5 +353,40 @@
 			</default_params>
 			<admin_function>true</admin_function>
 		</function>
+		<function>
+			<function_type>ANOMALY</function_type>
+			<function_name>Quality Gates</function_name>
+			<description>
+				Constantly checks the application and alerts whenever specific quality gates fail.
+			</description>
+			<param_type>TEXT</param_type>
+			<class_file>com.takipi.udf.quality.QualityGatesFunction</class_file>
+			<default_params>
+				# Time period to look at when inspecting application performance
+				period=1d
+
+				# Minimal interval between to consecutive alerts on same quality gate.
+				min_alert_interval=1h
+
+				# Should alert on new events. 0 - No. 1 - Critical only. 2 - All.
+				alert_new_events=1
+
+				# Should alert on increasing events. 0 - No. 1 - Critical only. 2 - All.
+				alert_increasing_events=1
+
+				# Should alert on slowdowns. 0 - No. 1 - Critical only. 2 - All.
+				alert_slowdowns=1
+
+				# Minimal unique events count to break quality gate. 0 for disabled.
+				min_unique_events=0
+
+				# Minimal total volume of events to break quality gate. 0 for disabled.
+				min_total_volume=0
+
+				# Minimal total volume of critical events to break quality gate. 0 for disabled.
+				min_critical_volume=0
+			</default_params>
+			<admin_function>true</admin_function>
+		</function>
 	</functions>
 </udf_manifest>
