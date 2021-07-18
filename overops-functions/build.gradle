@@ -53,6 +53,21 @@ uploadArchives {
 	}
 }
 
+task writeDependenciesFile() { 
+	doLast {
+		def resourcesDir = sourceSets.main.resources.srcDirs[0]
+		def dependenciesFile = new File(resourcesDir, "META-INF/dependencies.txt")
+		
+		dependenciesFile.write(
+			project.configurations.compile.resolve()
+				.collect({ it.name })
+				.join("\n")
+		)
+	}
+}
+
+processResources.dependsOn writeDependenciesFile
+
 task copyJar(dependsOn: fatJar) {
 	doLast {
 		if (rootProject.hasProperty("jarTargetFile")) {
