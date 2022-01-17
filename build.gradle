@@ -8,7 +8,13 @@ subprojects {
 	version = '2.0.0'
 	
 	repositories {
-		jcenter()
+		mavenCentral()
+		maven {
+			url "https://packages.atlassian.com/maven-public/"
+		}
+		maven {
+			url "https://m2proxy.atlassian.com/repository/public/"
+		}
 		mavenLocal()
 	}
 	task javadocJar(type: Jar) {
