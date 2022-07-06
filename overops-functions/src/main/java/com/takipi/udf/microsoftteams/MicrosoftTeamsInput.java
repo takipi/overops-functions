@@ -1,5 +1,6 @@
 package com.takipi.udf.microsoftteams;
 
+import com.google.common.base.Strings;
 import com.takipi.udf.input.Input;
 
 class MicrosoftTeamsInput extends Input {
@@ -19,7 +20,7 @@ class MicrosoftTeamsInput extends Input {
 	}
 
 	public void checkUrl() {
-		if (url == null || "".equals(url)) {
+		if (Strings.isNullOrEmpty(url)) {
 			throw new IllegalArgumentException("'url' isn't valid.");
 		}
 	}
