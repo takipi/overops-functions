@@ -19,7 +19,7 @@ class MicrosoftTeamsInput extends Input {
 	}
 
 	public void checkUrl() {
-		if ((url == null) || (!url.matches("^https.*outlook.*webhook.*"))) {
+		if (url == null || "".equals(url)) {
 			throw new IllegalArgumentException("'url' isn't valid.");
 		}
 	}
