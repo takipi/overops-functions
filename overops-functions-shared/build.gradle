@@ -5,7 +5,7 @@ buildscript {
 }
 
 dependencies {
-	compile (
+	implementation (
 		"org.apache.commons:commons-lang3:3.7",
 	)
 	
@@ -13,14 +13,14 @@ dependencies {
 		"$gradle.localApiClient" == "true") {
 		println "Compiling overops functions shared with project api-client"
 
-		compile (
+		implementation (
 			project(":api-client"),
 			project(":api-client-util"),
 		)
 	} else {
 		println "Compiling overops functions shared with maven api-client"
 
-		compile (
+		implementation (
 			"com.takipi:api-client:2.30.0",
 			"com.takipi:api-client-util:2.30.0",
 		)
