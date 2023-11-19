@@ -1,4 +1,4 @@
-apply plugin: 'eu.appsatori.fatjar'
+apply plugin: "com.github.johnrengelman.shadow"
 
 archivesBaseName = 'overops-functions'
 
@@ -10,7 +10,7 @@ buildscript {
 	}
 
 	dependencies {
-		classpath 'eu.appsatori:gradle-fatjar-plugin:0.3'
+		classpath group:'com.github.jengelman.gradle.plugins', name:'shadow', version:'5.2.0'
 	}
 }
 
@@ -19,13 +19,36 @@ dependencies {
 		project(":overops-functions-shared"),
 		"com.atlassian.jira:jira-rest-java-client-api:5.2.0",
 		"com.atlassian.jira:jira-rest-java-client-core:5.2.0",
-		"io.atlassian.fugue:fugue:4.7.2"
+		"io.atlassian.fugue:fugue:4.7.2",
+		"com.google.code.gson:gson:2.8.2"
 	)
+	
+	if (gradle.hasProperty("localApiClient") &&
+		"$gradle.localApiClient" == "true") {
+		println "Compiling overops functions shared with project api-client"
+
+		implementation (
+			project(":api-client"),
+			project(":api-client-util"),
+		)
+	} else {
+		println "Compiling overops functions shared with maven api-client"
+
+		implementation (
+			"com.takipi:api-client:2.30.0",
+			"com.takipi:api-client-util:2.30.0",
+		)
+	}
 }
 
-fatJar {
+shadowJar {
+	classifier = ''
+	archiveVersion = ''
 	exclude 'META-INF/maven'
 	exclude 'META-INF/*.example'
+}
+
+jar {
 	manifest {
 		attributes 'Main-Class': 'OveropsFunctions'
 	}
@@ -61,7 +84,7 @@ task writeDependenciesFile() {
 		def dependenciesFile = new File(resourcesDir, "META-INF/dependencies.txt")
 		
 		dependenciesFile.write(
-			project.configurations.compile.resolve()
+			project.configurations.runtimeClasspath.resolve()
 				.collect({ it.name })
 				.join("\n")
 		)
@@ -70,12 +93,12 @@ task writeDependenciesFile() {
 
 processResources.dependsOn writeDependenciesFile
 
-task copyJar(dependsOn: fatJar) {
+task copyJar(dependsOn: shadowJar) {
 	doLast {
 		if (rootProject.hasProperty("jarTargetFile")) {
-			println "Copying $jar.archivePath to $jarTargetFile"
-
-			ant.copy(file:jar.archivePath, tofile:jarTargetFile)
+			println "Copying $shadowJar.archivePath to $jarTargetFile"
+			
+			ant.copy(file:shadowJar.archivePath, tofile:jarTargetFile)
 		}
 	}
 }
