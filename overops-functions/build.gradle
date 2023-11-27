@@ -19,8 +19,9 @@ dependencies {
 		project(":overops-functions-shared"),
 		"com.atlassian.jira:jira-rest-java-client-api:5.2.0",
 		"com.atlassian.jira:jira-rest-java-client-core:5.2.0",
+		"com.google.guava:guava:32.1.3-jre",
 		"io.atlassian.fugue:fugue:4.7.2",
-		"com.google.code.gson:gson:2.8.2"
+		"com.google.code.gson:gson:2.10.1"
 	)
 	
 	if (gradle.hasProperty("localApiClient") &&
