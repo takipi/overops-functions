@@ -1,4 +1,4 @@
-rootProject.name = ''
+rootProject.name = 'root'
 include "overops-functions-shared"
 include "overops-functions"
 
